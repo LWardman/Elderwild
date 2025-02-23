@@ -1,0 +1,11 @@
+/.vs/Elderwild/v17/.suo
+/.vsconfig
+/Elderwild.sln
+/Elderwild.uproject
+
+/Binaries/*
+/.idea/*
+/Intermediate/*
+/Config/*
+/Content/*
+/Saved/*
