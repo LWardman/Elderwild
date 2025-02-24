@@ -47,7 +47,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants")
 	float SelectionOpacity = 0.5f;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Constants")
 	UMaterialInterface* Material;
 
 	UPROPERTY()
@@ -57,7 +57,7 @@ public:
 	UMaterialInstanceDynamic* SelectionMaterial;
 
 private:
-	void CreateLine(FVector Start, FVector End, float Thickness, TArray<FVector> Vertices, TArray<int32> Triangles);
+	void CreateLine(const FVector Start, const FVector End, const float Thickness, TArray<FVector>& Vertices, TArray<int32>& Triangles);
 
 	int32 GetGridWidth() const;
 
