@@ -15,6 +15,8 @@ public:
 	// Sets default values for this actor's properties
 	AGrid();
 
+	void OnConstruction(const FTransform &Transform) override;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -55,6 +57,9 @@ public:
 	
 	UPROPERTY()
 	UMaterialInstanceDynamic* SelectionMaterial;
+
+	UPROPERTY()
+	UProceduralMeshComponent* ProceduralMesh;
 
 private:
 	void CreateLine(const FVector Start, const FVector End, const float Thickness, TArray<FVector>& Vertices, TArray<int32>& Triangles);
