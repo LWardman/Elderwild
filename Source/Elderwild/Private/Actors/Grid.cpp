@@ -7,13 +7,18 @@ AGrid::AGrid()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	ProceduralMesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("Procedural Mesh Component"));
+}
+
+void AGrid::OnConstruction(const FTransform &Transform)
+{
 	LineMaterial = CreateMaterialInstance(LineColor, LineOpacity);
 	SelectionMaterial = CreateMaterialInstance(SelectionColor, SelectionOpacity);
 	
 	TArray<FVector> Vertices;
 	TArray<int32> Triangles;
 
-	for (int32 i = 0; i < NumRows; i++)
+	for (int32 i = 0; i <= NumRows; i++)
 	{
 		const float LineStart = i * TileSize;
 		const float LineEnd = GetGridWidth();
@@ -21,10 +26,10 @@ AGrid::AGrid()
 		const FVector Start = FVector(LineStart, 0, 0);
 		const FVector End = FVector(LineStart, LineEnd, 0);
 		
-		CreateLine(Start, End, LineOpacity, Vertices, Triangles);
+		CreateLine(Start, End, LineThickness, Vertices, Triangles);
 	}
 
-	for (int32 i = 0; i < NumCols; i++)
+	for (int32 i = 0; i <= NumCols; i++)
 	{
 		const float LineStart = i * TileSize;
 		const float LineEnd = GetGridHeight();
@@ -32,9 +37,35 @@ AGrid::AGrid()
 		const FVector Start = FVector( 0, LineStart,0);
 		const FVector End = FVector( LineEnd, LineStart,0);
 		
-		CreateLine(Start, End, LineOpacity, Vertices, Triangles);
+		CreateLine(Start, End, LineThickness, Vertices, Triangles);
 	}
+	
+	if (ProceduralMesh)
+	{
+		ProceduralMesh->CreateMeshSection(
+			0,
+			Vertices,
+			Triangles,
+			TArray<FVector>(),				// Normals (empty)
+			TArray<FVector2D>(),			// UV0 (empty)
+			TArray<FColor>(),				// VertexColors (empty)
+			TArray<FProcMeshTangent>(),		// Tangents (empty)
+			false							// Collision not needed
+		);
 
+		if (LineMaterial)
+		{
+			ProceduralMesh->SetMaterial(0, LineMaterial);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("LineMaterial not generated properly"));
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Grid cannot be created, as no procedural mesh is assigned"));
+	}
 }
 
 // Called when the game starts or when spawned
@@ -90,7 +121,7 @@ UMaterialInstanceDynamic* AGrid::CreateMaterialInstance(FLinearColor Color, floa
 {
 	if (!Material)
 	{
-		UE_LOG(LogTemp, Warning,
+		UE_LOG(LogTemp, Error,
 			TEXT("AGrid cannot create dynamic material instance, because no parent material is set. "
 							"Returning nullptr."));
 		return nullptr;
