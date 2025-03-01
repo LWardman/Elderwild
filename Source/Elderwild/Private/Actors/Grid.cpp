@@ -168,20 +168,60 @@ UMaterialInstanceDynamic* AGrid::CreateMaterialInstance(FLinearColor Color, floa
 
 void AGrid::LocationToTile(FVector Location, int32& GridRow, int32& GridCol, bool& IsValid)
 {
-	
+	FVector GridLocation = GetActorLocation();
+	FVector LocalHitLocation = Location - GridLocation;
+
+	if (GetGridWidth() == 0 || GetGridHeight() == 0)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Dividing by 0 when calculating cursor location to tile, check grid dimensions"));
+		return;
+	}
+
+	GridRow = FMath::Floor((LocalHitLocation.X / GetGridWidth()) * NumRows);
+	GridCol = FMath::Floor((LocalHitLocation.Y / GetGridHeight()) * NumCols);
+
+	IsValid = TileIsValid(GridRow, GridCol);
+	UE_LOG(LogTemp, Warning, TEXT("IsValid value is %s"), ( IsValid ? TEXT("true"): TEXT("false") ));
 }
 
 void AGrid::TileToGridLocation(int32 Row, int32 Col, bool ShouldCenter, bool& IsValid, FVector2D& Location)
 {
-	
+	if (TileIsValid(Row, Col))
+	{
+		float CenterAdjustment = ShouldCenter * TileSize / 2;
+		float TileCornerX = Row * TileSize + GetActorLocation().X;
+		float TileCornerY = Col * TileSize + GetActorLocation().Y;
+
+		Location.X = TileCornerX + CenterAdjustment;
+		Location.Y = TileCornerY + CenterAdjustment;
+
+		IsValid = true;
+	}
 }
 
 void AGrid::SetSelectedTile(int32 Row, int32 Col)
 {
+	bool IsValid = false;
+	FVector2D Location;
+	TileToGridLocation(Row, Col, false, IsValid, Location);
+
+	bool SelectionMeshIsValid = (SelectionProceduralMesh != nullptr);
 	
+	if (!SelectionProceduralMesh) return;
+	
+	SelectionProceduralMesh->SetVisibility(IsValid);
+
+
+	if (IsValid)
+	{
+		FVector SelectionLocation = FVector(Location.X, Location.Y, GetActorLocation().Z);
+		SelectionProceduralMesh->SetWorldLocation(SelectionLocation);
+	}
 }
 
 bool AGrid::TileIsValid(int32 Row, int32 Col)
 {
-	return true;
+	bool RowIsValid = (Row >= 0 && Row < NumRows);
+	bool ColIsValid = (Col >= 0 && Col < NumCols);
+	return RowIsValid && ColIsValid;
 }
