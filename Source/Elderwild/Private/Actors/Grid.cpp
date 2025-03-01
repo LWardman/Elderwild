@@ -2,12 +2,12 @@
 
 #include "ProceduralMeshComponent.h"
 
-// Sets default values
 AGrid::AGrid()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	ProceduralMesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("Procedural Mesh Component"));
+	LinesProceduralMesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("Procedural Mesh Component for Lines"));
+	SelectionProceduralMesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("Procedural Mesh Component for Selection"));
 }
 
 void AGrid::OnConstruction(const FTransform &Transform)
@@ -40,9 +40,9 @@ void AGrid::OnConstruction(const FTransform &Transform)
 		CreateLine(Start, End, LineThickness, Vertices, Triangles);
 	}
 	
-	if (ProceduralMesh)
+	if (LinesProceduralMesh)
 	{
-		ProceduralMesh->CreateMeshSection(
+		LinesProceduralMesh->CreateMeshSection(
 			0,
 			Vertices,
 			Triangles,
@@ -55,17 +55,49 @@ void AGrid::OnConstruction(const FTransform &Transform)
 
 		if (LineMaterial)
 		{
-			ProceduralMesh->SetMaterial(0, LineMaterial);
+			LinesProceduralMesh->SetMaterial(0, LineMaterial);
 		}
 		else
 		{
-			UE_LOG(LogTemp, Error, TEXT("LineMaterial not generated properly"));
+			UE_LOG(LogTemp, Warning, TEXT("LineMaterial not generated properly"));
 		}
 	}
 	else
 	{
 		UE_LOG(LogTemp, Error, TEXT("Grid cannot be created, as no procedural mesh is assigned"));
 	}
+
+	if (SelectionProceduralMesh)
+	{
+		FVector SelectionStart = FVector(0, TileSize/2, 0);
+		FVector SelectionEnd = FVector(TileSize, TileSize/2, 0);
+		TArray<FVector> SelectionVertices;
+		TArray<int32> SelectionTriangles;
+		CreateLine(SelectionStart, SelectionEnd, TileSize, SelectionVertices, SelectionTriangles);
+
+		SelectionProceduralMesh->CreateMeshSection(
+			0,
+			SelectionVertices,
+			SelectionTriangles,
+			TArray<FVector>(),				// Normals (empty)
+			TArray<FVector2D>(),			// UV0 (empty)
+			TArray<FColor>(),				// VertexColors (empty)
+			TArray<FProcMeshTangent>(),		// Tangents (empty)
+			false							// Collision not needed
+		);
+
+		SelectionProceduralMesh->SetVisibility(false);
+
+		if (SelectionMaterial)
+		{
+			SelectionProceduralMesh->SetMaterial(0, SelectionMaterial);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("SelectionMaterial not generated properly"));
+		}
+	}
+	
 }
 
 // Called when the game starts or when spawned
@@ -121,15 +153,15 @@ UMaterialInstanceDynamic* AGrid::CreateMaterialInstance(FLinearColor Color, floa
 {
 	if (!Material)
 	{
-		UE_LOG(LogTemp, Error,
+		UE_LOG(LogTemp, Warning,
 			TEXT("AGrid cannot create dynamic material instance, because no parent material is set. "
 							"Returning nullptr."));
 		return nullptr;
 	}
 	
 	UMaterialInstanceDynamic* DynMaterial = UMaterialInstanceDynamic::Create(Material, this);
-	DynMaterial->SetVectorParameterValue("Color", LineColor);
-	DynMaterial->SetScalarParameterValue("Opacity", LineOpacity);
+	DynMaterial->SetVectorParameterValue("Color", Color);
+	DynMaterial->SetScalarParameterValue("Opacity", Opacity);
 	
 	return DynMaterial;
 }
