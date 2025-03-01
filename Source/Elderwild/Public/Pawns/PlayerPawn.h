@@ -4,6 +4,8 @@
 #include "GameFramework/Pawn.h"
 #include "PlayerPawn.generated.h"
 
+class UCameraComponent;
+
 UCLASS()
 class ELDERWILD_API APlayerPawn : public APawn
 {
@@ -20,4 +22,6 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UPROPERTY(EditAnywhere)
+	UCameraComponent* Camera;
 };
