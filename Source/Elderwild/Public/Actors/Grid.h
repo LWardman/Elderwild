@@ -6,23 +6,22 @@
 
 class UProceduralMeshComponent;
 
+// TODO : DOCUMENT THIS AND THE CPP FILE
+
 UCLASS()
 class ELDERWILD_API AGrid : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
 	AGrid();
 
 	void OnConstruction(const FTransform &Transform) override;
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants")
@@ -59,7 +58,10 @@ public:
 	UMaterialInstanceDynamic* SelectionMaterial;
 
 	UPROPERTY()
-	UProceduralMeshComponent* ProceduralMesh;
+	UProceduralMeshComponent* LinesProceduralMesh;
+
+	UPROPERTY()
+	UProceduralMeshComponent* SelectionProceduralMesh;
 
 private:
 	void CreateLine(const FVector Start, const FVector End, const float Thickness, TArray<FVector>& Vertices, TArray<int32>& Triangles);
