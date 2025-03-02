@@ -7,6 +7,8 @@
 class UInputMappingContext;
 class UInputAction;
 
+/** Controller intended only for use with the player pawn
+ */
 UCLASS()
 class ELDERWILD_API AElderwildController : public APlayerController
 {
@@ -15,6 +17,7 @@ class ELDERWILD_API AElderwildController : public APlayerController
 public:
 	AElderwildController();
 
+	// TODO : configure the mapping context and its InputActions 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	UInputMappingContext* DefaultMappingContext;
 
@@ -25,7 +28,7 @@ protected:
 	virtual void SetupInputComponent() override;
 	
 	// To add mapping context
-	virtual void BeginPlay();
+	virtual void BeginPlay() override;
 
 	void OnClickStarted();
 };
