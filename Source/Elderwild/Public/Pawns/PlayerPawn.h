@@ -18,10 +18,17 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-	virtual void Tick(float DeltaTime) override;
+	
+	UPROPERTY(EditAnywhere)
+	UCameraComponent* Camera;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	UPROPERTY(EditAnywhere)
-	UCameraComponent* Camera;
+	virtual void Tick(float DeltaTime) override;
+
+	void HandlePlayerCursor();
+
+	void HoverTile();
+
+	void UnhoverTile();
 };
