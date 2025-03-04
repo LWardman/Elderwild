@@ -45,15 +45,15 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 void APlayerPawn::HandlePlayerCursor()
 {
-	APlayerController* Controller = Cast<APlayerController>(GetController());
-	checkf(Controller, TEXT("Handling player cursor could not be done because the controller is invalid"));
-
 	ADevGameMode* GameMode = Cast<ADevGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
 	checkf(GameMode, TEXT("Handling player cursor could not be done because the game mode is invalid"));
 
 	AGrid* Grid = GameMode->GetGrid();
 	checkf(Grid, TEXT("Handling player cursor could not be done because the grid cannot be found"));
 
+	APlayerController* Controller = Cast<APlayerController>(GetController());
+	checkf(Controller, TEXT("Handling player cursor could not be done because the controller is invalid"));
+	
 	FHitResult Hit;
 
 	if (Controller->GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit))
