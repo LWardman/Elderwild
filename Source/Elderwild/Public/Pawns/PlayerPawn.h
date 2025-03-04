@@ -26,6 +26,7 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+	// TODO : find a better name for this function
 	void HandlePlayerCursor();
 
 	void HoverTile();
