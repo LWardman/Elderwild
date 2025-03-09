@@ -73,7 +73,7 @@ void APlayerPawn::HoverTile(AGrid* Grid)
 	int32 GridRow;
 	int32 GridCol;
 	bool IsValid;
-	Grid->LocationToTile(Hit.Location, GridRow, GridCol, IsValid);
+	Grid->LocationToTile(Hit.Location, GridRow, GridCol);
 
 	Grid->SetSelectedTile(GridRow, GridCol);
 }
