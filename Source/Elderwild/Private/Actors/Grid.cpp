@@ -18,6 +18,64 @@ void AGrid::OnConstruction(const FTransform &Transform)
 	TArray<FVector> Vertices;
 	TArray<int32> Triangles;
 
+	CreateParallelHorizontalLines(Vertices, Triangles);
+
+	CreateParallelVerticalLines(Vertices, Triangles);
+	
+	checkf(LinesProceduralMesh, TEXT("LinesProceduralMesh is not assigned"));
+	LinesProceduralMesh->CreateMeshSection(
+		0,
+		Vertices,
+		Triangles,
+		TArray<FVector>(),				// Normals (empty)
+		TArray<FVector2D>(),			// UV0 (empty)
+		TArray<FColor>(),				// VertexColors (empty)
+		TArray<FProcMeshTangent>(),		// Tangents (empty)
+		false							// Collision not needed
+	);
+
+	checkf(LineMaterial, TEXT("LineMaterial not generated properly"));
+	LinesProceduralMesh->SetMaterial(0, LineMaterial);
+
+	checkf(SelectionProceduralMesh, TEXT("SelectionProceduralMesh is not assigned"));
+	
+	FVector SelectionStart = FVector(0, TileSize/2, 0);
+	FVector SelectionEnd = FVector(TileSize, TileSize/2, 0);
+	TArray<FVector> SelectionVertices;
+	TArray<int32> SelectionTriangles;
+	CreateLine(SelectionStart, SelectionEnd, TileSize, SelectionVertices, SelectionTriangles);
+
+	SelectionProceduralMesh->CreateMeshSection(
+		0,
+		SelectionVertices,
+		SelectionTriangles,
+		TArray<FVector>(),				// Normals (empty)
+		TArray<FVector2D>(),			// UV0 (empty)
+		TArray<FColor>(),				// VertexColors (empty)
+		TArray<FProcMeshTangent>(),		// Tangents (empty)
+		false							// Collision not needed
+	);
+
+	SelectionProceduralMesh->SetVisibility(false);
+
+	checkf(SelectionMaterial, TEXT("SelectionMaterial not generated properly"));
+	SelectionProceduralMesh->SetMaterial(0, SelectionMaterial);
+}
+
+// Called when the game starts or when spawned
+void AGrid::BeginPlay()
+{
+	Super::BeginPlay();	
+}
+
+// Called every frame
+void AGrid::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}
+
+void AGrid::CreateParallelHorizontalLines(TArray<FVector>& Vertices, TArray<int32>& Triangles)
+{
 	for (int32 i = 0; i <= NumRows; i++)
 	{
 		const float LineStart = i * TileSize;
@@ -28,7 +86,10 @@ void AGrid::OnConstruction(const FTransform &Transform)
 		
 		CreateLine(Start, End, LineThickness, Vertices, Triangles);
 	}
+}
 
+void AGrid::CreateParallelVerticalLines(TArray<FVector>& Vertices, TArray<int32>& Triangles)
+{
 	for (int32 i = 0; i <= NumCols; i++)
 	{
 		const float LineStart = i * TileSize;
@@ -39,79 +100,6 @@ void AGrid::OnConstruction(const FTransform &Transform)
 		
 		CreateLine(Start, End, LineThickness, Vertices, Triangles);
 	}
-	
-	if (LinesProceduralMesh)
-	{
-		LinesProceduralMesh->CreateMeshSection(
-			0,
-			Vertices,
-			Triangles,
-			TArray<FVector>(),				// Normals (empty)
-			TArray<FVector2D>(),			// UV0 (empty)
-			TArray<FColor>(),				// VertexColors (empty)
-			TArray<FProcMeshTangent>(),		// Tangents (empty)
-			false							// Collision not needed
-		);
-
-		if (LineMaterial)
-		{
-			LinesProceduralMesh->SetMaterial(0, LineMaterial);
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("LineMaterial not generated properly"));
-		}
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("Grid cannot be created, as no procedural mesh is assigned"));
-	}
-
-	if (SelectionProceduralMesh)
-	{
-		FVector SelectionStart = FVector(0, TileSize/2, 0);
-		FVector SelectionEnd = FVector(TileSize, TileSize/2, 0);
-		TArray<FVector> SelectionVertices;
-		TArray<int32> SelectionTriangles;
-		CreateLine(SelectionStart, SelectionEnd, TileSize, SelectionVertices, SelectionTriangles);
-
-		SelectionProceduralMesh->CreateMeshSection(
-			0,
-			SelectionVertices,
-			SelectionTriangles,
-			TArray<FVector>(),				// Normals (empty)
-			TArray<FVector2D>(),			// UV0 (empty)
-			TArray<FColor>(),				// VertexColors (empty)
-			TArray<FProcMeshTangent>(),		// Tangents (empty)
-			false							// Collision not needed
-		);
-
-		SelectionProceduralMesh->SetVisibility(false);
-
-		if (SelectionMaterial)
-		{
-			SelectionProceduralMesh->SetMaterial(0, SelectionMaterial);
-		}
-		else
-		{
-			UE_LOG(LogTemp, Warning, TEXT("SelectionMaterial not generated properly"));
-		}
-	}
-	
-}
-
-// Called when the game starts or when spawned
-void AGrid::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
-// Called every frame
-void AGrid::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
 }
 
 void AGrid::CreateLine(const FVector Start, const FVector End, const float Thickness, TArray<FVector>& Vertices, TArray<int32>& Triangles)
@@ -151,13 +139,7 @@ int32 AGrid::GetGridHeight() const
 
 UMaterialInstanceDynamic* AGrid::CreateMaterialInstance(FLinearColor Color, float Opacity)
 {
-	if (!Material)
-	{
-		UE_LOG(LogTemp, Warning,
-			TEXT("AGrid cannot create dynamic material instance, because no parent material is set. "
-							"Returning nullptr."));
-		return nullptr;
-	}
+	checkf(Grid, TEXT("AGrid cannot create dynamic material instance, because no parent material is set"));
 	
 	UMaterialInstanceDynamic* DynMaterial = UMaterialInstanceDynamic::Create(Material, this);
 	DynMaterial->SetVectorParameterValue("Color", Color);
@@ -166,53 +148,40 @@ UMaterialInstanceDynamic* AGrid::CreateMaterialInstance(FLinearColor Color, floa
 	return DynMaterial;
 }
 
-void AGrid::LocationToTile(FVector Location, int32& GridRow, int32& GridCol, bool& IsValid)
+void AGrid::LocationToTile(FVector Location, int32& GridRow, int32& GridCol)
 {
+	checkf((GetGridWidth() != 0), TEXT("Grid has width zero, don't divide by 0"));
+	checkf((GetGridHeight() != 0), TEXT("Grid has height zero, don't divide by 0"));
+
 	FVector GridLocation = GetActorLocation();
 	FVector LocalHitLocation = Location - GridLocation;
 
-	if (GetGridWidth() == 0 || GetGridHeight() == 0)
-	{
-		UE_LOG(LogTemp, Error, TEXT("Dividing by 0 when calculating cursor location to tile, check grid dimensions"));
-		return;
-	}
-
 	GridRow = FMath::Floor((LocalHitLocation.X / GetGridWidth()) * NumRows);
 	GridCol = FMath::Floor((LocalHitLocation.Y / GetGridHeight()) * NumCols);
-
-	IsValid = TileIsValid(GridRow, GridCol);
-	UE_LOG(LogTemp, Warning, TEXT("IsValid value is %s"), ( IsValid ? TEXT("true"): TEXT("false") ));
 }
 
-void AGrid::TileToGridLocation(int32 Row, int32 Col, bool ShouldCenter, bool& IsValid, FVector2D& Location)
+void AGrid::TileToGridLocation(int32 Row, int32 Col, bool ShouldCenter, FVector2D& Location)
 {
-	if (TileIsValid(Row, Col))
-	{
-		float CenterAdjustment = ShouldCenter * TileSize / 2;
-		float TileCornerX = Row * TileSize + GetActorLocation().X;
-		float TileCornerY = Col * TileSize + GetActorLocation().Y;
+	if (!TileIsValid(Row, Col)) return;
+	
+	float CenterAdjustment = ShouldCenter * TileSize / 2;
+	float TileCornerX = Row * TileSize + GetActorLocation().X;
+	float TileCornerY = Col * TileSize + GetActorLocation().Y;
 
-		Location.X = TileCornerX + CenterAdjustment;
-		Location.Y = TileCornerY + CenterAdjustment;
-
-		IsValid = true;
-	}
+	Location.X = TileCornerX + CenterAdjustment;
+	Location.Y = TileCornerY + CenterAdjustment;
 }
 
 void AGrid::SetSelectedTile(int32 Row, int32 Col)
 {
-	bool IsValid = false;
 	FVector2D Location;
-	TileToGridLocation(Row, Col, false, IsValid, Location);
-
-	bool SelectionMeshIsValid = (SelectionProceduralMesh != nullptr);
+	TileToGridLocation(Row, Col, false, Location);
 	
-	if (!SelectionProceduralMesh) return;
-	
-	SelectionProceduralMesh->SetVisibility(IsValid);
+	checkf(SelectionProceduralMesh, TEXT("Selection procedural mesh is not initialized right"));
 
+	SelectionProceduralMesh->SetVisibility(TileIsValid(Row, Col));
 
-	if (IsValid)
+	if (TileIsValid(Row, Col))
 	{
 		FVector SelectionLocation = FVector(Location.X, Location.Y, GetActorLocation().Z);
 		SelectionProceduralMesh->SetWorldLocation(SelectionLocation);
