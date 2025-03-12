@@ -23,16 +23,7 @@ void AGrid::OnConstruction(const FTransform &Transform)
 	CreateParallelVerticalLines(Vertices, Triangles);
 	
 	checkf(LinesProceduralMesh, TEXT("LinesProceduralMesh is not assigned"));
-	LinesProceduralMesh->CreateMeshSection(
-		0,
-		Vertices,
-		Triangles,
-		TArray<FVector>(),				// Normals (empty)
-		TArray<FVector2D>(),			// UV0 (empty)
-		TArray<FColor>(),				// VertexColors (empty)
-		TArray<FProcMeshTangent>(),		// Tangents (empty)
-		false							// Collision not needed
-	);
+	CreateMeshSectionFromVerticesAndTriangles(LinesProceduralMesh, Vertices, Triangles);
 
 	checkf(LineMaterial, TEXT("LineMaterial not generated properly"));
 	LinesProceduralMesh->SetMaterial(0, LineMaterial);
@@ -45,33 +36,12 @@ void AGrid::OnConstruction(const FTransform &Transform)
 	TArray<int32> SelectionTriangles;
 	CreateLine(SelectionStart, SelectionEnd, TileSize, SelectionVertices, SelectionTriangles);
 
-	SelectionProceduralMesh->CreateMeshSection(
-		0,
-		SelectionVertices,
-		SelectionTriangles,
-		TArray<FVector>(),				// Normals (empty)
-		TArray<FVector2D>(),			// UV0 (empty)
-		TArray<FColor>(),				// VertexColors (empty)
-		TArray<FProcMeshTangent>(),		// Tangents (empty)
-		false							// Collision not needed
-	);
+	CreateMeshSectionFromVerticesAndTriangles(SelectionProceduralMesh, Vertices, Triangles);
 
 	SelectionProceduralMesh->SetVisibility(false);
 
 	checkf(SelectionMaterial, TEXT("SelectionMaterial not generated properly"));
 	SelectionProceduralMesh->SetMaterial(0, SelectionMaterial);
-}
-
-// Called when the game starts or when spawned
-void AGrid::BeginPlay()
-{
-	Super::BeginPlay();	
-}
-
-// Called every frame
-void AGrid::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 }
 
 void AGrid::CreateParallelHorizontalLines(TArray<FVector>& Vertices, TArray<int32>& Triangles)
@@ -102,6 +72,22 @@ void AGrid::CreateParallelVerticalLines(TArray<FVector>& Vertices, TArray<int32>
 	}
 }
 
+void AGrid::CreateMeshSectionFromVerticesAndTriangles(UProceduralMeshComponent* Mesh, TArray<FVector>& Vertices, TArray<int32>& Triangles)
+{
+	checkf(Mesh, TEXT("Trying to create a mesh section with a nullptr procedural mesh component"));
+
+	Mesh->CreateMeshSection(
+		0,								// Which mesh section to write to
+		Vertices,
+		Triangles,
+		TArray<FVector>(),				// Normals (empty)
+		TArray<FVector2D>(),			// UV0 (empty)
+		TArray<FColor>(),				// VertexColors (empty)
+		TArray<FProcMeshTangent>(),		// Tangents (empty)
+		false							// Collision not needed
+	);
+}
+
 void AGrid::CreateLine(const FVector Start, const FVector End, const float Thickness, TArray<FVector>& Vertices, TArray<int32>& Triangles)
 {
 	const float HalfThickness = Thickness / 2;
@@ -115,7 +101,6 @@ void AGrid::CreateLine(const FVector Start, const FVector End, const float Thick
 	TArray<int32> TriangleIndices = {VerticesLength + 2, VerticesLength + 1, VerticesLength + 0,
 									 VerticesLength + 2, VerticesLength + 3, VerticesLength + 1};
 
-	// Keep an eye on this as it might append an array
 	Triangles.Append(TriangleIndices);
 
 	FVector VertexZero = Start + HalfThickness * ThicknessDirection;
@@ -178,7 +163,6 @@ void AGrid::SetSelectedTile(int32 Row, int32 Col)
 	TileToGridLocation(Row, Col, false, Location);
 	
 	checkf(SelectionProceduralMesh, TEXT("Selection procedural mesh is not initialized right"));
-
 	SelectionProceduralMesh->SetVisibility(TileIsValid(Row, Col));
 
 	if (TileIsValid(Row, Col))
