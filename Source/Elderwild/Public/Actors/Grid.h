@@ -16,15 +16,11 @@ public:
 
 	virtual void OnConstruction(const FTransform &Transform) override;
 
-protected:
-	virtual void BeginPlay() override;
+	void CreateParallelHorizontalLines(TArray<FVector>& Vertices, TArray<int32>& Triangles);
 
-public:	
-	virtual void Tick(float DeltaTime) override;
+	void CreateParallelVerticalLines(TArray<FVector>& Vertices, TArray<int32>& Triangles);
 
-	void CreateParallelHorizontalLines(TArray<FVector>& Vertices, TArray<int32>& Triangles)
-
-	void CreateParallelVerticalLines(TArray<FVector>& Vertices, TArray<int32>& Triangles)
+	void CreateMeshSectionFromVerticesAndTriangles(UProceduralMeshComponent* Mesh, TArray<FVector>& Vertices, TArray<int32>& Triangles);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants")
 	int32 NumRows = 10;
