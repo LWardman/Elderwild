@@ -5,6 +5,7 @@
 #include "PlayerPawn.generated.h"
 
 class UCameraComponent;
+class AGrid;
 
 UCLASS()
 class ELDERWILD_API APlayerPawn : public APawn
@@ -29,7 +30,7 @@ public:
 	// TODO : find a better name for this function
 	void HandlePlayerCursor();
 
-	void HoverTile();
+	void HoverTile(AGrid* Grid, FVector Location);
 
-	void UnhoverTile();
+	void UnhoverTile(AGrid* Grid);
 };
