@@ -36,7 +36,7 @@ void AGrid::OnConstruction(const FTransform &Transform)
 	TArray<int32> SelectionTriangles;
 	CreateLine(SelectionStart, SelectionEnd, TileSize, SelectionVertices, SelectionTriangles);
 
-	CreateMeshSectionFromVerticesAndTriangles(SelectionProceduralMesh, Vertices, Triangles);
+	CreateMeshSectionFromVerticesAndTriangles(SelectionProceduralMesh, SelectionVertices, SelectionTriangles);
 
 	SelectionProceduralMesh->SetVisibility(false);
 
@@ -124,7 +124,7 @@ int32 AGrid::GetGridHeight() const
 
 UMaterialInstanceDynamic* AGrid::CreateMaterialInstance(FLinearColor Color, float Opacity)
 {
-	checkf(Grid, TEXT("AGrid cannot create dynamic material instance, because no parent material is set"));
+	checkf(Material, TEXT("AGrid cannot create dynamic material instance, because no parent material is set"));
 	
 	UMaterialInstanceDynamic* DynMaterial = UMaterialInstanceDynamic::Create(Material, this);
 	DynMaterial->SetVectorParameterValue("Color", Color);
