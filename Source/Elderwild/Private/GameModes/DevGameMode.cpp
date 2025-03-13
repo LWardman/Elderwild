@@ -4,34 +4,12 @@
 
 #include "Controllers/ElderwildController.h"
 #include "Actors/Grid.h"
+#include "Pawns/PlayerPawn.h"
 
 ADevGameMode::ADevGameMode()
 {
-	// TODO : remove below comment when testing proves everything is okay
-	//PlayerControllerClass = AElderwildController::StaticClass();
-
-	SetDefaultPawnClass();
-
-	SetDefaultControllerClass();
-}
-
-// TODO : violates DRY with SetDefaultControllerClass?
-void ADevGameMode::SetDefaultPawnClass()
-{
-	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/Elderwild/Pawns/BP_PlayerPawn.BP_PlayerPawn"));
-	if (PlayerPawnBPClass.Class != nullptr)
-	{
-		DefaultPawnClass = PlayerPawnBPClass.Class;
-	}
-}
-
-void ADevGameMode::SetDefaultControllerClass()
-{
-	static ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerBPClass(TEXT("/Game/Elderwild/Controllers/BP_ElderwildController.BP_ElderwildController"));
-	if(PlayerControllerBPClass.Class != nullptr)
-	{
-		PlayerControllerClass = PlayerControllerBPClass.Class;
-	}
+	DefaultPawnClass = APlayerPawn::StaticClass();
+	PlayerControllerClass = AElderwildController::StaticClass();
 }
 
 void ADevGameMode::BeginPlay()

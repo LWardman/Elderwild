@@ -22,10 +22,6 @@ public:
 
 	virtual void BeginPlay() override;
 
-	void SetDefaultPawnClass();
-
-	void SetDefaultControllerClass();
-
 	// Finds, stores and gets the grid used in play.
 	UPROPERTY()
 	AGrid* Grid;
