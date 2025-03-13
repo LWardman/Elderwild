@@ -1,8 +1,6 @@
 #include "Pawns/PlayerPawn.h"
 
 #include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetMathLibrary.h"
-#include "GameFramework/GameMode.h"
 
 #include "Actors/Grid.h"
 #include "Camera/CameraComponent.h"
@@ -51,29 +49,28 @@ void APlayerPawn::HandlePlayerCursor()
 	AGrid* Grid = GameMode->GetGrid();
 	checkf(Grid, TEXT("Handling player cursor could not be done because the grid cannot be found"));
 
-	APlayerController* Controller = Cast<APlayerController>(GetController());
-	checkf(Controller, TEXT("Handling player cursor could not be done because the controller is invalid"));
+	APlayerController* PlayerController = Cast<APlayerController>(GetController());
+	checkf(PlayerController, TEXT("Handling player cursor could not be done because the controller is invalid"));
 	
 	FHitResult Hit;
 
-	if (Controller->GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit))
+	if (PlayerController->GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit))
 	{
-	    HoverTile(Grid);   
+	    HoverTile(Grid, Hit.Location);   
     }
 	else
 	{
-		UnhoverTile();
+		UnhoverTile(Grid);
 	}
 }
 
-void APlayerPawn::HoverTile(AGrid* Grid)
+void APlayerPawn::HoverTile(AGrid* Grid, FVector Location)
 {
 	checkf(Grid, TEXT("Passed a nullptr in place of the grid"));
 
 	int32 GridRow;
 	int32 GridCol;
-	bool IsValid;
-	Grid->LocationToTile(Hit.Location, GridRow, GridCol);
+	Grid->LocationToTile(Location, GridRow, GridCol);
 
 	Grid->SetSelectedTile(GridRow, GridCol);
 }
