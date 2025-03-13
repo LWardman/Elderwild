@@ -7,6 +7,8 @@
 AElderwildController::AElderwildController()
 {
 	bShowMouseCursor = true;
+	bEnableClickEvents = true; 
+	bEnableMouseOverEvents = true;
 	DefaultMouseCursor = EMouseCursor::Default;
 }
 
