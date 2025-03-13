@@ -16,6 +16,10 @@ public:
 
 	virtual void BeginPlay() override;
 
+	void SetDefaultPawnClass();
+
+	void SetDefaultControllerClass();
+
 	UPROPERTY()
 	AGrid* Grid;
 

@@ -6,8 +6,6 @@
 
 class UProceduralMeshComponent;
 
-// TODO : DOCUMENT THIS AND THE CPP FILE
-
 UCLASS()
 class ELDERWILD_API AGrid : public AActor
 {
@@ -18,11 +16,11 @@ public:
 
 	virtual void OnConstruction(const FTransform &Transform) override;
 
-protected:
-	virtual void BeginPlay() override;
+	void CreateParallelHorizontalLines(TArray<FVector>& Vertices, TArray<int32>& Triangles);
 
-public:	
-	virtual void Tick(float DeltaTime) override;
+	void CreateParallelVerticalLines(TArray<FVector>& Vertices, TArray<int32>& Triangles);
+
+	void CreateMeshSectionFromVerticesAndTriangles(UProceduralMeshComponent* Mesh, TArray<FVector>& Vertices, TArray<int32>& Triangles);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants")
 	int32 NumRows = 10;
@@ -73,9 +71,9 @@ private:
 	UMaterialInstanceDynamic* CreateMaterialInstance(FLinearColor Color, float Opacity);
 
 public:
-	void LocationToTile(FVector Location, int32& GridRow, int32& GridCol, bool& IsValid);
+	void LocationToTile(FVector Location, int32& GridRow, int32& GridCol);
 
-	void TileToGridLocation(int32 Row, int32 Col, bool ShouldCenter, bool& IsValid, FVector2D& Location);
+	void TileToGridLocation(int32 Row, int32 Col, bool ShouldCenter, FVector2D& Location);
 
 	void SetSelectedTile(int32 Row, int32 Col);
 

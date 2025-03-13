@@ -7,16 +7,26 @@
 
 ADevGameMode::ADevGameMode()
 {
-	PlayerControllerClass = AElderwildController::StaticClass();
+	// TODO : remove below comment when testing proves everything is okay
+	//PlayerControllerClass = AElderwildController::StaticClass();
 
-	// set default pawn class to our blueprinted pawn
+	SetDefaultPawnClass();
+
+	SetDefaultControllerClass();
+}
+
+// TODO : violates DRY with SetDefaultControllerClass?
+void ADevGameMode::SetDefaultPawnClass()
+{
 	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/Elderwild/Pawns/BP_PlayerPawn.BP_PlayerPawn"));
 	if (PlayerPawnBPClass.Class != nullptr)
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
+}
 
-	// set default controller to our blueprinted controller
+void ADevGameMode::SetDefaultControllerClass()
+{
 	static ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerBPClass(TEXT("/Game/Elderwild/Controllers/BP_ElderwildController.BP_ElderwildController"));
 	if(PlayerControllerBPClass.Class != NULL)
 	{
