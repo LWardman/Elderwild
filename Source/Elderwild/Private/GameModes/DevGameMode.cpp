@@ -28,7 +28,7 @@ void ADevGameMode::SetDefaultPawnClass()
 void ADevGameMode::SetDefaultControllerClass()
 {
 	static ConstructorHelpers::FClassFinder<APlayerController> PlayerControllerBPClass(TEXT("/Game/Elderwild/Controllers/BP_ElderwildController.BP_ElderwildController"));
-	if(PlayerControllerBPClass.Class != NULL)
+	if(PlayerControllerBPClass.Class != nullptr)
 	{
 		PlayerControllerClass = PlayerControllerBPClass.Class;
 	}
@@ -37,8 +37,8 @@ void ADevGameMode::SetDefaultControllerClass()
 void ADevGameMode::BeginPlay()
 {
 	Super::BeginPlay();
-
-	Grid = FindGrid();
+	
+	Grid = FindGrid(); // Can still be a nullptr, use with care.
 }
 
 AGrid* ADevGameMode::FindGrid()
@@ -55,7 +55,7 @@ AGrid* ADevGameMode::FindGrid()
 	return nullptr;
 }
 
-AGrid* ADevGameMode::GetGrid()
+AGrid* ADevGameMode::GetGrid() const 
 {
 	if (Grid == nullptr)
 	{
