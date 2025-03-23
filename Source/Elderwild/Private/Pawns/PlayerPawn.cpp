@@ -1,6 +1,7 @@
 #include "Pawns/PlayerPawn.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "GameFramework/FloatingPawnMovement.h"
 
 #include "Actors/Grid.h"
 #include "Camera/CameraComponent.h"
@@ -13,15 +14,11 @@ APlayerPawn::APlayerPawn()
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
 
-	// Don't rotate character to camera direction
-	bUseControllerRotationPitch = false;
-	bUseControllerRotationYaw = false;
-	bUseControllerRotationRoll = false;
-
-	// Create a camera...
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	RootComponent = Camera;
 	Camera->SetRelativeRotation(FRotator(-60, 0, 0));
+
+	Movement = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("Movement"));
 }
 
 void APlayerPawn::BeginPlay()
@@ -36,11 +33,7 @@ void APlayerPawn::Tick(float DeltaTime)
 	HandlePlayerCursor();
 }
 
-void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-}
-
+// TODO : move this to controller class
 void APlayerPawn::HandlePlayerCursor()
 {
 	ADevGameMode* GameMode = Cast<ADevGameMode>(UGameplayStatics::GetGameMode(GetWorld()));

@@ -5,6 +5,7 @@
 #include "PlayerPawn.generated.h"
 
 class UCameraComponent;
+class UFloatingPawnMovement;
 class AGrid;
 
 UCLASS()
@@ -23,7 +24,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	UCameraComponent* Camera;
 
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	UPROPERTY(EditAnywhere)
+	UFloatingPawnMovement* Movement;
 
 	virtual void Tick(float DeltaTime) override;
 
