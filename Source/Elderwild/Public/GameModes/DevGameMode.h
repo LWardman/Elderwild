@@ -22,6 +22,8 @@ public:
 
 	virtual void BeginPlay() override;
 
+	void SetDefaultPlayerController();
+
 	// Finds, stores and gets the grid used in play.
 	UPROPERTY()
 	AGrid* Grid;

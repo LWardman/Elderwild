@@ -2,14 +2,13 @@
 
 #include "Kismet/GameplayStatics.h"
 
-#include "Controllers/ElderwildController.h"
 #include "Actors/Grid.h"
 #include "Pawns/PlayerPawn.h"
 
 ADevGameMode::ADevGameMode()
 {
 	DefaultPawnClass = APlayerPawn::StaticClass();
-	PlayerControllerClass = AElderwildController::StaticClass();
+	SetDefaultPlayerController();
 }
 
 void ADevGameMode::BeginPlay()
@@ -17,6 +16,17 @@ void ADevGameMode::BeginPlay()
 	Super::BeginPlay();
 	
 	Grid = FindGrid(); // Can still be a nullptr, use with care.
+}
+
+void ADevGameMode::SetDefaultPlayerController()
+{
+	static ConstructorHelpers::FObjectFinder<UBlueprint>
+		ControllerBlueprint(TEXT("Blueprint'/Game/Elderwild/Controllers/BP_ElderwildController.BP_ElderwildController'"));
+
+	if (ControllerBlueprint.Object)
+	{
+		PlayerControllerClass = ControllerBlueprint.Object->GeneratedClass;
+	}
 }
 
 AGrid* ADevGameMode::FindGrid()
