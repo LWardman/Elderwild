@@ -9,6 +9,8 @@
 
 #include "Pawns/PlayerPawn.h"
 
+// TODO : match function order to header file.
+
 AElderwildController::AElderwildController()
 {
 	bShowMouseCursor = true;
@@ -33,6 +35,7 @@ void AElderwildController::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 
 	InterpolateCameraFieldOfView(DeltaSeconds);
+	//InterpolateCameraToTargetPosition(DeltaSeconds);
 }
 
 void AElderwildController::SetupInputComponent()
@@ -57,6 +60,7 @@ void AElderwildController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(IA_Zoom, ETriggerEvent::Triggered, this, &AElderwildController::ZoomCamera);
 
 		// Setup mouse camera movement
+		EnhancedInputComponent->BindAction(IA_DragMoveCamera, ETriggerEvent::Started, this, &AElderwildController::BeginDragMoveCamera);
 		EnhancedInputComponent->BindAction(IA_DragMoveCamera, ETriggerEvent::Triggered, this, &AElderwildController::DragMoveCamera);
 
 		EnhancedInputComponent->BindAction(IA_DragRotateCamera, ETriggerEvent::Triggered, this, &AElderwildController::DragRotateCamera);
@@ -114,16 +118,6 @@ void AElderwildController::ZoomCamera(const FInputActionValue& Value)
 	TargetFieldOfView = FMath::Clamp(TargetFieldOfView, MinimumFieldOfView, MaximumFieldOfView);
 }
 
-void AElderwildController::DragMoveCamera(const FInputActionValue& Value)
-{
-	UE_LOG(LogTemp, Log, TEXT("Drag Move Camera!"));
-}
-
-void AElderwildController::DragRotateCamera(const FInputActionValue& Value)
-{
-	UE_LOG(LogTemp, Log, TEXT("Drag Rotate Camera!"));
-}
-
 void AElderwildController::InterpolateCameraFieldOfView(float DeltaSeconds)
 {
 	float DifferenceBetweenTargetAndActualFieldOfView = TargetFieldOfView - FieldOfView;
@@ -134,4 +128,51 @@ void AElderwildController::InterpolateCameraFieldOfView(float DeltaSeconds)
 	checkf(PlayerPawn, TEXT("Can't zoom without a pawn"));
 	checkf(PlayerPawn->Camera, TEXT("PlayerPawn Camera not found"));
 	PlayerPawn->Camera->SetFieldOfView(FieldOfView);
+}
+
+void AElderwildController::BeginDragMoveCamera(const FInputActionValue& Value)
+{
+	float CursorPositionX = 0.0f;
+	float CursorPositionY = 0.0f;
+	if (GetMousePosition(CursorPositionX, CursorPositionY))
+	{
+		BeginningMousePosition = FVector{CursorPositionX, CursorPositionY, 0.0f};
+		CurrentMousePosition = BeginningMousePosition;
+	}
+}
+
+void AElderwildController::DragMoveCamera(const FInputActionValue& Value)
+{
+	float CursorPositionX = 0.0f;
+	float CursorPositionY = 0.0f;
+	if (GetMousePosition(CursorPositionX, CursorPositionY))
+	{
+		CurrentMousePosition = FVector{CursorPositionX, CursorPositionY, 0.0f};
+
+		checkf(PlayerPawn, TEXT("Can't move a nullptr pawn"));
+		FVector CurrentLocation = PlayerPawn->GetActorLocation();
+		
+		FVector MouseDeltaPosition = CurrentMousePosition - BeginningMousePosition;
+		
+		BeginningMousePosition = CurrentMousePosition;
+
+		// TODO : DRY
+		// Quick way to project the forward vector onto the XY plane
+		FVector ForwardVector = PlayerPawn->GetActorForwardVector();
+		ForwardVector.Z = 0.0f;			
+		ForwardVector.Normalize();
+		FVector ForwardMovement = ForwardVector * MouseDeltaPosition.Y * DragCameraSensitivity;
+
+		FVector RightVector = PlayerPawn->GetActorRightVector();
+		FVector SidewaysMovement = - RightVector * MouseDeltaPosition.X * DragCameraSensitivity;
+
+		FVector NewLocation = CurrentLocation + ForwardMovement + SidewaysMovement;
+		
+		PlayerPawn->SetActorLocation(NewLocation);
+	}
+}
+
+void AElderwildController::DragRotateCamera(const FInputActionValue& Value)
+{
+	UE_LOG(LogTemp, Log, TEXT("Drag Rotate Camera!"));
 }

@@ -53,27 +53,43 @@ protected:
 	virtual void Tick(float DeltaSeconds) override;
 
 	void OnClickStarted();
+	
 
-	void MoveCameraOnXYPlane(const FInputActionValue& Value);
-
-	void RotateCameraAroundYawAxis(const FInputActionValue& Value);
-
+// =========== Camera Zoom Movement ==================
+protected:
 	void ZoomCamera(const FInputActionValue& Value);
+	
+private:
+	float FieldOfView = 90;
+    float TargetFieldOfView = FieldOfView;
+    float MinimumFieldOfView = 16.0f;
+    float MaximumFieldOfView = 90.0f;
 
+	void InterpolateCameraFieldOfView(float DeltaSeconds);
+
+// =========== Camera Location Movement ==================
+protected:
+	void MoveCameraOnXYPlane(const FInputActionValue& Value);
+	
+	void BeginDragMoveCamera(const FInputActionValue& Value);
 	void DragMoveCamera(const FInputActionValue& Value);
-
-	void DragRotateCamera(const FInputActionValue& Value);
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-	float RotationSpeed = 10.f;
+	float DragCameraSensitivity = 1.5f;
+	FVector BeginningMousePosition = FVector::ZeroVector;
+	FVector CurrentMousePosition = FVector::ZeroVector;
 
-	float FieldOfView = 90;
-	float TargetFieldOfView = FieldOfView;
-	float MinimumFieldOfView = 16.0f;
-	float MaximumFieldOfView = 90.0f;
+// =========== Camera Rotation Movement ==================	
+protected:
+	void DragRotateCamera(const FInputActionValue& Value);
+	
+	void RotateCameraAroundYawAxis(const FInputActionValue& Value);
 
-	void InterpolateCameraFieldOfView(float DeltaSeconds);
+private:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	float RotationSpeed = 30.f;
+private:
 
 	UPROPERTY()
 	APlayerPawn* PlayerPawn;
