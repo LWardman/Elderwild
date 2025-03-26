@@ -3,6 +3,7 @@
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
 #include "EnhancedInputSubsystems.h"
+#include "InteractiveToolManager.h"
 #include "GameFramework/FloatingPawnMovement.h"
 #include "Kismet/GameplayStatics.h"
 #include "Camera/CameraComponent.h"
@@ -35,7 +36,6 @@ void AElderwildController::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 
 	InterpolateCameraFieldOfView(DeltaSeconds);
-	//InterpolateCameraToTargetPosition(DeltaSeconds);
 }
 
 void AElderwildController::SetupInputComponent()
@@ -63,6 +63,7 @@ void AElderwildController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(IA_DragMoveCamera, ETriggerEvent::Started, this, &AElderwildController::BeginDragMoveCamera);
 		EnhancedInputComponent->BindAction(IA_DragMoveCamera, ETriggerEvent::Triggered, this, &AElderwildController::DragMoveCamera);
 
+		EnhancedInputComponent->BindAction(IA_DragRotateCamera, ETriggerEvent::Started, this, &AElderwildController::BeginDragRotatingCamera);
 		EnhancedInputComponent->BindAction(IA_DragRotateCamera, ETriggerEvent::Triggered, this, &AElderwildController::DragRotateCamera);
 	}
 	else
@@ -136,8 +137,8 @@ void AElderwildController::BeginDragMoveCamera(const FInputActionValue& Value)
 	float CursorPositionY = 0.0f;
 	if (GetMousePosition(CursorPositionX, CursorPositionY))
 	{
-		BeginningMousePosition = FVector{CursorPositionX, CursorPositionY, 0.0f};
-		CurrentMousePosition = BeginningMousePosition;
+		BeginningMousePositionMove = FVector{CursorPositionX, CursorPositionY, 0.0f};
+		CurrentMousePositionMove = BeginningMousePositionMove;
 	}
 }
 
@@ -147,24 +148,24 @@ void AElderwildController::DragMoveCamera(const FInputActionValue& Value)
 	float CursorPositionY = 0.0f;
 	if (GetMousePosition(CursorPositionX, CursorPositionY))
 	{
-		CurrentMousePosition = FVector{CursorPositionX, CursorPositionY, 0.0f};
+		CurrentMousePositionMove = FVector{CursorPositionX, CursorPositionY, 0.0f};
 
 		checkf(PlayerPawn, TEXT("Can't move a nullptr pawn"));
 		FVector CurrentLocation = PlayerPawn->GetActorLocation();
 		
-		FVector MouseDeltaPosition = CurrentMousePosition - BeginningMousePosition;
+		FVector MouseDeltaPosition = CurrentMousePositionMove - BeginningMousePositionMove;
 		
-		BeginningMousePosition = CurrentMousePosition;
+		BeginningMousePositionMove = CurrentMousePositionMove;
 
 		// TODO : DRY
 		// Quick way to project the forward vector onto the XY plane
 		FVector ForwardVector = PlayerPawn->GetActorForwardVector();
 		ForwardVector.Z = 0.0f;			
 		ForwardVector.Normalize();
-		FVector ForwardMovement = ForwardVector * MouseDeltaPosition.Y * DragCameraSensitivity;
+		FVector ForwardMovement = ForwardVector * MouseDeltaPosition.Y * DragCameraMoveSensitivity;
 
 		FVector RightVector = PlayerPawn->GetActorRightVector();
-		FVector SidewaysMovement = - RightVector * MouseDeltaPosition.X * DragCameraSensitivity;
+		FVector SidewaysMovement = - RightVector * MouseDeltaPosition.X * DragCameraMoveSensitivity;
 
 		FVector NewLocation = CurrentLocation + ForwardMovement + SidewaysMovement;
 		
@@ -172,7 +173,34 @@ void AElderwildController::DragMoveCamera(const FInputActionValue& Value)
 	}
 }
 
+void AElderwildController::BeginDragRotatingCamera(const FInputActionValue& Value)
+{
+	float CursorPositionX = 0.0f;
+	float CursorPositionY = 0.0f;
+	if (GetMousePosition(CursorPositionX, CursorPositionY))
+	{
+		CurrentMousePositionRotate = FVector{CursorPositionX, CursorPositionY, 0.0f};
+		BeginningMousePositionRotate = CurrentMousePositionRotate;
+	}
+}
+
 void AElderwildController::DragRotateCamera(const FInputActionValue& Value)
 {
-	UE_LOG(LogTemp, Log, TEXT("Drag Rotate Camera!"));
+	float CursorPositionX = 0.0f;
+	float CursorPositionY = 0.0f;
+	if (GetMousePosition(CursorPositionX, CursorPositionY))
+	{
+		CurrentMousePositionRotate = FVector{CursorPositionX, CursorPositionY, 0.0f};
+
+		checkf(PlayerPawn, TEXT("Can't move a nullptr pawn"));
+		FRotator CurrentRotation = PlayerPawn->GetActorRotation();
+		
+		FVector MouseDeltaPosition = BeginningMousePositionRotate - CurrentMousePositionRotate;
+		
+		BeginningMousePositionRotate = CurrentMousePositionRotate;
+
+		FRotator DeltaRotation = FRotator{0.0f, DragCameraRotateSensitivity * MouseDeltaPosition.X, 0.0f};
+		
+		PlayerPawn->SetActorRotation(CurrentRotation + DeltaRotation);
+	}
 }

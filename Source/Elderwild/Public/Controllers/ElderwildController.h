@@ -76,21 +76,30 @@ protected:
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-	float DragCameraSensitivity = 1.5f;
-	FVector BeginningMousePosition = FVector::ZeroVector;
-	FVector CurrentMousePosition = FVector::ZeroVector;
+	float DragCameraMoveSensitivity = 1.5f;
+	FVector BeginningMousePositionMove = FVector::ZeroVector;
+	FVector CurrentMousePositionMove = FVector::ZeroVector;
 
 // =========== Camera Rotation Movement ==================	
 protected:
+	void BeginDragRotatingCamera(const FInputActionValue& Value);
 	void DragRotateCamera(const FInputActionValue& Value);
-	
-	void RotateCameraAroundYawAxis(const FInputActionValue& Value);
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-	float RotationSpeed = 30.f;
-private:
+	float DragCameraRotateSensitivity = 0.8f;
 
+protected:
+	void RotateCameraAroundYawAxis(const FInputActionValue& Value);
+
+private:
+	FVector BeginningMousePositionRotate = FVector::ZeroVector;
+	FVector CurrentMousePositionRotate = FVector::ZeroVector;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	float RotationSpeed = 30.f;
+
+	
 	UPROPERTY()
 	APlayerPawn* PlayerPawn;
 };
