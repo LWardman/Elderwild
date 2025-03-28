@@ -78,4 +78,8 @@ public:
 	void SetSelectedTile(int32 Row, int32 Col);
 
 	bool TileIsValid(int32 Row, int32 Col);
+
+	void HoverTile(FVector Location);
+
+	void UnhoverTile();
 };

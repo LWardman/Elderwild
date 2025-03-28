@@ -178,3 +178,16 @@ bool AGrid::TileIsValid(int32 Row, int32 Col)
 	bool ColIsValid = (Col >= 0 && Col < NumCols);
 	return RowIsValid && ColIsValid;
 }
+
+void AGrid::HoverTile(FVector Location)
+{
+	int32 GridRow;
+	int32 GridCol;
+	LocationToTile(Location, GridRow, GridCol);
+	SetSelectedTile(GridRow, GridCol);
+}
+
+void AGrid::UnhoverTile()
+{
+	SetSelectedTile(-1, -1);
+}
