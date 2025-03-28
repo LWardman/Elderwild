@@ -4,7 +4,7 @@
 #include "GameFramework/Pawn.h"
 #include "PlayerPawn.generated.h"
 
-class UCameraComponent;
+class UElderwildsCamera;
 class UFloatingPawnMovement;
 class AGrid;
 
@@ -20,19 +20,11 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-	
 	UPROPERTY(EditAnywhere)
-	UCameraComponent* Camera;
+	UElderwildsCamera* Camera;
 
 	UPROPERTY(EditAnywhere)
 	UFloatingPawnMovement* Movement;
 
 	virtual void Tick(float DeltaTime) override;
-
-	// TODO : find a better name for this function
-	void HandlePlayerCursor();
-
-	void HoverTile(AGrid* Grid, FVector Location);
-
-	void UnhoverTile(AGrid* Grid);
 };
