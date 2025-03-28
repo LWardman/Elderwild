@@ -4,11 +4,13 @@
 #include "GameFramework/PlayerController.h"
 #include "ElderwildController.generated.h"
 
+class UElderwildsCamera;
 class UFloatingPawnMovement;
 class UInputMappingContext;
 class UInputAction;
 class APlayerPawn;
 struct FInputActionValue;
+class AGrid;
 
 /** Controller intended only for use with the player pawn
  */
@@ -19,6 +21,15 @@ class ELDERWILD_API AElderwildController : public APlayerController
 
 public:
 	AElderwildController();
+
+	UPROPERTY()
+	APlayerPawn* PlayerPawn;
+
+	UPROPERTY()
+	UFloatingPawnMovement* Movement;
+
+	UPROPERTY()
+	UElderwildsCamera* CameraComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	UInputMappingContext* IMC_StandardPlay;
@@ -41,9 +52,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	UInputAction* IA_DragRotateCamera;
 
-	UPROPERTY()
-	UFloatingPawnMovement* Movement;
-
 protected:
 	virtual void SetupInputComponent() override;
 	
@@ -52,20 +60,15 @@ protected:
 
 	virtual void Tick(float DeltaSeconds) override;
 
+// =========== Clicking & Hovering ==================
+private:
 	void OnClickStarted();
-	
+
+	void HandleCursor();
 
 // =========== Camera Zoom Movement ==================
 protected:
 	void ZoomCamera(const FInputActionValue& Value);
-	
-private:
-	float FieldOfView = 90;
-    float TargetFieldOfView = FieldOfView;
-    float MinimumFieldOfView = 16.0f;
-    float MaximumFieldOfView = 90.0f;
-
-	void InterpolateCameraFieldOfView(float DeltaSeconds);
 
 // =========== Camera Location Movement ==================
 protected:
@@ -99,7 +102,5 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	float RotationSpeed = 30.f;
 
-	
-	UPROPERTY()
-	APlayerPawn* PlayerPawn;
+	void UpdateVariablesWithCursorPosition(FVector& BeginningPosition, FVector& CurrentPosition);
 };
