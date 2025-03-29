@@ -15,28 +15,24 @@ void AGrid::OnConstruction(const FTransform &Transform)
 	LineMaterial = CreateMaterialInstance(LineColor, LineOpacity);
 	SelectionMaterial = CreateMaterialInstance(SelectionColor, SelectionOpacity);
 	
-	TArray<FVector> Vertices;
-	TArray<int32> Triangles;
-
-	CreateParallelHorizontalLines(Vertices, Triangles);
-
-	CreateParallelVerticalLines(Vertices, Triangles);
+	FGridRenderData LinesRenderData;
+	CreateParallelHorizontalLines(LinesRenderData);
+	CreateParallelVerticalLines(LinesRenderData);
 	
 	checkf(LinesProceduralMesh, TEXT("LinesProceduralMesh is not assigned"));
-	CreateMeshSectionFromVerticesAndTriangles(LinesProceduralMesh, Vertices, Triangles);
+	CreateMeshSectionFromVerticesAndTriangles(LinesProceduralMesh, LinesRenderData);
 
 	checkf(LineMaterial, TEXT("LineMaterial not generated properly"));
 	LinesProceduralMesh->SetMaterial(0, LineMaterial);
 
-	checkf(SelectionProceduralMesh, TEXT("SelectionProceduralMesh is not assigned"));
-	
-	FVector SelectionStart = FVector(0, TileSize/2, 0);
-	FVector SelectionEnd = FVector(TileSize, TileSize/2, 0);
-	TArray<FVector> SelectionVertices;
-	TArray<int32> SelectionTriangles;
-	CreateLine(SelectionStart, SelectionEnd, TileSize, SelectionVertices, SelectionTriangles);
+	FLine SelectionLine;
+	SelectionLine.Start = FVector(0, TileSize/2, 0);
+	SelectionLine.End = FVector(TileSize, TileSize/2, 0);
+	FGridRenderData SelectionRenderData;
+	CreateLine(SelectionLine, TileSize, SelectionRenderData);
 
-	CreateMeshSectionFromVerticesAndTriangles(SelectionProceduralMesh, SelectionVertices, SelectionTriangles);
+	checkf(SelectionProceduralMesh, TEXT("SelectionProceduralMesh is not assigned"));
+	CreateMeshSectionFromVerticesAndTriangles(SelectionProceduralMesh, SelectionRenderData);
 
 	SelectionProceduralMesh->SetVisibility(false);
 
@@ -44,42 +40,44 @@ void AGrid::OnConstruction(const FTransform &Transform)
 	SelectionProceduralMesh->SetMaterial(0, SelectionMaterial);
 }
 
-void AGrid::CreateParallelHorizontalLines(TArray<FVector>& Vertices, TArray<int32>& Triangles)
+void AGrid::CreateParallelHorizontalLines(FGridRenderData& GridRenderData)
 {
 	for (int32 i = 0; i <= NumRows; i++)
 	{
 		const float LineStart = i * TileSize;
 		const float LineEnd = GetGridWidth();
+
+		FLine Line;
+		Line.Start = FVector(LineStart, 0, 0);
+		Line.End = FVector(LineStart, LineEnd, 0);
 		
-		const FVector Start = FVector(LineStart, 0, 0);
-		const FVector End = FVector(LineStart, LineEnd, 0);
-		
-		CreateLine(Start, End, LineThickness, Vertices, Triangles);
+		CreateLine(Line, LineThickness, GridRenderData);
 	}
 }
 
-void AGrid::CreateParallelVerticalLines(TArray<FVector>& Vertices, TArray<int32>& Triangles)
+void AGrid::CreateParallelVerticalLines(FGridRenderData& GridRenderData)
 {
 	for (int32 i = 0; i <= NumCols; i++)
 	{
 		const float LineStart = i * TileSize;
 		const float LineEnd = GetGridHeight();
+
+		FLine Line;
+		Line.Start = FVector( 0, LineStart,0);
+		Line.End = FVector( LineEnd, LineStart,0);
 		
-		const FVector Start = FVector( 0, LineStart,0);
-		const FVector End = FVector( LineEnd, LineStart,0);
-		
-		CreateLine(Start, End, LineThickness, Vertices, Triangles);
+		CreateLine(Line, LineThickness, GridRenderData);
 	}
 }
 
-void AGrid::CreateMeshSectionFromVerticesAndTriangles(UProceduralMeshComponent* Mesh, TArray<FVector>& Vertices, TArray<int32>& Triangles)
+void AGrid::CreateMeshSectionFromVerticesAndTriangles(UProceduralMeshComponent* Mesh, FGridRenderData& GridRenderData)
 {
 	checkf(Mesh, TEXT("Trying to create a mesh section with a nullptr procedural mesh component"));
 
 	Mesh->CreateMeshSection(
 		0,								// Which mesh section to write to
-		Vertices,
-		Triangles,
+		GridRenderData.Vertices,
+		GridRenderData.Triangles,
 		TArray<FVector>(),				// Normals (empty)
 		TArray<FVector2D>(),			// UV0 (empty)
 		TArray<FColor>(),				// VertexColors (empty)
@@ -88,28 +86,28 @@ void AGrid::CreateMeshSectionFromVerticesAndTriangles(UProceduralMeshComponent* 
 	);
 }
 
-void AGrid::CreateLine(const FVector Start, const FVector End, const float Thickness, TArray<FVector>& Vertices, TArray<int32>& Triangles)
+void AGrid::CreateLine(const FLine& Line, const float Thickness, FGridRenderData& GridRenderData)
 {
 	const float HalfThickness = Thickness / 2;
 
-	FVector LineVector = End - Start;
+	FVector LineVector = Line.End - Line.Start;
 	FVector LineVectorNormalized = LineVector.GetSafeNormal();
 	FVector ThicknessDirection = FVector::CrossProduct(LineVectorNormalized, FVector::UnitZ());
 
-	int32 VerticesLength = Vertices.Num();
+	int32 VerticesLength = GridRenderData.Vertices.Num();
 	
 	TArray<int32> TriangleIndices = {VerticesLength + 2, VerticesLength + 1, VerticesLength + 0,
 									 VerticesLength + 2, VerticesLength + 3, VerticesLength + 1};
 
-	Triangles.Append(TriangleIndices);
+	GridRenderData.Triangles.Append(TriangleIndices);
 
-	FVector VertexZero = Start + HalfThickness * ThicknessDirection;
+	FVector VertexZero = Line.Start + HalfThickness * ThicknessDirection;
 	FVector VertexOne = VertexZero + LineVector;
 	FVector VertexTwo = VertexZero - Thickness * ThicknessDirection;
 	FVector VertexThree = VertexTwo + LineVector;
 
 	TArray<FVector> CalculatedVertices = {VertexZero, VertexOne, VertexTwo, VertexThree};
-	Vertices.Append(CalculatedVertices);
+	GridRenderData.Vertices.Append(CalculatedVertices);
 }
 
 int32 AGrid::GetGridWidth() const
@@ -133,61 +131,60 @@ UMaterialInstanceDynamic* AGrid::CreateMaterialInstance(FLinearColor Color, floa
 	return DynMaterial;
 }
 
-void AGrid::LocationToTile(FVector Location, int32& GridRow, int32& GridCol)
+void AGrid::LocationToTile(FVector Location, FIntVector2& Coord)
 {
-	checkf((GetGridWidth() != 0), TEXT("Grid has width zero, don't divide by 0"));
-	checkf((GetGridHeight() != 0), TEXT("Grid has height zero, don't divide by 0"));
+	checkf(GetGridWidth() != 0, TEXT("Grid has width zero, don't divide by 0"));
+	checkf(GetGridHeight() != 0, TEXT("Grid has height zero, don't divide by 0"));
 
 	FVector GridLocation = GetActorLocation();
 	FVector LocalHitLocation = Location - GridLocation;
 
-	GridRow = FMath::Floor((LocalHitLocation.X / GetGridWidth()) * NumRows);
-	GridCol = FMath::Floor((LocalHitLocation.Y / GetGridHeight()) * NumCols);
+	Coord.X = FMath::Floor((LocalHitLocation.X / GetGridWidth()) * NumRows);
+	Coord.Y = FMath::Floor((LocalHitLocation.Y / GetGridHeight()) * NumCols);
 }
 
-void AGrid::TileToGridLocation(int32 Row, int32 Col, bool ShouldCenter, FVector2D& Location)
+void AGrid::TileToGridLocation(FIntVector2 Coord, bool ShouldCenter, FVector2D& Location)
 {
-	if (!TileIsValid(Row, Col)) return;
+	if (!TileIsValid(Coord)) return;
 	
 	float CenterAdjustment = ShouldCenter * TileSize / 2;
-	float TileCornerX = Row * TileSize + GetActorLocation().X;
-	float TileCornerY = Col * TileSize + GetActorLocation().Y;
+	float TileCornerX = Coord.X * TileSize + GetActorLocation().X;
+	float TileCornerY = Coord.Y * TileSize + GetActorLocation().Y;
 
 	Location.X = TileCornerX + CenterAdjustment;
 	Location.Y = TileCornerY + CenterAdjustment;
 }
 
-void AGrid::SetSelectedTile(int32 Row, int32 Col)
+void AGrid::SetSelectedTile(FIntVector2 Coord)
 {
 	FVector2D Location;
-	TileToGridLocation(Row, Col, false, Location);
+	TileToGridLocation(Coord, false, Location);
 	
 	checkf(SelectionProceduralMesh, TEXT("Selection procedural mesh is not initialized right"));
-	SelectionProceduralMesh->SetVisibility(TileIsValid(Row, Col));
+	SelectionProceduralMesh->SetVisibility(TileIsValid(Coord));
 
-	if (TileIsValid(Row, Col))
+	if (TileIsValid(Coord))
 	{
 		FVector SelectionLocation = FVector(Location.X, Location.Y, GetActorLocation().Z);
 		SelectionProceduralMesh->SetWorldLocation(SelectionLocation);
 	}
 }
 
-bool AGrid::TileIsValid(int32 Row, int32 Col)
+bool AGrid::TileIsValid(FIntVector2 Coord)
 {
-	bool RowIsValid = (Row >= 0 && Row < NumRows);
-	bool ColIsValid = (Col >= 0 && Col < NumCols);
+	bool RowIsValid = (Coord.X >= 0 && Coord.X < NumRows);
+	bool ColIsValid = (Coord.Y >= 0 && Coord.Y < NumCols);
 	return RowIsValid && ColIsValid;
 }
 
 void AGrid::HoverTile(FVector Location)
 {
-	int32 GridRow;
-	int32 GridCol;
-	LocationToTile(Location, GridRow, GridCol);
-	SetSelectedTile(GridRow, GridCol);
+	FIntVector2 Coord = FIntVector2::ZeroValue;
+	LocationToTile(Location, Coord);
+	SetSelectedTile(Coord);
 }
 
 void AGrid::UnhoverTile()
 {
-	SetSelectedTile(-1, -1);
+	SetSelectedTile(FIntVector2(-1, -1));
 }

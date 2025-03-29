@@ -6,6 +6,18 @@
 
 class UProceduralMeshComponent;
 
+struct FGridRenderData
+{
+	TArray<FVector> Vertices;
+	TArray<int32> Triangles;
+};
+
+struct FLine
+{
+	FVector Start;
+	FVector End;
+};
+
 UCLASS()
 class ELDERWILD_API AGrid : public AActor
 {
@@ -16,11 +28,11 @@ public:
 
 	virtual void OnConstruction(const FTransform &Transform) override;
 
-	void CreateParallelHorizontalLines(TArray<FVector>& Vertices, TArray<int32>& Triangles);
+	void CreateParallelHorizontalLines(FGridRenderData& GridRenderData);
 
-	void CreateParallelVerticalLines(TArray<FVector>& Vertices, TArray<int32>& Triangles);
+	void CreateParallelVerticalLines(FGridRenderData& GridRenderData);
 
-	void CreateMeshSectionFromVerticesAndTriangles(UProceduralMeshComponent* Mesh, TArray<FVector>& Vertices, TArray<int32>& Triangles);
+	void CreateMeshSectionFromVerticesAndTriangles(UProceduralMeshComponent* Mesh, FGridRenderData& GridRenderData);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants")
 	int32 NumRows = 10;
@@ -62,7 +74,7 @@ public:
 	UProceduralMeshComponent* SelectionProceduralMesh;
 
 private:
-	void CreateLine(const FVector Start, const FVector End, const float Thickness, TArray<FVector>& Vertices, TArray<int32>& Triangles);
+	void CreateLine(const FLine& Line, const float Thickness, FGridRenderData& GridRenderData);
 
 	int32 GetGridWidth() const;
 
@@ -71,13 +83,13 @@ private:
 	UMaterialInstanceDynamic* CreateMaterialInstance(FLinearColor Color, float Opacity);
 
 public:
-	void LocationToTile(FVector Location, int32& GridRow, int32& GridCol);
+	void LocationToTile(FVector Location, FIntVector2& Coord);
 
-	void TileToGridLocation(int32 Row, int32 Col, bool ShouldCenter, FVector2D& Location);
+	void TileToGridLocation(FIntVector2 Coord, bool ShouldCenter, FVector2D& Location);
 
-	void SetSelectedTile(int32 Row, int32 Col);
+	void SetSelectedTile(FIntVector2 Coord);
 
-	bool TileIsValid(int32 Row, int32 Col);
+	bool TileIsValid(FIntVector2 Coord);
 
 	void HoverTile(FVector Location);
 
