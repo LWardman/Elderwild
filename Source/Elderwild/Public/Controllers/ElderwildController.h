@@ -4,12 +4,12 @@
 #include "GameFramework/PlayerController.h"
 #include "ElderwildController.generated.h"
 
-class UElderwildsCamera;
-class UFloatingPawnMovement;
 class UInputMappingContext;
 class UInputAction;
-class APlayerPawn;
 struct FInputActionValue;
+
+class UElderwildsCamera;
+class UFloatingPawnMovement;
 class AGrid;
 
 /** Controller intended only for use with the player pawn
@@ -23,13 +23,13 @@ public:
 	AElderwildController();
 
 	UPROPERTY()
-	APlayerPawn* PlayerPawn;
-
-	UPROPERTY()
 	UFloatingPawnMovement* Movement;
 
 	UPROPERTY()
 	UElderwildsCamera* CameraComponent;
+
+	UPROPERTY()
+	AGrid* Grid;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	UInputMappingContext* IMC_StandardPlay;
@@ -60,8 +60,10 @@ protected:
 
 	virtual void Tick(float DeltaSeconds) override;
 
-// =========== Clicking & Hovering ==================
 private:
+	void SetAndCheckPointers();
+
+// =========== Clicking & Hovering ==================
 	void OnClickStarted();
 
 	void HandleCursor();
@@ -71,7 +73,6 @@ protected:
 	void ZoomCamera(const FInputActionValue& Value);
 
 // =========== Camera Location Movement ==================
-protected:
 	void MoveCameraOnXYPlane(const FInputActionValue& Value);
 	
 	void BeginDragMoveCamera(const FInputActionValue& Value);
@@ -103,4 +104,6 @@ private:
 	float RotationSpeed = 30.f;
 
 	void UpdateVariablesWithCursorPosition(FVector& BeginningPosition, FVector& CurrentPosition);
+
+	FVector UpdateMousePositionsAndGetDelta(FVector& BeginningPosition, FVector& CurrentPosition, const FVector2d Cursor);
 };

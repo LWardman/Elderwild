@@ -58,14 +58,7 @@ void AElderwildController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	PlayerPawn = Cast<APlayerPawn>(GetPawn());
-	checkf(PlayerPawn, TEXT("Controller could not find the player pawn"));
-
-	Movement = PlayerPawn->Movement;
-	checkf(Movement, TEXT("Controller could not find the pawns floating movement component"));
-
-	CameraComponent = PlayerPawn->Camera;
-	checkf(CameraComponent, TEXT("Controller could not find the pawns camera component"));
+	SetAndCheckPointers();
 }
 
 void AElderwildController::Tick(float DeltaSeconds)
@@ -75,6 +68,24 @@ void AElderwildController::Tick(float DeltaSeconds)
 	HandleCursor();
 }
 
+void AElderwildController::SetAndCheckPointers()
+{
+	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(GetPawn());
+	checkf(PlayerPawn, TEXT("Controller could not find the player pawn"));
+
+	Movement = PlayerPawn->Movement;
+	checkf(Movement, TEXT("Controller could not find the pawns floating movement component"));
+
+	CameraComponent = PlayerPawn->Camera;
+	checkf(CameraComponent, TEXT("Controller could not find the pawns camera component"));
+
+	ADevGameMode* GameMode = Cast<ADevGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+	checkf(GameMode, TEXT("Controller could not find the game mode"));
+
+	Grid = GameMode->GetGrid();
+	checkf(Grid, TEXT("Handling player cursor could not be done because the grid cannot be found"));
+}
+
 void AElderwildController::OnClickStarted()
 {
 	UE_LOG(LogTemp, Log, TEXT("Clicked!"));
@@ -82,12 +93,6 @@ void AElderwildController::OnClickStarted()
 
 void AElderwildController::HandleCursor()
 {
-	ADevGameMode* GameMode = Cast<ADevGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
-	checkf(GameMode, TEXT("Handling player cursor could not be done because the game mode is invalid"));
-
-	AGrid* Grid = GameMode->GetGrid();
-	checkf(Grid, TEXT("Handling player cursor could not be done because the grid cannot be found"));
-
 	FHitResult Hit;
 	if (GetHitResultUnderCursor(ECC_Visibility, true, Hit))
 	{
@@ -118,29 +123,23 @@ void AElderwildController::BeginDragMoveCamera(const FInputActionValue& Value)
 
 void AElderwildController::DragMoveCamera(const FInputActionValue& Value)
 {
-	float CursorPositionX = 0.0f;
-	float CursorPositionY = 0.0f;
-	if (GetMousePosition(CursorPositionX, CursorPositionY))
+	FVector2d Cursor = FVector2d::Zero();
+	if (GetMousePosition(Cursor.X, Cursor.Y))
 	{
-		CurrentMousePositionMove = FVector{CursorPositionX, CursorPositionY, 0.0f};
-
-		checkf(PlayerPawn, TEXT("Can't move a nullptr pawn"));
-		FVector CurrentLocation = PlayerPawn->GetActorLocation();
+		FVector MouseDeltaPosition = UpdateMousePositionsAndGetDelta(BeginningMousePositionMove, CurrentMousePositionMove, Cursor);
+		MouseDeltaPosition *= -1;
 		
-		FVector MouseDeltaPosition = CurrentMousePositionMove - BeginningMousePositionMove;
-		
-		BeginningMousePositionMove = CurrentMousePositionMove;
-
-		// TODO : DRY
 		FVector ForwardVectorXY = CameraComponent->GetForwardXYVector();
 		FVector ForwardMovement = ForwardVectorXY * MouseDeltaPosition.Y * DragCameraMoveSensitivity;
 
-		FVector RightVector = PlayerPawn->GetActorRightVector();
-		FVector SidewaysMovement = - RightVector * MouseDeltaPosition.X * DragCameraMoveSensitivity;
+		FVector RightVector = CameraComponent->GetRightVector();
+		FVector SidewaysMovement = -1 * RightVector * MouseDeltaPosition.X * DragCameraMoveSensitivity;
+
+		FVector CurrentLocation = CameraComponent->GetComponentLocation();
 
 		FVector NewLocation = CurrentLocation + ForwardMovement + SidewaysMovement;
 		
-		PlayerPawn->SetActorLocation(NewLocation);
+		CameraComponent->SetWorldLocation(NewLocation);
 	}
 }
 
@@ -151,16 +150,10 @@ void AElderwildController::BeginDragRotatingCamera(const FInputActionValue& Valu
 
 void AElderwildController::DragRotateCamera(const FInputActionValue& Value)
 {
-	float CursorPositionX = 0.0f;
-	float CursorPositionY = 0.0f;
-	if (GetMousePosition(CursorPositionX, CursorPositionY))
+	FVector2D Cursor = FVector2d::Zero();
+	if (GetMousePosition(Cursor.X, Cursor.Y))
 	{
-		CurrentMousePositionRotate = FVector{CursorPositionX, CursorPositionY, 0.0f};
-		
-		const FVector MouseDeltaPosition = BeginningMousePositionRotate - CurrentMousePositionRotate;
-		
-		BeginningMousePositionRotate = CurrentMousePositionRotate;
-
+		FVector MouseDeltaPosition = UpdateMousePositionsAndGetDelta(BeginningMousePositionRotate, CurrentMousePositionRotate, Cursor);
 		const float RotationMagnitude = DragCameraRotateSensitivity * MouseDeltaPosition.X;
 		CameraComponent->RotateAroundYawAxis(RotationMagnitude);
 	}
@@ -175,11 +168,19 @@ void AElderwildController::RotateCameraAroundYawAxis(const FInputActionValue& Va
 
 void AElderwildController::UpdateVariablesWithCursorPosition(FVector& BeginningPosition, FVector& CurrentPosition)
 {
-	float CursorPositionX = 0.0f;
-   float CursorPositionY = 0.0f;
-   if (GetMousePosition(CursorPositionX, CursorPositionY))
-   {
-   	CurrentPosition = FVector{CursorPositionX, CursorPositionY, 0.0f};
-   	BeginningPosition = CurrentPosition;
-   }
+	FVector2d Cursor = FVector2D::ZeroVector;
+   	if (GetMousePosition(Cursor.X, Cursor.Y))
+   	{
+   		CurrentPosition = FVector{Cursor.X, Cursor.Y, 0.0f};
+   		BeginningPosition = CurrentPosition;
+   	}
+}
+
+FVector AElderwildController::UpdateMousePositionsAndGetDelta(FVector& BeginningPosition, FVector& CurrentPosition, const FVector2d Cursor)
+{
+	CurrentPosition = FVector{Cursor.X, Cursor.Y, 0.0f};
+	const FVector MouseDeltaPosition = BeginningPosition - CurrentPosition;
+	BeginningPosition = CurrentPosition;
+
+	return MouseDeltaPosition;
 }
