@@ -9,7 +9,7 @@
 #include "Actors/Grid.h"
 #include "GameModes/DevGameMode.h"
 #include "Pawns/PlayerPawn.h"
-#include "Components/ElderwildsCamera.h"
+#include "Components/ControlledCamera.h"
 
 
 AElderwildController::AElderwildController()

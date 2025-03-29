@@ -8,7 +8,7 @@ class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
 
-class UElderwildsCamera;
+class UControlledCamera;
 class UFloatingPawnMovement;
 class AGrid;
 
@@ -26,7 +26,7 @@ public:
 	UFloatingPawnMovement* Movement;
 
 	UPROPERTY()
-	UElderwildsCamera* CameraComponent;
+	UControlledCamera* CameraComponent;
 
 	UPROPERTY()
 	AGrid* Grid;

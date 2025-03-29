@@ -2,7 +2,7 @@
 
 #include "GameFramework/FloatingPawnMovement.h"
 
-#include "Components/ElderwildsCamera.h"
+#include "Components/ControlledCamera.h"
 
 
 APlayerPawn::APlayerPawn()
@@ -11,7 +11,7 @@ APlayerPawn::APlayerPawn()
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bStartWithTickEnabled = true;
 
-	Camera = CreateDefaultSubobject<UElderwildsCamera>(TEXT("Camera"));
+	Camera = CreateDefaultSubobject<UControlledCamera>(TEXT("Camera"));
 	RootComponent = Camera;
 	Camera->SetRelativeRotation(FRotator(-60, 0, 0));
 

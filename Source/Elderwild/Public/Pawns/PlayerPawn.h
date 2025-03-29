@@ -4,7 +4,7 @@
 #include "GameFramework/Pawn.h"
 #include "PlayerPawn.generated.h"
 
-class UElderwildsCamera;
+class UControlledCamera;
 class UFloatingPawnMovement;
 class AGrid;
 
@@ -21,7 +21,7 @@ protected:
 
 public:	
 	UPROPERTY(EditAnywhere)
-	UElderwildsCamera* Camera;
+	UControlledCamera* Camera;
 
 	UPROPERTY(EditAnywhere)
 	UFloatingPawnMovement* Movement;

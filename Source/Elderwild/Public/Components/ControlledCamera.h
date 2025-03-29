@@ -2,16 +2,16 @@
 
 #include "CoreMinimal.h"
 #include "Camera/CameraComponent.h"
-#include "ElderwildsCamera.generated.h"
+#include "ControlledCamera.generated.h"
 
 
 UCLASS()
-class ELDERWILD_API UElderwildsCamera : public UCameraComponent
+class ELDERWILD_API UControlledCamera : public UCameraComponent
 {
 	GENERATED_BODY()
 
 public:
-	UElderwildsCamera();
+	UControlledCamera();
 
 protected:
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;

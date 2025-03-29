@@ -1,30 +1,30 @@
-#include "Components/ElderwildsCamera.h"
+#include "Components/ControlledCamera.h"
 
 
-UElderwildsCamera::UElderwildsCamera()
+UControlledCamera::UControlledCamera()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
-void UElderwildsCamera::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
+void UControlledCamera::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	InterpolateCameraFieldOfView(DeltaTime);
 }
 
-void UElderwildsCamera::BeginPlay()
+void UControlledCamera::BeginPlay()
 {
 	Super::BeginPlay();
 	SetFieldOfView(FieldOfView);
 }
 
-void UElderwildsCamera::ZoomCamera(float Direction)
+void UControlledCamera::ZoomCamera(float Direction)
 {
 	TargetFieldOfView -= Direction * 2;
 	TargetFieldOfView = FMath::Clamp(TargetFieldOfView, MinimumFieldOfView, MaximumFieldOfView);
 }
 
-void UElderwildsCamera::InterpolateCameraFieldOfView(float DeltaTime)
+void UControlledCamera::InterpolateCameraFieldOfView(float DeltaTime)
 {
 	const float DifferenceBetweenTargetAndActualFieldOfView = TargetFieldOfView - FieldOfView;
 	const float InterpSpeed = FMath::Abs(DifferenceBetweenTargetAndActualFieldOfView);
@@ -34,7 +34,7 @@ void UElderwildsCamera::InterpolateCameraFieldOfView(float DeltaTime)
 	SetFieldOfView(FieldOfView);
 }
 
-FVector UElderwildsCamera::CalculateCameraMovementVectorOnXYPlane(FVector2D PlayerInput) const
+FVector UControlledCamera::CalculateCameraMovementVectorOnXYPlane(FVector2D PlayerInput) const
 {
 	FVector ForwardXY = GetForwardXYVector();
 	FVector RightVector = GetRightVector();
@@ -42,7 +42,7 @@ FVector UElderwildsCamera::CalculateCameraMovementVectorOnXYPlane(FVector2D Play
 	return ForwardXY * PlayerInput.X + RightVector * PlayerInput.Y;
 }
 
-FVector UElderwildsCamera::GetForwardXYVector() const 
+FVector UControlledCamera::GetForwardXYVector() const 
 {
 	FVector ForwardVector = GetForwardVector();
 
@@ -52,7 +52,7 @@ FVector UElderwildsCamera::GetForwardXYVector() const
 	return ForwardXY;
 }
 
-void UElderwildsCamera::RotateAroundYawAxis(float RotationMagnitude)
+void UControlledCamera::RotateAroundYawAxis(float RotationMagnitude)
 {
 	FRotator Rotation = GetComponentRotation();
 
