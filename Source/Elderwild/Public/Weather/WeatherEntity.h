@@ -1,5 +1,8 @@
 #pragma once
 
+typedef int32 Significance;
+typedef float Probability;
+
 /* Weather Entities are things like Temperature, Wind Speed, Rainfall etc.
  *
  * These entities follow a random walk weighed towards what the season
@@ -14,6 +17,16 @@ public:
 	UWeatherEntity();
 
 private:
-	float Target = 10.f;
-	float Current = Target;
+	float Mean = 10.f;
+	float StandardDeviation = 2.f;
+	float Variance = StandardDeviation * StandardDeviation;
+	
+	float Current = Mean;
+
+	void InitializeProbabilityMap();
+	TMap<Significance, Probability> EntityProbability;
+	
+	FTimerHandle UpdateEntityTimer;
+
+	void UpdateEntity();
 };
