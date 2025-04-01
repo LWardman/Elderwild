@@ -5,11 +5,6 @@ UDay::UDay()
 	
 }
 
-void UDay::BeginPlay()
-{
-	BeginDay();
-}
-
 void UDay::BeginDay()
 {
 	GetWorld()->GetTimerManager().SetTimer(
