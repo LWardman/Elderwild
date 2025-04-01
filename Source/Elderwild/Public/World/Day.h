@@ -6,8 +6,8 @@
 
 typedef float Seconds;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDayToNightDelegate);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FNightToDayDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FNightStartsDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDayStartsDelegate);
 
 
 UCLASS()
@@ -21,22 +21,22 @@ public:
 	void BeginCycling();
 
 	void SetNewDayLengths(Seconds NewDayLength, Seconds NewNightLength);
-
+	
+	UPROPERTY(BlueprintAssignable, Category = "Day Events")
+	FDayStartsDelegate DayIsStarting;
+	
+	UPROPERTY(BlueprintAssignable, Category = "Day Events")
+	FNightStartsDelegate NightIsStarting;
+	
 private:
+	FTimerHandle DayEndTimerHandle;
+	
 	Seconds DaytimeLength = 60.f;
 	Seconds NightLength = 60.f;
 	Seconds FullDayCycle = DaytimeLength + NightLength;
 	
 	void TransitionToDay();
 	void TransitionToNight();
-
-	FTimerHandle DayEndTimerHandle;
-
-	UPROPERTY(BlueprintAssignable, Category = "Test")
-	FNightToDayDelegate DayIsStarting;
-	
-	UPROPERTY(BlueprintAssignable, Category = "Test")
-	FDayToNightDelegate NightIsStarting;
 
 	Seconds GetTimeRemainingForTheDay();
 };
