@@ -8,9 +8,7 @@ class UDay;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSeasonChangeDelegate);
 
-/** A season should...
- *  - fire events on season start and season end
- */
+
 UCLASS()
 class ELDERWILD_API USeason : public UObject
 {
