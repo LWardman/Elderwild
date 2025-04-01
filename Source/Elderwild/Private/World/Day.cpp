@@ -5,7 +5,19 @@ UDay::UDay()
 	
 }
 
-void UDay::BeginDay()
+void UDay::BeginCycling()
+{
+	TransitionToDay();
+}
+
+void UDay::SetNewDayLengths(Seconds NewDayLength, Seconds NewNightLength)
+{
+	DaytimeLength = NewDayLength;
+	NightLength = NewNightLength;
+	FullDayCycle = DaytimeLength + NightLength;
+}
+
+void UDay::TransitionToDay()
 {
 	GetWorld()->GetTimerManager().SetTimer(
 	DayEndTimerHandle, 
@@ -22,16 +34,11 @@ void UDay::TransitionToNight()
 	GetWorld()->GetTimerManager().SetTimer(
 	DayEndTimerHandle, 
 	this, 
-	&UDay::EndDay, 
+	&UDay::TransitionToDay, 
 	NightLength, 
 	false);
 
 	NightIsStarting.Broadcast();
-}
-
-void UDay::EndDay()
-{
-	UE_LOG(LogTemp, Log, TEXT("Day is ending"));
 }
 
 Seconds UDay::GetTimeRemainingForTheDay()

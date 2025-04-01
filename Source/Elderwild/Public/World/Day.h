@@ -18,14 +18,17 @@ class ELDERWILD_API UDay : public UObject
 public:
 	UDay();
 
-private:
-	void BeginDay();
-	void TransitionToNight();
-	void EndDay();
+	void BeginCycling();
 
+	void SetNewDayLengths(Seconds NewDayLength, Seconds NewNightLength);
+
+private:
 	Seconds DaytimeLength = 60.f;
 	Seconds NightLength = 60.f;
 	Seconds FullDayCycle = DaytimeLength + NightLength;
+	
+	void TransitionToDay();
+	void TransitionToNight();
 
 	FTimerHandle DayEndTimerHandle;
 
