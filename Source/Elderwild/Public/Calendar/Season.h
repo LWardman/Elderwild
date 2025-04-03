@@ -4,9 +4,6 @@
 #include "UObject/Object.h"
 #include "Season.generated.h"
 
-class UDay;
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSeasonChangeDelegate);
 
 UENUM(BlueprintType)
 enum FSeason
@@ -17,6 +14,12 @@ enum FSeason
 	WINTER
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSeasonChangeDelegate, FSeason, NewSeason);
+
+class UDay;
+enum FDayNight : int;
+
+
 UCLASS()
 class ELDERWILD_API USeason : public UObject
 {
@@ -25,24 +28,30 @@ class ELDERWILD_API USeason : public UObject
 public:
 	USeason();
 
+	UDay* GetDayCycler();
+	
+	int32 GetNumberOfDaysLeft();
+
+	bool IsLastDayOfMonth();
+
+	FSeason GetSeason();
+
 private:
 	UFUNCTION()
-	void OnDayChange();
+	void OnDayChange(FDayNight NewState);
 
 	FSeason CurrentSeason = SPRING;
 
 	UFUNCTION()
 	FSeason GetNextSeason();
+
+	void ChangeSeason();
 	
 	UPROPERTY()
 	UDay* Day;
 
 	int32 CurrentDay = 1;
 	int32 MonthLength = 28;
-
-	int32 GetNumberOfDaysLeft();
-
-	bool IsLastDayOfMonth();
 	
 	UPROPERTY(BlueprintAssignable, Category = "Day Events")
 	FSeasonChangeDelegate SeasonIsChanging;
