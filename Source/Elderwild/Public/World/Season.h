@@ -8,6 +8,14 @@ class UDay;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSeasonChangeDelegate);
 
+UENUM(BlueprintType)
+enum FSeason
+{
+	SPRING,
+	SUMMER,
+	AUTUMN,
+	WINTER
+};
 
 UCLASS()
 class ELDERWILD_API USeason : public UObject
@@ -20,14 +28,17 @@ public:
 private:
 	UFUNCTION()
 	void OnDayChange();
+
+	FSeason CurrentSeason = SPRING;
+
+	UFUNCTION()
+	FSeason GetNextSeason();
 	
 	UPROPERTY()
 	UDay* Day;
 
 	int32 CurrentDay = 1;
 	int32 MonthLength = 28;
-
-	void SetDayLengths();
 
 	int32 GetNumberOfDaysLeft();
 

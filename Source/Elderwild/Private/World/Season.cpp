@@ -13,16 +13,19 @@ void USeason::OnDayChange()
 	if (IsLastDayOfMonth())
 	{
 		SeasonIsChanging.Broadcast();
+		CurrentSeason = GetNextSeason();
+
+		UE_LOG(LogTemp, Log, TEXT("Season : %i is starting"), CurrentSeason);
 	}
 }
 
-
-void USeason::SetDayLengths()
+FSeason USeason::GetNextSeason()
 {
-	checkf(Day, TEXT("Day is not initialised"));
+	int CurrentSeasonIndex = CurrentSeason;
+	CurrentSeasonIndex += 1;
+	CurrentSeasonIndex %= 4;
 
-	// TODO : pass this information in from a TMap<int32(CurrentDay, Day-Night(struct)>
-	Day->SetNewDayLengths(60.f, 60.f);
+	return FSeason(CurrentSeasonIndex);
 }
 
 int32 USeason::GetNumberOfDaysLeft()
