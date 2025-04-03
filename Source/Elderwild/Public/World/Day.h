@@ -9,18 +9,15 @@ typedef float Seconds;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FNightStartsDelegate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDayStartsDelegate);
 
-
+// TODO : create link between this and the suns position in the engine.
 UCLASS()
 class ELDERWILD_API UDay : public UObject
 {
 	GENERATED_BODY()
 
 public:
-	UDay();
-
+	// TODO : Call this where appropriate
 	void BeginCycling();
-
-	void SetNewDayLengths(Seconds NewDayLength, Seconds NewNightLength);
 	
 	UPROPERTY(BlueprintAssignable, Category = "Day Events")
 	FDayStartsDelegate DayIsStarting;

@@ -1,20 +1,9 @@
 #include "World/Day.h"
 
-UDay::UDay()
-{
-	
-}
 
 void UDay::BeginCycling()
 {
 	TransitionToDay();
-}
-
-void UDay::SetNewDayLengths(Seconds NewDayLength, Seconds NewNightLength)
-{
-	DaytimeLength = NewDayLength;
-	NightLength = NewNightLength;
-	FullDayCycle = DaytimeLength + NightLength;
 }
 
 void UDay::TransitionToDay()
@@ -27,6 +16,8 @@ void UDay::TransitionToDay()
 	false);
 
 	DayIsStarting.Broadcast();
+
+	UE_LOG(LogTemp, Log, TEXT("Day Time"));
 }
 
 void UDay::TransitionToNight()
@@ -39,6 +30,8 @@ void UDay::TransitionToNight()
 	false);
 
 	NightIsStarting.Broadcast();
+	
+	UE_LOG(LogTemp, Log, TEXT("Night Time"));
 }
 
 Seconds UDay::GetTimeRemainingForTheDay()
