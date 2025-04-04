@@ -25,7 +25,6 @@ class ELDERWILD_API UDayCycler : public UObject
 	GENERATED_BODY()
 
 public:
-	// TODO : Call this where appropriate
 	void BeginCycling();
 
 	void ForceTransitionToDay();
