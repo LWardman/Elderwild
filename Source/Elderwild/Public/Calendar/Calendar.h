@@ -4,6 +4,7 @@
 #include "Components/ActorComponent.h"
 #include "Calendar.generated.h"
 
+class USeasonCycler;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ELDERWILD_API UCalendar : public UActorComponent
@@ -16,6 +17,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-public:	
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+private:
+	UPROPERTY()
+	USeasonCycler* SeasonCycler;
 };
