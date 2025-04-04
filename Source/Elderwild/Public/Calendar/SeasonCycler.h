@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
-#include "Season.generated.h"
+#include "SeasonCycler.generated.h"
 
 
 UENUM(BlueprintType)
@@ -16,19 +16,19 @@ enum FSeason
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSeasonChangeDelegate, FSeason, NewSeason);
 
-class UDay;
+class UDayCycler;
 enum FDayNight : int;
 
 
 UCLASS()
-class ELDERWILD_API USeason : public UObject
+class ELDERWILD_API USeasonCycler : public UObject
 {
 	GENERATED_BODY()
 
 public:
-	USeason();
+	USeasonCycler();
 
-	UDay* GetDayCycler();
+	UDayCycler* GetDayCycler();
 	
 	int32 GetNumberOfDaysLeft();
 
@@ -48,7 +48,7 @@ private:
 	void ChangeSeason();
 	
 	UPROPERTY()
-	UDay* Day;
+	UDayCycler* Day;
 
 	int32 CurrentDay = 1;
 	int32 MonthLength = 28;

@@ -1,12 +1,12 @@
-#include "World/Season.h"
-#include "World/Day.h"
+#include "Calendar/SeasonCycler.h"
+#include "Calendar/DayCycler.h"
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FCalendar, "Elderwild.Calendar", EAutomationTestFlags::EditorContext | EAutomationTestFlags::EngineFilter)
 
 bool FCalendar::RunTest(const FString& Parameters)
 {
-	USeason* Season = NewObject<USeason>();
-	UDay* Day = Season->GetDayCycler();
+	USeasonCycler* Season = NewObject<USeasonCycler>();
+	UDayCycler* Day = Season->GetDayCycler();
 
 	TestNotNull(TEXT("Season generated properly"), Season);
 	TestNotNull(TEXT("Day Cycler generated properly"), Day);

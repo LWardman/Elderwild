@@ -1,30 +1,30 @@
-#include "World/Day.h"
+#include "Calendar/DayCycler.h"
 
 
-void UDay::BeginCycling()
+void UDayCycler::BeginCycling()
 {
 	if (GetWorld())
 	{
 		GetWorld()->GetTimerManager().SetTimer(
 			DayCyclingTimerHandle, 
 			this, 
-			&UDay::TransitionToNight, 
+			&UDayCycler::TransitionToNight, 
 			DaytimeLength, 
 			false);
 	}
 }
 
-void UDay::ForceTransitionToDay()
+void UDayCycler::ForceTransitionToDay()
 {
 	TransitionToDay();
 }
 
-void UDay::ForceTransitionToNight()
+void UDayCycler::ForceTransitionToNight()
 {
 	TransitionToNight();
 }
 
-Seconds UDay::GetTimeRemainingForTheDay()
+Seconds UDayCycler::GetTimeRemainingForTheDay()
 {
 	Seconds TimeRemaining = GetWorld()->GetTimerManager().GetTimerRemaining(DayCyclingTimerHandle);
 
@@ -36,19 +36,19 @@ Seconds UDay::GetTimeRemainingForTheDay()
 	return TimeRemaining;
 }
 
-FDayNight UDay::GetCurrentTimePeriod()
+FDayNight UDayCycler::GetCurrentTimePeriod()
 {
 	return TimePeriod;
 }
 
-void UDay::TransitionToDay()
+void UDayCycler::TransitionToDay()
 {
 	if (GetWorld())
 	{
 		GetWorld()->GetTimerManager().SetTimer(
         	DayCyclingTimerHandle, 
         	this, 
-        	&UDay::TransitionToNight, 
+        	&UDayCycler::TransitionToNight, 
         	DaytimeLength, 
         	false);
 	}
@@ -59,14 +59,14 @@ void UDay::TransitionToDay()
 	UE_LOG(LogTemp, Log, TEXT("Day Time"));
 }
 
-void UDay::TransitionToNight()
+void UDayCycler::TransitionToNight()
 {
 	if (GetWorld())
 	{
 		GetWorld()->GetTimerManager().SetTimer(
         	DayCyclingTimerHandle, 
         	this, 
-        	&UDay::TransitionToDay, 
+        	&UDayCycler::TransitionToDay, 
         	NightLength, 
         	false);
 	}

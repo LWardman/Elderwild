@@ -1,35 +1,35 @@
-#include "World/Season.h"
+#include "Calendar/SeasonCycler.h"
 
-#include "World/Day.h"
+#include "Calendar/DayCycler.h"
 
 
-USeason::USeason()
+USeasonCycler::USeasonCycler()
 {
-	Day = CreateDefaultSubobject<UDay>("Day");
-	Day->DayStateChanged.AddDynamic(this, &USeason::OnDayChange);
+	Day = CreateDefaultSubobject<UDayCycler>("Day");
+	Day->DayStateChanged.AddDynamic(this, &USeasonCycler::OnDayChange);
 }
 
-UDay* USeason::GetDayCycler()
+UDayCycler* USeasonCycler::GetDayCycler()
 {
 	return Day;
 }
 
-int32 USeason::GetNumberOfDaysLeft()
+int32 USeasonCycler::GetNumberOfDaysLeft()
 {
 	return MonthLength - CurrentDay;
 }
 
-bool USeason::IsLastDayOfMonth()
+bool USeasonCycler::IsLastDayOfMonth()
 {
 	return GetNumberOfDaysLeft() == 0;
 }
 
-FSeason USeason::GetSeason()
+FSeason USeasonCycler::GetSeason()
 {
 	return CurrentSeason;
 }
 
-void USeason::OnDayChange(FDayNight NewState)
+void USeasonCycler::OnDayChange(FDayNight NewState)
 {
 	if (NewState == DAY)
 	{
@@ -44,7 +44,7 @@ void USeason::OnDayChange(FDayNight NewState)
 	}
 }
 
-FSeason USeason::GetNextSeason()
+FSeason USeasonCycler::GetNextSeason()
 {
 	int CurrentSeasonIndex = CurrentSeason;
 	CurrentSeasonIndex += 1;
@@ -53,7 +53,7 @@ FSeason USeason::GetNextSeason()
 	return FSeason(CurrentSeasonIndex);
 }
 
-void USeason::ChangeSeason()
+void USeasonCycler::ChangeSeason()
 {
 	CurrentSeason = GetNextSeason();
 	CurrentDay = 1;

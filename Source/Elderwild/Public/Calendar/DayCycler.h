@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Object.h"
-#include "Day.generated.h"
+#include "DayCycler.generated.h"
 
 
 UENUM(BlueprintType)
@@ -20,7 +20,7 @@ typedef float Seconds;
 
 // TODO : create link between this and the suns position in the engine.
 UCLASS()
-class ELDERWILD_API UDay : public UObject
+class ELDERWILD_API UDayCycler : public UObject
 {
 	GENERATED_BODY()
 
