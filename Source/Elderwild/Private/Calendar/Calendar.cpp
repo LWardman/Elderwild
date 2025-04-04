@@ -2,6 +2,7 @@
 
 #include "Calendar/DayCycler.h"
 #include "Calendar/SeasonCycler.h"
+#include "Kismet/GameplayStatics.h"
 
 UCalendar::UCalendar()
 {
@@ -18,4 +19,9 @@ void UCalendar::BeginPlay()
 	checkf(SeasonCycler->GetDayCycler(), TEXT("Season's DayCycler not initialized properly"));
 
 	SeasonCycler->GetDayCycler()->BeginCycling();
+
+	TArray<AActor*> SunActors;
+	UGameplayStatics::GetAllActorsWithTag(this, "Sun", SunActors);
+	
+	UE_LOG(LogTemp, Display, TEXT("Found %i sun actors"), SunActors.Num());
 }

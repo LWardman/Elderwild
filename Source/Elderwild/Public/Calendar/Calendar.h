@@ -5,8 +5,9 @@
 #include "Calendar.generated.h"
 
 class USeasonCycler;
+class ADirectionalLight;
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS()
 class ELDERWILD_API UCalendar : public UActorComponent
 {
 	GENERATED_BODY()
@@ -20,4 +21,7 @@ protected:
 private:
 	UPROPERTY()
 	USeasonCycler* SeasonCycler;
+
+	UPROPERTY()
+	ADirectionalLight* Sunlight;
 };
