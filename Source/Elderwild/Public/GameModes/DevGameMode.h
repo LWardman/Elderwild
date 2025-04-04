@@ -5,6 +5,7 @@
 #include "DevGameMode.generated.h"
 
 class AGrid;
+class UCalendar;
 
 /** WARNING : ADevGameMode should not be used in the final product,
  *		      it is for testing only. If this game mode wants to be
@@ -29,4 +30,8 @@ public:
 	AGrid* Grid;
 	AGrid* FindGrid();
 	AGrid* GetGrid() const;
+
+private:
+	UPROPERTY()
+	UCalendar* Calendar;
 };

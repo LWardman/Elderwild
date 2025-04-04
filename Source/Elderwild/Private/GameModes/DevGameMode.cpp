@@ -3,12 +3,15 @@
 #include "Kismet/GameplayStatics.h"
 
 #include "Actors/Grid.h"
+#include "Calendar/Calendar.h"
 #include "Pawns/PlayerPawn.h"
 
 ADevGameMode::ADevGameMode()
 {
 	DefaultPawnClass = APlayerPawn::StaticClass();
 	SetDefaultPlayerController();
+
+	Calendar = CreateDefaultSubobject<UCalendar>(TEXT("Calendar"));
 }
 
 void ADevGameMode::BeginPlay()
