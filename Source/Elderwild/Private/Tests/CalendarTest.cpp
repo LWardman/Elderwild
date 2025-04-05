@@ -6,16 +6,16 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FCalendar, "Elderwild.Calendar", EAutomationTes
 bool FCalendar::RunTest(const FString& Parameters)
 {
 	USeasonCycler* Season = NewObject<USeasonCycler>();
-	UDayCycler* Day = Season->GetDayCycler();
+	UDayCycler* Day = NewObject<UDayCycler>();
+	Season->Init(Day);
 
 	TestNotNull(TEXT("Season generated properly"), Season);
 	TestNotNull(TEXT("Day Cycler generated properly"), Day);
 	
-	Day->BeginCycling();
 	
 	for (int seasonNum = 0; seasonNum < 4; seasonNum++)
 	{
-		TestEqual(TEXT("Season is correct"), Season->GetSeason(), FSeason(seasonNum));
+		TestEqual(TEXT("Season is correct"), Season->GetSeason(), StaticCast<FSeason>(seasonNum));
         
         // Get to the last day of the month
         for (int dayNum = 27; dayNum > 0; dayNum--)
@@ -35,7 +35,8 @@ bool FCalendar::RunTest(const FString& Parameters)
 	}
 
 	TestEqual(TEXT("Year has repeated"), Season->GetSeason(), SPRING);
-	
+
+	// TODO : is it possible to test the sunlight actor in UCalendar?
 	
 	return true;
 }
