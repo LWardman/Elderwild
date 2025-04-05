@@ -24,8 +24,22 @@ void UDayCycler::ForceTransitionToNight()
 	TransitionToNight();
 }
 
-Seconds UDayCycler::GetTimeRemainingForTheDay()
+float UDayCycler::PercentWayThroughDay() const
 {
+	return (1 - GetTimeRemainingForTheDay() / FullDayCycle);
+}
+
+FDayNight UDayCycler::GetCurrentTimePeriod() const
+{
+	return TimePeriod;
+}
+
+Seconds UDayCycler::GetTimeRemainingForTheDay() const
+{
+	UE_LOG(LogTemp, Warning, (TEXT("Checking for world...")));
+	if (!GetWorld()) return FullDayCycle;
+	UE_LOG(LogTemp, Warning, (TEXT("....World found.")));
+	
 	Seconds TimeRemaining = GetWorld()->GetTimerManager().GetTimerRemaining(DayCyclingTimerHandle);
 
 	if (GetCurrentTimePeriod() == DAY)
@@ -34,11 +48,6 @@ Seconds UDayCycler::GetTimeRemainingForTheDay()
 	}
 	
 	return TimeRemaining;
-}
-
-FDayNight UDayCycler::GetCurrentTimePeriod()
-{
-	return TimePeriod;
 }
 
 void UDayCycler::TransitionToDay()
@@ -76,3 +85,4 @@ void UDayCycler::TransitionToNight()
 	
 	UE_LOG(LogTemp, Log, TEXT("Night Time"));
 }
+// TODO : These logs arent showing up, why?

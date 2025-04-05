@@ -4,21 +4,13 @@
 #include "UObject/Object.h"
 #include "DayCycler.generated.h"
 
-
 UENUM(BlueprintType)
-enum FDayNight
-{
-	DAY,
-	NIGHT
-};
+enum FDayNight : int { DAY, NIGHT };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FNightStartsDelegate);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FDayStartsDelegate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDayStateChanged, FDayNight, NewState);
 
 typedef float Seconds;
 
-// TODO : create link between this and the suns position in the engine.
 UCLASS()
 class ELDERWILD_API UDayCycler : public UObject
 {
@@ -33,12 +25,14 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Day Events")
 	FDayStateChanged DayStateChanged;
 
-	Seconds GetTimeRemainingForTheDay();
+	float PercentWayThroughDay() const;
 
-	FDayNight GetCurrentTimePeriod();
+	FDayNight GetCurrentTimePeriod() const;
 	
 private:
 	FTimerHandle DayCyclingTimerHandle;
+
+	Seconds GetTimeRemainingForTheDay() const;
 	
 	Seconds DaytimeLength = 60.f;
 	Seconds NightLength = 60.f;
