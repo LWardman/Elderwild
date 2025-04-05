@@ -26,15 +26,15 @@ class ELDERWILD_API USeasonCycler : public UObject
 	GENERATED_BODY()
 
 public:
-	USeasonCycler();
+	void Init(UDayCycler* DayCycler);
 
-	UDayCycler* GetDayCycler();
+	UDayCycler* GetDayCycler() const;
 	
-	int32 GetNumberOfDaysLeft();
+	int32 GetNumberOfDaysLeft() const;
 
-	bool IsLastDayOfMonth();
+	bool IsLastDayOfMonth() const;
 
-	FSeason GetSeason();
+	FSeason GetSeason() const;
 
 private:
 	UFUNCTION()
@@ -43,7 +43,7 @@ private:
 	FSeason CurrentSeason = SPRING;
 
 	UFUNCTION()
-	FSeason GetNextSeason();
+	FSeason GetNextSeason() const;
 
 	void ChangeSeason();
 	

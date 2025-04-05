@@ -3,28 +3,32 @@
 #include "Calendar/DayCycler.h"
 
 
-USeasonCycler::USeasonCycler()
+void USeasonCycler::Init(UDayCycler* DayCycler)
 {
-	Day = CreateDefaultSubobject<UDayCycler>("Day");
-	Day->DayStateChanged.AddDynamic(this, &USeasonCycler::OnDayChange);
+	Day = DayCycler;
+	if (Day)
+	{
+		Day->BeginCycling();
+		Day->DayStateChanged.AddDynamic(this, &USeasonCycler::OnDayChange);
+	}
 }
 
-UDayCycler* USeasonCycler::GetDayCycler()
+UDayCycler* USeasonCycler::GetDayCycler() const
 {
 	return Day;
 }
 
-int32 USeasonCycler::GetNumberOfDaysLeft()
+int32 USeasonCycler::GetNumberOfDaysLeft() const
 {
 	return MonthLength - CurrentDay;
 }
 
-bool USeasonCycler::IsLastDayOfMonth()
+bool USeasonCycler::IsLastDayOfMonth() const
 {
 	return GetNumberOfDaysLeft() == 0;
 }
 
-FSeason USeasonCycler::GetSeason()
+FSeason USeasonCycler::GetSeason() const
 {
 	return CurrentSeason;
 }
@@ -44,13 +48,13 @@ void USeasonCycler::OnDayChange(FDayNight NewState)
 	}
 }
 
-FSeason USeasonCycler::GetNextSeason()
+FSeason USeasonCycler::GetNextSeason() const 
 {
 	int CurrentSeasonIndex = CurrentSeason;
 	CurrentSeasonIndex += 1;
 	CurrentSeasonIndex %= 4;
-
-	return FSeason(CurrentSeasonIndex);
+	
+	return StaticCast<FSeason>(CurrentSeasonIndex);
 }
 
 void USeasonCycler::ChangeSeason()
