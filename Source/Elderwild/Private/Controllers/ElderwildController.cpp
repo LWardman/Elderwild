@@ -8,8 +8,8 @@
 
 #include "Actors/Grid.h"
 #include "GameModes/DevGameMode.h"
-#include "Pawns/PlayerPawn.h"
-#include "Components/ControlledCamera.h"
+#include "Player/PlayerPawn.h"
+#include "Player/ControlledCamera.h"
 
 
 AElderwildController::AElderwildController()

@@ -4,7 +4,7 @@
 
 #include "Actors/Grid.h"
 #include "Calendar/Calendar.h"
-#include "Pawns/PlayerPawn.h"
+#include "Player/PlayerPawn.h"
 
 ADevGameMode::ADevGameMode()
 {

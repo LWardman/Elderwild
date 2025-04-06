@@ -1,8 +1,8 @@
-#include "Pawns/PlayerPawn.h"
+#include "Player/PlayerPawn.h"
 
 #include "GameFramework/FloatingPawnMovement.h"
 
-#include "Components/ControlledCamera.h"
+#include "Player/ControlledCamera.h"
 
 
 APlayerPawn::APlayerPawn()
