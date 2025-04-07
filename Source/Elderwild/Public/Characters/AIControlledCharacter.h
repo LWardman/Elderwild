@@ -4,6 +4,7 @@
 #include "GameFramework/Character.h"
 #include "AIControlledCharacter.generated.h"
 
+
 UCLASS()
 class ELDERWILD_API AAIControlledCharacter : public ACharacter
 {
@@ -19,5 +20,4 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
 };
