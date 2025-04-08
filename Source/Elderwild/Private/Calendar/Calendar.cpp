@@ -38,8 +38,6 @@ TArray<AActor*> UCalendar::GetActorsWithSunTag()
 {
 	TArray<AActor*> SunActors;
 	UGameplayStatics::GetAllActorsWithTag(this, FName("Sun"), SunActors);
-	
-	UE_LOG(LogTemp, Display, TEXT("Found %i sun actors"), SunActors.Num());
 	return SunActors;
 }
 
