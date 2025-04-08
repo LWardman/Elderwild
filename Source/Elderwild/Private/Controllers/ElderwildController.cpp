@@ -6,7 +6,7 @@
 #include "GameFramework/FloatingPawnMovement.h"
 #include "Kismet/GameplayStatics.h"
 
-#include "Actors/Grid.h"
+#include "Gridmap/Grid.h"
 #include "GameModes/DevGameMode.h"
 #include "Player/PlayerPawn.h"
 #include "Player/ControlledCamera.h"
@@ -34,7 +34,7 @@ void AElderwildController::SetupInputComponent()
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
 	{
 		// Setup LMB click
-		EnhancedInputComponent->BindAction(IA_Click, ETriggerEvent::Started, this, &AElderwildController::OnClickStarted);
+		EnhancedInputComponent->BindAction(IA_Click, ETriggerEvent::Completed, this, &AElderwildController::OnClickStarted);
 
 		// Setup keyboard camera movement
 		EnhancedInputComponent->BindAction(IA_Move, ETriggerEvent::Triggered, this, &AElderwildController::MoveCameraOnXYPlane);
@@ -89,6 +89,15 @@ void AElderwildController::SetAndCheckPointers()
 void AElderwildController::OnClickStarted()
 {
 	UE_LOG(LogTemp, Log, TEXT("Clicked!"));
+
+	FHitResult Hit;
+	if (GetHitResultUnderCursor(ECC_Visibility, true, Hit))
+	{
+		FIntVector2 GridLocation = FIntVector2{-1, -1};
+		Grid->LocationToTile(Hit.Location, GridLocation);
+
+		UE_LOG(LogTemp, Log, TEXT("Tile Hit : %s"), *GridLocation.ToString());
+	}
 }
 
 void AElderwildController::HandleCursor()
