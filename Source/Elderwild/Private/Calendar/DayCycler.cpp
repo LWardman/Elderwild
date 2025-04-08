@@ -36,9 +36,7 @@ FDayNight UDayCycler::GetCurrentTimePeriod() const
 
 Seconds UDayCycler::GetTimeRemainingForTheDay() const
 {
-	UE_LOG(LogTemp, Warning, (TEXT("Checking for world...")));
 	if (!GetWorld()) return FullDayCycle;
-	UE_LOG(LogTemp, Warning, (TEXT("....World found.")));
 	
 	Seconds TimeRemaining = GetWorld()->GetTimerManager().GetTimerRemaining(DayCyclingTimerHandle);
 
