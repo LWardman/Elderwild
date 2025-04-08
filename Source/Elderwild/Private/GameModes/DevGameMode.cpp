@@ -2,7 +2,7 @@
 
 #include "Kismet/GameplayStatics.h"
 
-#include "Actors/Grid.h"
+#include "Gridmap/Grid.h"
 #include "Calendar/Calendar.h"
 #include "Player/PlayerPawn.h"
 
