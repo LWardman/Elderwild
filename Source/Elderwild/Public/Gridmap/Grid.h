@@ -83,9 +83,11 @@ private:
 	UMaterialInstanceDynamic* CreateMaterialInstance(FLinearColor Color, float Opacity);
 
 public:
-	void LocationToTile(FVector Location, FIntVector2& Coord);
+	FIntVector2 LocationToTile(FVector Location);
 
-	void TileToGridLocation(FIntVector2 Coord, bool ShouldCenter, FVector2D& Location);
+	FVector2D CornerOfTileToGridLocation(FIntVector2 Coord);
+
+	FVector2D CenterOfTileToGridLocation(FIntVector2 Coord);
 
 	void SetSelectedTile(FIntVector2 Coord);
 

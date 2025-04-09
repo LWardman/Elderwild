@@ -131,34 +131,38 @@ UMaterialInstanceDynamic* AGrid::CreateMaterialInstance(FLinearColor Color, floa
 	return DynMaterial;
 }
 
-void AGrid::LocationToTile(FVector Location, FIntVector2& Coord)
+FIntVector2 AGrid::LocationToTile(FVector Location)
 {
 	checkf(GetGridWidth() != 0, TEXT("Grid has width zero, don't divide by 0"));
 	checkf(GetGridHeight() != 0, TEXT("Grid has height zero, don't divide by 0"));
 
-	FVector GridLocation = GetActorLocation();
-	FVector LocalHitLocation = Location - GridLocation;
+	const FVector GridLocation = GetActorLocation();
+	const FVector LocalHitLocation = Location - GridLocation;
 
-	Coord.X = FMath::Floor((LocalHitLocation.X / GetGridWidth()) * NumRows);
-	Coord.Y = FMath::Floor((LocalHitLocation.Y / GetGridHeight()) * NumCols);
+	FIntVector2 TileLocation;
+	TileLocation.X = FMath::Floor((LocalHitLocation.X / GetGridWidth()) * NumRows);
+	TileLocation.Y = FMath::Floor((LocalHitLocation.Y / GetGridHeight()) * NumCols);
+
+	return TileLocation;
 }
 
-void AGrid::TileToGridLocation(FIntVector2 Coord, bool ShouldCenter, FVector2D& Location)
+FVector2D AGrid::CornerOfTileToGridLocation(FIntVector2 Coord)
 {
-	if (!TileIsValid(Coord)) return;
-	
-	float CenterAdjustment = ShouldCenter * TileSize / 2;
 	float TileCornerX = Coord.X * TileSize + GetActorLocation().X;
 	float TileCornerY = Coord.Y * TileSize + GetActorLocation().Y;
+	return FVector2D{TileCornerX, TileCornerY};
+}
 
-	Location.X = TileCornerX + CenterAdjustment;
-	Location.Y = TileCornerY + CenterAdjustment;
+FVector2D AGrid::CenterOfTileToGridLocation(FIntVector2 Coord)
+{
+	float HalfTileLength = TileSize / 2;
+	FVector2D CenterAdjustment = FVector2D{HalfTileLength, HalfTileLength};
+	return CornerOfTileToGridLocation(Coord) + CenterAdjustment;
 }
 
 void AGrid::SetSelectedTile(FIntVector2 Coord)
 {
-	FVector2D Location;
-	TileToGridLocation(Coord, false, Location);
+	FVector2D Location = CornerOfTileToGridLocation(Coord);
 	
 	checkf(SelectionProceduralMesh, TEXT("Selection procedural mesh is not initialized right"));
 	SelectionProceduralMesh->SetVisibility(TileIsValid(Coord));
@@ -179,8 +183,7 @@ bool AGrid::TileIsValid(FIntVector2 Coord)
 
 void AGrid::HoverTile(FVector Location)
 {
-	FIntVector2 Coord = FIntVector2::ZeroValue;
-	LocationToTile(Location, Coord);
+	FIntVector2 Coord = LocationToTile(Location);
 	SetSelectedTile(Coord);
 }
 
