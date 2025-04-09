@@ -93,10 +93,9 @@ void AElderwildController::OnClickStarted()
 	FHitResult Hit;
 	if (GetHitResultUnderCursor(ECC_Visibility, true, Hit))
 	{
-		FIntVector2 GridLocation = FIntVector2{-1, -1};
-		Grid->LocationToTile(Hit.Location, GridLocation);
+		FIntVector2 GridTile = Grid->LocationToTile(Hit.Location);
 
-		UE_LOG(LogTemp, Log, TEXT("Tile Hit : %s"), *GridLocation.ToString());
+		UE_LOG(LogTemp, Log, TEXT("Tile Hit : %s"), *GridTile.ToString());
 	}
 }
 
