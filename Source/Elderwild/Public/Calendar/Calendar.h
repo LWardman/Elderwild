@@ -7,7 +7,6 @@
 class USeasonCycler;
 class ADirectionalLight;
 
-// TODO : create link between this and the suns position in the engine.
 UCLASS()
 class ELDERWILD_API UCalendar : public UActorComponent
 {
