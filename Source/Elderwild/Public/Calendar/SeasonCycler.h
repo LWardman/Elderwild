@@ -4,7 +4,6 @@
 #include "UObject/Object.h"
 #include "SeasonCycler.generated.h"
 
-
 UENUM(BlueprintType)
 enum FSeason
 {
@@ -18,7 +17,6 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSeasonChangeDelegate, FSeason, NewS
 
 class UDayCycler;
 enum FDayNight : int;
-
 
 UCLASS()
 class ELDERWILD_API USeasonCycler : public UObject
