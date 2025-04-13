@@ -4,6 +4,7 @@
 #include "GameFramework/Actor.h"
 #include "Grid.generated.h"
 
+class UOccupancyMap;
 class UProceduralMeshComponent;
 
 struct FGridRenderData
@@ -18,6 +19,8 @@ struct FLine
 	FVector End;
 };
 
+
+// TODO : Class is doing too much. Refactor Grid to have multiple components. GridFactory, OccupancyMap, BuildingComponent etc..
 UCLASS()
 class ELDERWILD_API AGrid : public AActor
 {
@@ -25,6 +28,11 @@ class ELDERWILD_API AGrid : public AActor
 	
 public:	
 	AGrid();
+
+protected:
+	virtual void BeginPlay() override;
+
+public:
 
 	virtual void OnConstruction(const FTransform &Transform) override;
 
@@ -96,4 +104,13 @@ public:
 	void HoverTile(FVector Location);
 
 	void UnhoverTile();
+
+	void TryBuild(FIntVector2 TileToBuildOn);
+
+	UPROPERTY(EditAnywhere, Category = "Buildings")
+	TSubclassOf<AActor> Building;
+
+private:
+	UPROPERTY()
+	UOccupancyMap* OccupancyMap = nullptr;
 };

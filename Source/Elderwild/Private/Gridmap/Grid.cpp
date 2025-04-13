@@ -1,6 +1,7 @@
 #include "Gridmap/Grid.h"
 
 #include "ProceduralMeshComponent.h"
+#include "Gridmap/OccupancyMap.h"
 
 AGrid::AGrid()
 {
@@ -8,6 +9,15 @@ AGrid::AGrid()
 
 	LinesProceduralMesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("Procedural Mesh Component for Lines"));
 	SelectionProceduralMesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("Procedural Mesh Component for Selection"));
+}
+
+void AGrid::BeginPlay()
+{
+	Super::BeginPlay();
+
+	OccupancyMap = NewObject<UOccupancyMap>();
+	checkf(OccupancyMap, TEXT("OccupancyMap not initialized properly"));
+	OccupancyMap->Init(GetGridWidth(), GetGridHeight());
 }
 
 void AGrid::OnConstruction(const FTransform &Transform)
@@ -190,4 +200,20 @@ void AGrid::HoverTile(FVector Location)
 void AGrid::UnhoverTile()
 {
 	SetSelectedTile(FIntVector2(-1, -1));
+}
+
+void AGrid::TryBuild(FIntVector2 TileToBuildOn)
+{
+	if (!Building || !OccupancyMap) return;
+	if (OccupancyMap->GetTileOccupancyState(TileToBuildOn) == OCCUPIED) return;
+
+	UE_LOG(LogTemp, Display, TEXT("TryBuild"));
+	
+	FVector2D TileCenter = CenterOfTileToGridLocation(TileToBuildOn);
+	FVector LocalLocation = FVector(TileCenter.X, TileCenter.Y, GetActorLocation().Z);
+	FRotator Rotation(0.0f, 0.0f, 0.0f);
+	FActorSpawnParameters SpawnInfo;
+	GetWorld()->SpawnActor<AActor>(Building, LocalLocation, Rotation, SpawnInfo);
+	
+	OccupancyMap->SetTileOccupancyState(TileToBuildOn, OCCUPIED);
 }
