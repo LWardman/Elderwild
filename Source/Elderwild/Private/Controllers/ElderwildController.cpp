@@ -88,14 +88,11 @@ void AElderwildController::SetAndCheckPointers()
 
 void AElderwildController::OnClickStarted()
 {
-	UE_LOG(LogTemp, Log, TEXT("Clicked!"));
-
 	FHitResult Hit;
 	if (GetHitResultUnderCursor(ECC_Visibility, true, Hit))
 	{
 		FIntVector2 GridTile = Grid->LocationToTile(Hit.Location);
-
-		UE_LOG(LogTemp, Log, TEXT("Tile Hit : %s"), *GridTile.ToString());
+		Grid->TryBuild(GridTile);
 	}
 }
 
