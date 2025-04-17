@@ -3,6 +3,11 @@
 #include "Gridmap/GridRenderData.h"
 #include "Gridmap/Line.h"
 
+void UGridFactory::SetGridDimensions(FGridDimensions NewGridDimensions)
+{
+	GridDimensions = NewGridDimensions;
+}
+
 FGridRenderData UGridFactory::GenerateGridGeometry()
 {
 	FGridRenderData GridGeometry;
@@ -14,40 +19,40 @@ FGridRenderData UGridFactory::GenerateGridGeometry()
 FGridRenderData UGridFactory::GenerateSelectionSquareGeometry()
 {
 	FLine SelectionSquare;
-	SelectionSquare.Start = FVector(0, TileSize/2, 0);
-	SelectionSquare.End = FVector(TileSize, TileSize/2, 0);
+	SelectionSquare.Start = FVector(0, GridDimensions.TileSize/2, 0);
+	SelectionSquare.End = FVector(GridDimensions.TileSize, GridDimensions.TileSize/2, 0);
 	FGridRenderData SelectionRenderData;
-	CreateLine(SelectionSquare, TileSize, SelectionRenderData);
+	CreateLine(SelectionSquare, GridDimensions.TileSize, SelectionRenderData);
 	return SelectionRenderData;
 }
 
 void UGridFactory::CreateParallelHorizontalLines(FGridRenderData& GridRenderData)
 {
-	for (int32 i = 0; i <= NumRows; i++)
+	for (int32 i = 0; i <= GridDimensions.NumRows; i++)
 	{
-		const float LineStart = i * TileSize;
-		const float LineEnd = GetGridWidth();
+		const float LineStart = i * GridDimensions.TileSize;
+		const float LineEnd = GridDimensions.GetGridWidth();
 
 		FLine Line;
 		Line.Start = FVector(LineStart, 0, 0);
 		Line.End = FVector(LineStart, LineEnd, 0);
 		
-		CreateLine(Line, LineThickness, GridRenderData);
+		CreateLine(Line, GridDimensions.LineThickness, GridRenderData);
 	}
 }
 
 void UGridFactory::CreateParallelVerticalLines(FGridRenderData& GridRenderData)
 {
-	for (int32 i = 0; i <= NumCols; i++)
+	for (int32 i = 0; i <= GridDimensions.NumCols; i++)
 	{
-		const float LineStart = i * TileSize;
-		const float LineEnd = GetGridHeight();
+		const float LineStart = i * GridDimensions.TileSize;
+		const float LineEnd = GridDimensions.GetGridHeight();
 
 		FLine Line;
 		Line.Start = FVector( 0, LineStart,0);
 		Line.End = FVector( LineEnd, LineStart,0);
 		
-		CreateLine(Line, LineThickness, GridRenderData);
+		CreateLine(Line, GridDimensions.LineThickness, GridRenderData);
 	}
 }
 

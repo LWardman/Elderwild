@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Gridmap/GridDimensions.h"
+
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "GridFactory.generated.h"
@@ -17,33 +19,18 @@ class ELDERWILD_API UGridFactory : public UActorComponent
 	GENERATED_BODY()
 
 public:
+	void SetGridDimensions(FGridDimensions NewGridDimensions);
+	
 	FGridRenderData GenerateGridGeometry();
 
 	FGridRenderData GenerateSelectionSquareGeometry();
 
 private:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants", meta = (AllowPrivateAccess = "true"))
-	int32 NumRows = 10;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants", meta = (AllowPrivateAccess = "true"))
-	int32 NumCols = 10;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants", meta = (AllowPrivateAccess = "true"))
-	int32 TileSize = 10;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants", meta = (AllowPrivateAccess = "true"))
-	int32 LineThickness = 10;
+	FGridDimensions GridDimensions;
 	
 	void CreateParallelHorizontalLines(FGridRenderData& GridRenderData);
 
 	void CreateParallelVerticalLines(FGridRenderData& GridRenderData);
 
-	// TODO : DRY
-	int32 GetGridWidth() const {return NumCols * TileSize;}
-
-	int32 GetGridHeight() const {return NumRows * TileSize;}
-
 	void CreateLine(const FLine& Line, const float Thickness, FGridRenderData& GridRenderData);
-
-	
 };
