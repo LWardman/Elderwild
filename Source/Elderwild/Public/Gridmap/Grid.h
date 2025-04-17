@@ -6,21 +6,12 @@
 
 class UOccupancyMap;
 class UProceduralMeshComponent;
+class UGridFactory;
 
-struct FGridRenderData
-{
-	TArray<FVector> Vertices;
-	TArray<int32> Triangles;
-};
+struct FGridRenderData;
+struct FLine;
 
-struct FLine
-{
-	FVector Start;
-	FVector End;
-};
-
-
-// TODO : Class is doing too much. Refactor Grid to have multiple components. GridFactory, OccupancyMap, BuildingComponent etc..
+// TODO : write tests?
 UCLASS()
 class ELDERWILD_API AGrid : public AActor
 {
@@ -29,19 +20,13 @@ class ELDERWILD_API AGrid : public AActor
 public:	
 	AGrid();
 
+	virtual void OnConstruction(const FTransform &Transform) override;
+	
 protected:
 	virtual void BeginPlay() override;
 
 public:
-
-	virtual void OnConstruction(const FTransform &Transform) override;
-
-	void CreateParallelHorizontalLines(FGridRenderData& GridRenderData);
-
-	void CreateParallelVerticalLines(FGridRenderData& GridRenderData);
-
-	void CreateMeshSectionFromVerticesAndTriangles(UProceduralMeshComponent* Mesh, FGridRenderData& GridRenderData);
-
+	// TODO : repeated uproperty variables that can be mismatched, make component?
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants")
 	int32 NumRows = 10;
 
@@ -50,9 +35,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants")
 	int32 TileSize = 10;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants")
-	int32 LineThickness = 10;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants")
 	FLinearColor LineColor = FLinearColor::Black;
@@ -82,11 +64,11 @@ public:
 	UProceduralMeshComponent* SelectionProceduralMesh;
 
 private:
-	void CreateLine(const FLine& Line, const float Thickness, FGridRenderData& GridRenderData);
+	void CreateMeshSectionFromRenderData(UProceduralMeshComponent* Mesh, FGridRenderData& GridRenderData);
+	
+	int32 GetGridWidth() const {return NumCols * TileSize;}
 
-	int32 GetGridWidth() const;
-
-	int32 GetGridHeight() const;
+	int32 GetGridHeight() const {return NumRows * TileSize;}
 
 	UMaterialInstanceDynamic* CreateMaterialInstance(FLinearColor Color, float Opacity);
 
@@ -107,10 +89,13 @@ public:
 
 	void TryBuild(FIntVector2 TileToBuildOn);
 
-	UPROPERTY(EditAnywhere, Category = "Buildings")
-	TSubclassOf<AActor> Building;
-
 private:
+	UPROPERTY(EditAnywhere, Category = "Buildings", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<AActor> Building;
+	
 	UPROPERTY()
 	UOccupancyMap* OccupancyMap = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = "Grid")
+	UGridFactory* GridFactory;
 };

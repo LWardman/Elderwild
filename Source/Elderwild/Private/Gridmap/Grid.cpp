@@ -1,7 +1,10 @@
 #include "Gridmap/Grid.h"
 
 #include "ProceduralMeshComponent.h"
+
+#include "Gridmap/GridFactory.h"
 #include "Gridmap/OccupancyMap.h"
+#include "Gridmap/GridRenderData.h"
 
 AGrid::AGrid()
 {
@@ -9,6 +12,32 @@ AGrid::AGrid()
 
 	LinesProceduralMesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("Procedural Mesh Component for Lines"));
 	SelectionProceduralMesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("Procedural Mesh Component for Selection"));
+	GridFactory = CreateDefaultSubobject<UGridFactory>(TEXT("Grid Factory"));
+}
+
+void AGrid::OnConstruction(const FTransform &Transform)
+{
+	LineMaterial = CreateMaterialInstance(LineColor, LineOpacity);
+	SelectionMaterial = CreateMaterialInstance(SelectionColor, SelectionOpacity);
+	
+	checkf(GridFactory, TEXT("Grid factory not created"));
+	FGridRenderData LinesRenderData = GridFactory->GenerateGridGeometry();
+	
+	checkf(LinesProceduralMesh, TEXT("LinesProceduralMesh is not assigned"));
+	CreateMeshSectionFromRenderData(LinesProceduralMesh, LinesRenderData);
+
+	checkf(LineMaterial, TEXT("LineMaterial not generated properly"));
+	LinesProceduralMesh->SetMaterial(0, LineMaterial);
+	
+	FGridRenderData SelectionRenderData = GridFactory->GenerateSelectionSquareGeometry();
+
+	checkf(SelectionProceduralMesh, TEXT("SelectionProceduralMesh is not assigned"));
+	CreateMeshSectionFromRenderData(SelectionProceduralMesh, SelectionRenderData);
+
+	SelectionProceduralMesh->SetVisibility(false);
+
+	checkf(SelectionMaterial, TEXT("SelectionMaterial not generated properly"));
+	SelectionProceduralMesh->SetMaterial(0, SelectionMaterial);
 }
 
 void AGrid::BeginPlay()
@@ -20,67 +49,7 @@ void AGrid::BeginPlay()
 	OccupancyMap->Init(GetGridWidth(), GetGridHeight());
 }
 
-void AGrid::OnConstruction(const FTransform &Transform)
-{
-	LineMaterial = CreateMaterialInstance(LineColor, LineOpacity);
-	SelectionMaterial = CreateMaterialInstance(SelectionColor, SelectionOpacity);
-	
-	FGridRenderData LinesRenderData;
-	CreateParallelHorizontalLines(LinesRenderData);
-	CreateParallelVerticalLines(LinesRenderData);
-	
-	checkf(LinesProceduralMesh, TEXT("LinesProceduralMesh is not assigned"));
-	CreateMeshSectionFromVerticesAndTriangles(LinesProceduralMesh, LinesRenderData);
-
-	checkf(LineMaterial, TEXT("LineMaterial not generated properly"));
-	LinesProceduralMesh->SetMaterial(0, LineMaterial);
-
-	FLine SelectionLine;
-	SelectionLine.Start = FVector(0, TileSize/2, 0);
-	SelectionLine.End = FVector(TileSize, TileSize/2, 0);
-	FGridRenderData SelectionRenderData;
-	CreateLine(SelectionLine, TileSize, SelectionRenderData);
-
-	checkf(SelectionProceduralMesh, TEXT("SelectionProceduralMesh is not assigned"));
-	CreateMeshSectionFromVerticesAndTriangles(SelectionProceduralMesh, SelectionRenderData);
-
-	SelectionProceduralMesh->SetVisibility(false);
-
-	checkf(SelectionMaterial, TEXT("SelectionMaterial not generated properly"));
-	SelectionProceduralMesh->SetMaterial(0, SelectionMaterial);
-}
-
-void AGrid::CreateParallelHorizontalLines(FGridRenderData& GridRenderData)
-{
-	for (int32 i = 0; i <= NumRows; i++)
-	{
-		const float LineStart = i * TileSize;
-		const float LineEnd = GetGridWidth();
-
-		FLine Line;
-		Line.Start = FVector(LineStart, 0, 0);
-		Line.End = FVector(LineStart, LineEnd, 0);
-		
-		CreateLine(Line, LineThickness, GridRenderData);
-	}
-}
-
-void AGrid::CreateParallelVerticalLines(FGridRenderData& GridRenderData)
-{
-	for (int32 i = 0; i <= NumCols; i++)
-	{
-		const float LineStart = i * TileSize;
-		const float LineEnd = GetGridHeight();
-
-		FLine Line;
-		Line.Start = FVector( 0, LineStart,0);
-		Line.End = FVector( LineEnd, LineStart,0);
-		
-		CreateLine(Line, LineThickness, GridRenderData);
-	}
-}
-
-void AGrid::CreateMeshSectionFromVerticesAndTriangles(UProceduralMeshComponent* Mesh, FGridRenderData& GridRenderData)
+void AGrid::CreateMeshSectionFromRenderData(UProceduralMeshComponent* Mesh, FGridRenderData& GridRenderData)
 {
 	checkf(Mesh, TEXT("Trying to create a mesh section with a nullptr procedural mesh component"));
 
@@ -94,40 +63,6 @@ void AGrid::CreateMeshSectionFromVerticesAndTriangles(UProceduralMeshComponent* 
 		TArray<FProcMeshTangent>(),		// Tangents (empty)
 		false							// Collision not needed
 	);
-}
-
-void AGrid::CreateLine(const FLine& Line, const float Thickness, FGridRenderData& GridRenderData)
-{
-	const float HalfThickness = Thickness / 2;
-
-	FVector LineVector = Line.End - Line.Start;
-	FVector LineVectorNormalized = LineVector.GetSafeNormal();
-	FVector ThicknessDirection = FVector::CrossProduct(LineVectorNormalized, FVector::UnitZ());
-
-	int32 VerticesLength = GridRenderData.Vertices.Num();
-	
-	TArray<int32> TriangleIndices = {VerticesLength + 2, VerticesLength + 1, VerticesLength + 0,
-									 VerticesLength + 2, VerticesLength + 3, VerticesLength + 1};
-
-	GridRenderData.Triangles.Append(TriangleIndices);
-
-	FVector VertexZero = Line.Start + HalfThickness * ThicknessDirection;
-	FVector VertexOne = VertexZero + LineVector;
-	FVector VertexTwo = VertexZero - Thickness * ThicknessDirection;
-	FVector VertexThree = VertexTwo + LineVector;
-
-	TArray<FVector> CalculatedVertices = {VertexZero, VertexOne, VertexTwo, VertexThree};
-	GridRenderData.Vertices.Append(CalculatedVertices);
-}
-
-int32 AGrid::GetGridWidth() const
-{
-	return NumCols * TileSize;
-}
-
-int32 AGrid::GetGridHeight() const 
-{
-	return NumRows * TileSize;
 }
 
 UMaterialInstanceDynamic* AGrid::CreateMaterialInstance(FLinearColor Color, float Opacity)
