@@ -13,6 +13,7 @@ enum FOccupancyState : uint8
 
 typedef TMap<FIntVector2, FOccupancyState> OccupancyMatrix;
 
+// TODO : large grids are causing large frame lengths because of this object, fix.
 UCLASS()
 class ELDERWILD_API UOccupancyMap : public UObject
 {
