@@ -3,10 +3,10 @@
 #include "CoreMinimal.h"
 #include "Line.generated.h"
 
-USTRUCT(BlueprintType)
+USTRUCT()
 struct FLine
 {
-	GENERATED_BODY()
+	GENERATED_USTRUCT_BODY()
 	
 	UPROPERTY()
 	FVector Start;

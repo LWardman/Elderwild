@@ -3,10 +3,10 @@
 #include "CoreMinimal.h"
 #include "GridRenderData.generated.h"
 
-USTRUCT(BlueprintType)
+USTRUCT()
 struct FGridRenderData
 {
-	GENERATED_BODY()
+	GENERATED_USTRUCT_BODY()
 
 	UPROPERTY()
 	TArray<FVector> Vertices;
