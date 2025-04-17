@@ -21,19 +21,15 @@ void AGrid::OnConstruction(const FTransform &Transform)
 	SelectionMaterial = CreateMaterialInstance(SelectionColor, SelectionOpacity);
 	
 	checkf(GridFactory, TEXT("Grid factory not created"));
+	GridFactory->SetGridDimensions(GridDimensions);
 	FGridRenderData LinesRenderData = GridFactory->GenerateGridGeometry();
+	FGridRenderData SelectionRenderData = GridFactory->GenerateSelectionSquareGeometry();
 	
-	checkf(LinesProceduralMesh, TEXT("LinesProceduralMesh is not assigned"));
 	CreateMeshSectionFromRenderData(LinesProceduralMesh, LinesRenderData);
 
 	checkf(LineMaterial, TEXT("LineMaterial not generated properly"));
 	LinesProceduralMesh->SetMaterial(0, LineMaterial);
-	
-	FGridRenderData SelectionRenderData = GridFactory->GenerateSelectionSquareGeometry();
-
-	checkf(SelectionProceduralMesh, TEXT("SelectionProceduralMesh is not assigned"));
 	CreateMeshSectionFromRenderData(SelectionProceduralMesh, SelectionRenderData);
-
 	SelectionProceduralMesh->SetVisibility(false);
 
 	checkf(SelectionMaterial, TEXT("SelectionMaterial not generated properly"));
@@ -46,7 +42,7 @@ void AGrid::BeginPlay()
 
 	OccupancyMap = NewObject<UOccupancyMap>();
 	checkf(OccupancyMap, TEXT("OccupancyMap not initialized properly"));
-	OccupancyMap->Init(GetGridWidth(), GetGridHeight());
+	OccupancyMap->Init(GridDimensions.GetGridWidth(), GridDimensions.GetGridHeight());
 }
 
 void AGrid::CreateMeshSectionFromRenderData(UProceduralMeshComponent* Mesh, FGridRenderData& GridRenderData)
@@ -78,29 +74,29 @@ UMaterialInstanceDynamic* AGrid::CreateMaterialInstance(FLinearColor Color, floa
 
 FIntVector2 AGrid::LocationToTile(FVector Location)
 {
-	checkf(GetGridWidth() != 0, TEXT("Grid has width zero, don't divide by 0"));
-	checkf(GetGridHeight() != 0, TEXT("Grid has height zero, don't divide by 0"));
+	checkf(GridDimensions.GetGridWidth() != 0, TEXT("Grid has width zero, don't divide by 0"));
+	checkf(GridDimensions.GetGridHeight() != 0, TEXT("Grid has height zero, don't divide by 0"));
 
 	const FVector GridLocation = GetActorLocation();
 	const FVector LocalHitLocation = Location - GridLocation;
 
 	FIntVector2 TileLocation;
-	TileLocation.X = FMath::Floor((LocalHitLocation.X / GetGridWidth()) * NumRows);
-	TileLocation.Y = FMath::Floor((LocalHitLocation.Y / GetGridHeight()) * NumCols);
+	TileLocation.X = FMath::Floor((LocalHitLocation.X / GridDimensions.GetGridWidth()) * GridDimensions.NumRows);
+	TileLocation.Y = FMath::Floor((LocalHitLocation.Y / GridDimensions.GetGridHeight()) * GridDimensions.NumCols);
 
 	return TileLocation;
 }
 
 FVector2D AGrid::CornerOfTileToGridLocation(FIntVector2 Coord)
 {
-	float TileCornerX = Coord.X * TileSize + GetActorLocation().X;
-	float TileCornerY = Coord.Y * TileSize + GetActorLocation().Y;
+	float TileCornerX = Coord.X * GridDimensions.TileSize + GetActorLocation().X;
+	float TileCornerY = Coord.Y * GridDimensions.TileSize + GetActorLocation().Y;
 	return FVector2D{TileCornerX, TileCornerY};
 }
 
 FVector2D AGrid::CenterOfTileToGridLocation(FIntVector2 Coord)
 {
-	float HalfTileLength = TileSize / 2;
+	float HalfTileLength = GridDimensions.TileSize / 2;
 	FVector2D CenterAdjustment = FVector2D{HalfTileLength, HalfTileLength};
 	return CornerOfTileToGridLocation(Coord) + CenterAdjustment;
 }
@@ -121,8 +117,8 @@ void AGrid::SetSelectedTile(FIntVector2 Coord)
 
 bool AGrid::TileIsValid(FIntVector2 Coord)
 {
-	bool RowIsValid = (Coord.X >= 0 && Coord.X < NumRows);
-	bool ColIsValid = (Coord.Y >= 0 && Coord.Y < NumCols);
+	bool RowIsValid = (Coord.X >= 0 && Coord.X < GridDimensions.NumRows);
+	bool ColIsValid = (Coord.Y >= 0 && Coord.Y < GridDimensions.NumCols);
 	return RowIsValid && ColIsValid;
 }
 

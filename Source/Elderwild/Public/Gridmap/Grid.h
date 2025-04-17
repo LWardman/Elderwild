@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Gridmap/GridDimensions.h"
+
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Grid.generated.h"
@@ -26,15 +28,8 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	// TODO : repeated uproperty variables that can be mismatched, make component?
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants")
-	int32 NumRows = 10;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants")
-	int32 NumCols = 10;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants")
-	int32 TileSize = 10;
+	UPROPERTY(EditAnywhere, Category = "Constants")
+	FGridDimensions GridDimensions;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants")
 	FLinearColor LineColor = FLinearColor::Black;
@@ -65,10 +60,6 @@ public:
 
 private:
 	void CreateMeshSectionFromRenderData(UProceduralMeshComponent* Mesh, FGridRenderData& GridRenderData);
-	
-	int32 GetGridWidth() const {return NumCols * TileSize;}
-
-	int32 GetGridHeight() const {return NumRows * TileSize;}
 
 	UMaterialInstanceDynamic* CreateMaterialInstance(FLinearColor Color, float Opacity);
 
