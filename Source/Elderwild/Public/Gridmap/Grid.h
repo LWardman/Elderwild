@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Gridmap/GridDimensions.h"
-
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Grid.generated.h"
@@ -9,6 +7,7 @@
 class UOccupancyMap;
 class UProceduralMeshComponent;
 class UGridFactory;
+class UGridDimensions;
 
 struct FGridRenderData;
 struct FLine;
@@ -28,9 +27,6 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	UPROPERTY(EditAnywhere, Category = "Constants")
-	FGridDimensions GridDimensions;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants")
 	FLinearColor LineColor = FLinearColor::Black;
 
@@ -64,21 +60,16 @@ private:
 	UMaterialInstanceDynamic* CreateMaterialInstance(FLinearColor Color, float Opacity);
 
 public:
-	FIntVector2 LocationToTile(FVector Location);
-
-	FVector2D CornerOfTileToGridLocation(FIntVector2 Coord);
-
-	FVector2D CenterOfTileToGridLocation(FIntVector2 Coord);
-
 	void SetSelectedTile(FIntVector2 Coord);
-
-	bool TileIsValid(FIntVector2 Coord);
 
 	void HoverTile(FVector Location);
 
 	void UnhoverTile();
 
 	void TryBuild(FIntVector2 TileToBuildOn);
+	
+	UPROPERTY(EditAnywhere, Category = "Grid")
+    	UGridDimensions* GridDimensions;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Buildings", meta = (AllowPrivateAccess = "true"))
