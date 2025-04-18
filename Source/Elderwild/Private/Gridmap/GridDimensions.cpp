@@ -36,8 +36,8 @@ FIntVector2 UGridDimensions::LocationToTile(FVector HitLocation) const
 FIntVector2 UGridDimensions::LocalLocationToTile(FVector LocalHitLocation) const
 {
 	FIntVector2 TileCornerLocation;
-	TileCornerLocation.X = FMath::Floor((LocalHitLocation.X / GetGridWidth()) * NumRows);
-	TileCornerLocation.Y = FMath::Floor((LocalHitLocation.Y / GetGridHeight()) * NumCols);
+	TileCornerLocation.X = FMath::Floor((LocalHitLocation.X / GetGridWidth()) * NumCols);
+	TileCornerLocation.Y = FMath::Floor((LocalHitLocation.Y / GetGridHeight()) * NumRows);
 
 	return TileCornerLocation;
 }
