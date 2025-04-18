@@ -7,9 +7,11 @@
 #include "Kismet/GameplayStatics.h"
 
 #include "Gridmap/Grid.h"
+#include "Gridmap/GridDimensions.h"
 #include "GameModes/DevGameMode.h"
 #include "Player/PlayerPawn.h"
 #include "Player/ControlledCamera.h"
+
 
 
 AElderwildController::AElderwildController()
@@ -88,10 +90,11 @@ void AElderwildController::SetAndCheckPointers()
 
 void AElderwildController::OnClickStarted()
 {
+	checkf(Grid && Grid->GridDimensions, TEXT("GridDimensions not initialized properly"));
 	FHitResult Hit;
 	if (GetHitResultUnderCursor(ECC_Visibility, true, Hit))
 	{
-		FIntVector2 GridTile = Grid->LocationToTile(Hit.Location);
+		FIntVector2 GridTile = Grid->GridDimensions->LocationToTile(Hit.Location);
 		Grid->TryBuild(GridTile);
 	}
 }
