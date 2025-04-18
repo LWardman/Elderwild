@@ -3,7 +3,7 @@
 #include "Gridmap/GridRenderData.h"
 #include "Gridmap/Line.h"
 
-void UGridFactory::SetGridDimensions(FGridDimensions NewGridDimensions)
+void UGridFactory::SetGridDimensions(UGridDimensions* NewGridDimensions)
 {
 	GridDimensions = NewGridDimensions;
 }
@@ -18,41 +18,44 @@ FGridRenderData UGridFactory::GenerateGridGeometry()
 
 FGridRenderData UGridFactory::GenerateSelectionSquareGeometry()
 {
+	checkf(GridDimensions, TEXT("GridDimensions not initialized properly"));
 	FLine SelectionSquare;
-	SelectionSquare.Start = FVector(0, GridDimensions.TileSize/2, 0);
-	SelectionSquare.End = FVector(GridDimensions.TileSize, GridDimensions.TileSize/2, 0);
+	SelectionSquare.Start = FVector(0, GridDimensions->GetTileSize()/2, 0);
+	SelectionSquare.End = FVector(GridDimensions->GetTileSize(), GridDimensions->GetTileSize()/2, 0);
 	FGridRenderData SelectionRenderData;
-	CreateLine(SelectionSquare, GridDimensions.TileSize, SelectionRenderData);
+	CreateLine(SelectionSquare, GridDimensions->GetTileSize(), SelectionRenderData);
 	return SelectionRenderData;
 }
 
 void UGridFactory::CreateParallelHorizontalLines(FGridRenderData& GridRenderData)
 {
-	for (int32 i = 0; i <= GridDimensions.NumRows; i++)
+	checkf(GridDimensions, TEXT("GridDimensions not initialized properly"));
+	for (int32 i = 0; i <= GridDimensions->GetNumRows(); i++)
 	{
-		const float LineStart = i * GridDimensions.TileSize;
-		const float LineEnd = GridDimensions.GetGridWidth();
+		const float LineStart = i * GridDimensions->GetTileSize();
+		const float LineEnd = GridDimensions->GetGridWidth();
 
 		FLine Line;
 		Line.Start = FVector(LineStart, 0, 0);
 		Line.End = FVector(LineStart, LineEnd, 0);
 		
-		CreateLine(Line, GridDimensions.LineThickness, GridRenderData);
+		CreateLine(Line, GridDimensions->GetLineThickness(), GridRenderData);
 	}
 }
 
 void UGridFactory::CreateParallelVerticalLines(FGridRenderData& GridRenderData)
 {
-	for (int32 i = 0; i <= GridDimensions.NumCols; i++)
+	checkf(GridDimensions, TEXT("GridDimensions not initialized properly"));
+	for (int32 i = 0; i <= GridDimensions->GetNumCols(); i++)
 	{
-		const float LineStart = i * GridDimensions.TileSize;
-		const float LineEnd = GridDimensions.GetGridHeight();
+		const float LineStart = i * GridDimensions->GetTileSize();
+		const float LineEnd = GridDimensions->GetGridHeight();
 
 		FLine Line;
 		Line.Start = FVector( 0, LineStart,0);
 		Line.End = FVector( LineEnd, LineStart,0);
 		
-		CreateLine(Line, GridDimensions.LineThickness, GridRenderData);
+		CreateLine(Line, GridDimensions->GetLineThickness(), GridRenderData);
 	}
 }
 

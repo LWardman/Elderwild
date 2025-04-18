@@ -19,14 +19,15 @@ class ELDERWILD_API UGridFactory : public UActorComponent
 	GENERATED_BODY()
 
 public:
-	void SetGridDimensions(FGridDimensions NewGridDimensions);
+	void SetGridDimensions(UGridDimensions* NewGridDimensions);
 	
 	FGridRenderData GenerateGridGeometry();
 
 	FGridRenderData GenerateSelectionSquareGeometry();
 
 private:
-	FGridDimensions GridDimensions;
+	UPROPERTY()
+	UGridDimensions* GridDimensions;
 	
 	void CreateParallelHorizontalLines(FGridRenderData& GridRenderData);
 
