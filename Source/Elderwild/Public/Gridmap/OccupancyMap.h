@@ -11,9 +11,8 @@ enum FOccupancyState : uint8
 	OCCUPIED
 };
 
-typedef TMap<FIntVector2, FOccupancyState> OccupancyMatrix;
+typedef TArray<TArray<FOccupancyState>> OccupancyMatrix;
 
-// TODO : large grids are causing large frame lengths because of this object, fix.
 UCLASS()
 class ELDERWILD_API UOccupancyMap : public UObject
 {
@@ -27,6 +26,8 @@ public:
 	void SetTileOccupancyState(FIntVector2 Coord, FOccupancyState State);
 	
 private:
+	bool IndexIsValid(FIntVector2 Coord);
+	
 	int32 GridWidth;
 	int32 GridHeight;
 
