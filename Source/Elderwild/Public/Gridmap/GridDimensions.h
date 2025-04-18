@@ -14,8 +14,8 @@ public:
 	int32 GetGridWidth() const {return NumCols * TileSize;}
 	int32 GetGridHeight() const {return NumRows * TileSize;}
 	int32 GetTileSize() const {return TileSize;}
-	int32 GetNumCols() const {return NumRows;}
-	int32 GetNumRows() const {return NumCols;}
+	int32 GetNumCols() const {return NumCols;}
+	int32 GetNumRows() const {return NumRows;}
 	int32 GetLineThickness() const {return LineThickness;}
 
 	bool TileIsValid(const FIntVector2 Coord) const;
