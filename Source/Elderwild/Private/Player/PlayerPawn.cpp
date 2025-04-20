@@ -26,4 +26,17 @@ void APlayerPawn::BeginPlay()
 void APlayerPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (Camera)
+	{
+		FCameraBoundaries Boundaries = Camera->GetCameraBoundaries();
+
+		FVector CurrentLocation = GetActorLocation();
+		FVector ClampedLocation = CurrentLocation;
+
+		ClampedLocation.X = FMath::Clamp(ClampedLocation.X, Boundaries.Min.X, Boundaries.Max.X);
+		ClampedLocation.Y = FMath::Clamp(ClampedLocation.Y, Boundaries.Min.Y, Boundaries.Max.Y);
+
+		SetActorLocation(ClampedLocation);
+	}
 }
