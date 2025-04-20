@@ -35,8 +35,6 @@ bool FCalendar::RunTest(const FString& Parameters)
 	}
 
 	TestEqual(TEXT("Year has repeated"), Season->GetSeason(), SPRING);
-
-	// TODO : is it possible to test the sunlight actor in UCalendar?
 	
 	return true;
 }
