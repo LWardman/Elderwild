@@ -1,9 +1,22 @@
 #include "Player/ControlledCamera.h"
 
+#include "GameModes/DevGameMode.h"
+#include "Kismet/GameplayStatics.h"
 
 UControlledCamera::UControlledCamera()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+}
+
+void UControlledCamera::BeginPlay()
+{
+	Super::BeginPlay();
+	SetFieldOfView(FieldOfView);
+
+	if (ADevGameMode* GameMode = Cast<ADevGameMode>(UGameplayStatics::GetGameMode(this)))
+	{
+		CameraBoundaries = GameMode->CalculateCameraBoundariesFromGrid();
+	}
 }
 
 void UControlledCamera::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
@@ -12,26 +25,10 @@ void UControlledCamera::TickComponent(float DeltaTime, enum ELevelTick TickType,
 	InterpolateCameraFieldOfView(DeltaTime);
 }
 
-void UControlledCamera::BeginPlay()
-{
-	Super::BeginPlay();
-	SetFieldOfView(FieldOfView);
-}
-
 void UControlledCamera::ZoomCamera(float Direction)
 {
 	TargetFieldOfView -= Direction * 2;
 	TargetFieldOfView = FMath::Clamp(TargetFieldOfView, MinimumFieldOfView, MaximumFieldOfView);
-}
-
-void UControlledCamera::InterpolateCameraFieldOfView(float DeltaTime)
-{
-	const float DifferenceBetweenTargetAndActualFieldOfView = TargetFieldOfView - FieldOfView;
-	const float InterpSpeed = FMath::Abs(DifferenceBetweenTargetAndActualFieldOfView);
-
-	FieldOfView = FMath::FInterpTo(FieldOfView, TargetFieldOfView, DeltaTime, InterpSpeed);
-
-	SetFieldOfView(FieldOfView);
 }
 
 FVector UControlledCamera::CalculateCameraMovementVectorOnXYPlane(FVector2D PlayerInput) const
@@ -59,4 +56,14 @@ void UControlledCamera::RotateAroundYawAxis(float RotationMagnitude)
 	Rotation.Yaw += RotationMagnitude;
 
 	SetWorldRotation(Rotation);
+}
+
+void UControlledCamera::InterpolateCameraFieldOfView(float DeltaTime)
+{
+	const float DifferenceBetweenTargetAndActualFieldOfView = TargetFieldOfView - FieldOfView;
+	const float InterpSpeed = FMath::Abs(DifferenceBetweenTargetAndActualFieldOfView);
+
+	FieldOfView = FMath::FInterpTo(FieldOfView, TargetFieldOfView, DeltaTime, InterpSpeed);
+
+	SetFieldOfView(FieldOfView);
 }
