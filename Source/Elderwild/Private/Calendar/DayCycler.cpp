@@ -83,4 +83,3 @@ void UDayCycler::TransitionToNight()
 	
 	UE_LOG(LogTemp, Log, TEXT("Night Time"));
 }
-// TODO : These logs arent showing up, why?
