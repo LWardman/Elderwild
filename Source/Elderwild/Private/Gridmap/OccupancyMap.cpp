@@ -22,7 +22,7 @@ void UOccupancyMap::Init(int32 _GridWidth, int32 _GridHeight)
 FOccupancyState UOccupancyMap::GetTileOccupancyState(FIntVector2 Coord)
 {
 	if (!IndexIsValid(Coord)) return OCCUPIED;
-	
+
 	return Map[Coord.X][Coord.Y];
 }
 
@@ -34,5 +34,5 @@ void UOccupancyMap::SetTileOccupancyState(FIntVector2 Coord, FOccupancyState Sta
 
 bool UOccupancyMap::IndexIsValid(FIntVector2 Coord)
 {
-	return Coord.X < GridWidth && Coord.Y < GridHeight; 
+	return Map.IsValidIndex(Coord.X) && Map[Coord.X].IsValidIndex(Coord.Y); 
 }
