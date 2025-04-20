@@ -3,8 +3,10 @@
 #include "Kismet/GameplayStatics.h"
 
 #include "Gridmap/Grid.h"
+#include "Gridmap/GridDimensions.h"
 #include "Calendar/Calendar.h"
 #include "Player/PlayerPawn.h"
+#include "Player/ControlledCamera.h"
 
 ADevGameMode::ADevGameMode()
 {
@@ -54,4 +56,26 @@ AGrid* ADevGameMode::GetGrid() const
 	}
 	
 	return Grid;
+}
+
+// TODO : is this the right place to be doing this?
+FCameraBoundaries ADevGameMode::CalculateCameraBoundariesFromGrid()
+{
+	if (GetGrid() == nullptr || GetGrid()->GridDimensions == nullptr)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Grid or its dimensions is a nullptr"));
+	}
+
+	FVector GridMinimum = GetGrid()->GetActorLocation();
+	FVector GridMaximum = GridMinimum;
+	GridMaximum.X += GetGrid()->GridDimensions->GetGridWidth();
+	GridMaximum.Y += GetGrid()->GridDimensions->GetGridHeight();
+
+	FVector GridPadding = FVector(500, 500, 0);
+	
+	FCameraBoundaries CameraBoundaries;
+	CameraBoundaries.Min = GridMinimum - GridPadding;
+	CameraBoundaries.Max = GridMaximum + GridPadding;
+
+	return CameraBoundaries;
 }
