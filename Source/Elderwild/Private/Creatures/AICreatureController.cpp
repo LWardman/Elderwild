@@ -1,4 +1,4 @@
-#include "Controllers/AICreatureController.h"
+#include "Creatures/AICreatureController.h"
 
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
