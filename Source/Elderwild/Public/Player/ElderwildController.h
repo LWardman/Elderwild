@@ -14,6 +14,7 @@ class AGrid;
 
 /** Controller intended only for use with the player pawn
  */
+// TODO : rename to CameraController
 UCLASS()
 class ELDERWILD_API AElderwildController : public APlayerController
 {
@@ -31,6 +32,7 @@ public:
 	UPROPERTY()
 	AGrid* Grid;
 
+private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	UInputMappingContext* IMC_StandardPlay;
 
