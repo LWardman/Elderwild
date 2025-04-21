@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "ElderwildController.generated.h"
+#include "CameraController.generated.h"
 
 class UInputMappingContext;
 class UInputAction;
@@ -11,17 +11,18 @@ struct FInputActionValue;
 class UControlledCamera;
 class UFloatingPawnMovement;
 class AGrid;
+class UInputDataConfig;
+class UCursorInteractor;
 
 /** Controller intended only for use with the player pawn
  */
-// TODO : rename to CameraController
 UCLASS()
-class ELDERWILD_API AElderwildController : public APlayerController
+class ELDERWILD_API ACameraController : public APlayerController
 {
 	GENERATED_BODY()
 
 public:
-	AElderwildController();
+	ACameraController();
 
 	UPROPERTY()
 	UFloatingPawnMovement* Movement;
@@ -33,27 +34,15 @@ public:
 	AGrid* Grid;
 
 private:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input", meta=(AllowPrivateAccess = "true"))
 	UInputMappingContext* IMC_StandardPlay;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-	UInputAction* IA_Click;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput", meta=(AllowPrivateAccess = "true"))
+	UInputDataConfig* InputActions;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-	UInputAction* IA_Move;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-	UInputAction* IA_Rotate;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-    UInputAction* IA_Zoom;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-	UInputAction* IA_DragMoveCamera;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-	UInputAction* IA_DragRotateCamera;
-
+	UPROPERTY()
+	UCursorInteractor* CursorInteractor;
+	
 protected:
 	virtual void SetupInputComponent() override;
 	
@@ -63,12 +52,11 @@ protected:
 	virtual void Tick(float DeltaSeconds) override;
 
 private:
+	// TODO : seems like bad design to do this
 	void SetAndCheckPointers();
 
 // =========== Clicking & Hovering ==================
-	void OnClickStarted();
-
-	void HandleCursor();
+	void OnClick();
 
 // =========== Camera Zoom Movement ==================
 protected:
@@ -99,6 +87,7 @@ protected:
 	void RotateCameraAroundYawAxis(const FInputActionValue& Value);
 
 private:
+	// TODO : DRY with drag rotating camera. Make into a struct?
 	FVector BeginningMousePositionRotate = FVector::ZeroVector;
 	FVector CurrentMousePositionRotate = FVector::ZeroVector;
 

@@ -1,4 +1,4 @@
-#include "Player/ElderwildController.h"
+#include "Player/CameraController.h"
 
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
@@ -7,13 +7,14 @@
 #include "Kismet/GameplayStatics.h"
 
 #include "Gridmap/Grid.h"
-#include "Gridmap/GridDimensions.h"
 #include "GameModes/DevGameMode.h"
 #include "Player/PlayerPawn.h"
 #include "Player/ControlledCamera.h"
+#include "Player/InputDataConfig.h"
+#include "Player/CursorInteractor.h"
 
 
-AElderwildController::AElderwildController()
+ACameraController::ACameraController()
 {
 	bShowMouseCursor = true;
 	bEnableClickEvents = true; 
@@ -21,7 +22,7 @@ AElderwildController::AElderwildController()
 	DefaultMouseCursor = EMouseCursor::Default;
 }
 
-void AElderwildController::SetupInputComponent()
+void ACameraController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
@@ -31,23 +32,25 @@ void AElderwildController::SetupInputComponent()
 		Subsystem->AddMappingContext(IMC_StandardPlay, 0);
 	}
 
+	if(!InputActions) return;
+
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
 	{
 		// Setup LMB click
-		EnhancedInputComponent->BindAction(IA_Click, ETriggerEvent::Completed, this, &AElderwildController::OnClickStarted);
+		EnhancedInputComponent->BindAction(InputActions->Click, ETriggerEvent::Completed, this, &ACameraController::OnClick);
 
 		// Setup keyboard camera movement
-		EnhancedInputComponent->BindAction(IA_Move, ETriggerEvent::Triggered, this, &AElderwildController::MoveCameraOnXYPlane);
-		EnhancedInputComponent->BindAction(IA_Rotate, ETriggerEvent::Triggered, this, &AElderwildController::RotateCameraAroundYawAxis);
-		EnhancedInputComponent->BindAction(IA_Zoom, ETriggerEvent::Triggered, this, &AElderwildController::ZoomCamera);
+		EnhancedInputComponent->BindAction(InputActions->Move, ETriggerEvent::Triggered, this, &ACameraController::MoveCameraOnXYPlane);
+		EnhancedInputComponent->BindAction(InputActions->Rotate, ETriggerEvent::Triggered, this, &ACameraController::RotateCameraAroundYawAxis);
+		EnhancedInputComponent->BindAction(InputActions->Zoom, ETriggerEvent::Triggered, this, &ACameraController::ZoomCamera);
 
 		// Setup mouse camera movement
-		EnhancedInputComponent->BindAction(IA_DragMoveCamera, ETriggerEvent::Started, this, &AElderwildController::BeginDragMoveCamera);
-		EnhancedInputComponent->BindAction(IA_DragMoveCamera, ETriggerEvent::Triggered, this, &AElderwildController::DragMoveCamera);
+		EnhancedInputComponent->BindAction(InputActions->DragMoveCamera, ETriggerEvent::Started, this, &ACameraController::BeginDragMoveCamera);
+		EnhancedInputComponent->BindAction(InputActions->DragMoveCamera, ETriggerEvent::Triggered, this, &ACameraController::DragMoveCamera);
 
-		EnhancedInputComponent->BindAction(IA_DragRotateCamera, ETriggerEvent::Started, this, &AElderwildController::BeginDragRotatingCamera);
-		EnhancedInputComponent->BindAction(IA_DragRotateCamera, ETriggerEvent::Triggered, this, &AElderwildController::DragRotateCamera);
+		EnhancedInputComponent->BindAction(InputActions->DragRotateCamera, ETriggerEvent::Started, this, &ACameraController::BeginDragRotatingCamera);
+		EnhancedInputComponent->BindAction(InputActions->DragRotateCamera, ETriggerEvent::Triggered, this, &ACameraController::DragRotateCamera);
 	}
 	else
 	{
@@ -55,21 +58,24 @@ void AElderwildController::SetupInputComponent()
 	}
 }
 
-void AElderwildController::BeginPlay()
+void ACameraController::BeginPlay()
 {
 	Super::BeginPlay();
 
 	SetAndCheckPointers();
 }
 
-void AElderwildController::Tick(float DeltaSeconds)
+void ACameraController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	HandleCursor();
+	if (CursorInteractor)
+	{
+		CursorInteractor->UpdateHover();
+	}
 }
 
-void AElderwildController::SetAndCheckPointers()
+void ACameraController::SetAndCheckPointers()
 {
 	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(GetPawn());
 	checkf(PlayerPawn, TEXT("Controller could not find the player pawn"));
@@ -85,50 +91,38 @@ void AElderwildController::SetAndCheckPointers()
 
 	Grid = GameMode->GetGrid();
 	checkf(Grid, TEXT("Handling player cursor could not be done because the grid cannot be found"));
+
+	CursorInteractor = NewObject<UCursorInteractor>();
+	CursorInteractor->Initialize(this, Grid);
+	checkf(CursorInteractor, TEXT("CursorInteractor not initialized properly"));
 }
 
-void AElderwildController::OnClickStarted()
+void ACameraController::OnClick()
 {
-	checkf(Grid && Grid->GridDimensions, TEXT("GridDimensions not initialized properly"));
-	FHitResult Hit;
-	if (GetHitResultUnderCursor(ECC_Visibility, true, Hit))
+	if (CursorInteractor)
 	{
-		FIntVector2 GridTile = Grid->GridDimensions->LocationToTile(Hit.Location);
-		Grid->TryBuild(GridTile);
+		CursorInteractor->HandleClick();
 	}
 }
 
-void AElderwildController::HandleCursor()
-{
-	FHitResult Hit;
-	if (GetHitResultUnderCursor(ECC_Visibility, true, Hit))
-	{
-		Grid->HoverTile(Hit.Location);
-	}
-	else
-	{
-		Grid->UnhoverTile();
-	}
-}
-
-void AElderwildController::ZoomCamera(const FInputActionValue& Value)
+void ACameraController::ZoomCamera(const FInputActionValue& Value)
 {
 	CameraComponent->ZoomCamera(Value.GetMagnitude());
 }
 
-void AElderwildController::MoveCameraOnXYPlane(const FInputActionValue& Value)
+void ACameraController::MoveCameraOnXYPlane(const FInputActionValue& Value)
 {
 	const FVector2D Input = Value.Get<FVector2D>();
 	FVector MovementDirection = CameraComponent->CalculateCameraMovementVectorOnXYPlane(Input);
 	Movement->AddInputVector(MovementDirection);
 }
 
-void AElderwildController::BeginDragMoveCamera(const FInputActionValue& Value)
+void ACameraController::BeginDragMoveCamera(const FInputActionValue& Value)
 {
 	UpdateVariablesWithCursorPosition(BeginningMousePositionMove, CurrentMousePositionMove);
 }
 
-void AElderwildController::DragMoveCamera(const FInputActionValue& Value)
+void ACameraController::DragMoveCamera(const FInputActionValue& Value)
 {
 	FVector2d Cursor = FVector2d::Zero();
 	if (GetMousePosition(Cursor.X, Cursor.Y))
@@ -150,12 +144,12 @@ void AElderwildController::DragMoveCamera(const FInputActionValue& Value)
 	}
 }
 
-void AElderwildController::BeginDragRotatingCamera(const FInputActionValue& Value)
+void ACameraController::BeginDragRotatingCamera(const FInputActionValue& Value)
 {
 	UpdateVariablesWithCursorPosition(BeginningMousePositionRotate, CurrentMousePositionRotate);
 }
 
-void AElderwildController::DragRotateCamera(const FInputActionValue& Value)
+void ACameraController::DragRotateCamera(const FInputActionValue& Value)
 {
 	FVector2D Cursor = FVector2d::Zero();
 	if (GetMousePosition(Cursor.X, Cursor.Y))
@@ -166,14 +160,14 @@ void AElderwildController::DragRotateCamera(const FInputActionValue& Value)
 	}
 }
 
-void AElderwildController::RotateCameraAroundYawAxis(const FInputActionValue& Value)
+void ACameraController::RotateCameraAroundYawAxis(const FInputActionValue& Value)
 {
 	const float DeltaTime = UGameplayStatics::GetWorldDeltaSeconds(this);
 	const float RotationMagnitude = DeltaTime * RotationSpeed * Value.GetMagnitude();
 	CameraComponent->RotateAroundYawAxis(RotationMagnitude);
 }
 
-void AElderwildController::UpdateVariablesWithCursorPosition(FVector& BeginningPosition, FVector& CurrentPosition)
+void ACameraController::UpdateVariablesWithCursorPosition(FVector& BeginningPosition, FVector& CurrentPosition)
 {
 	FVector2d Cursor = FVector2D::ZeroVector;
    	if (GetMousePosition(Cursor.X, Cursor.Y))
@@ -183,7 +177,7 @@ void AElderwildController::UpdateVariablesWithCursorPosition(FVector& BeginningP
    	}
 }
 
-FVector AElderwildController::UpdateMousePositionsAndGetDelta(FVector& BeginningPosition, FVector& CurrentPosition, const FVector2d Cursor)
+FVector ACameraController::UpdateMousePositionsAndGetDelta(FVector& BeginningPosition, FVector& CurrentPosition, const FVector2d Cursor)
 {
 	CurrentPosition = FVector{Cursor.X, Cursor.Y, 0.0f};
 	const FVector MouseDeltaPosition = BeginningPosition - CurrentPosition;
