@@ -1,13 +1,15 @@
 #pragma once
 
+#include "Player/DraggingMousePositions.h"
+
 #include "CoreMinimal.h"
 #include "Camera/CameraComponent.h"
 #include "ControlledCamera.generated.h"
 
 struct FCameraBoundaries
 {
-	FVector Min = FVector::ZeroVector;
-	FVector Max = FVector::ZeroVector;
+	FVector Min;
+	FVector Max;
 };
 
 UCLASS()
@@ -32,9 +34,22 @@ public:
     
 	FVector GetForwardXYVector() const;
     
-	void RotateAroundYawAxis(float RotationMagnitude);
+	void RotateAroundYawAxis(float RotationDirection);
+
+	void BeginDragMovement(FVector2D Cursor);
+
+	void DragMove(FVector2d Cursor);
+
+	void BeginDragRotate(FVector2d Cursor);
+
+	void DragRotate(FVector2d Cursor);
+
+	FVector UpdateMousePositionsAndGetDelta(FDraggingMousePositions& CursorPositions, const FVector2d Cursor);
 	
 private:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
+	float RotationSpeed = 30.f;
+	
 	FCameraBoundaries CameraBoundaries;
 	
 	float FieldOfView = 80;
@@ -43,4 +58,7 @@ private:
 	float MaximumFieldOfView = 90.0f;
 
 	void InterpolateCameraFieldOfView(float DeltaTime);
+
+	FDraggingMousePositions DragMovement;
+	FDraggingMousePositions DragRotation;
 };
