@@ -16,4 +16,25 @@ struct FDraggingMousePositions
 
 	UPROPERTY()
 	float Sensitivity = 1.0f;
+
+	void ResetToCursorsPosition(FVector2D Cursor)
+	{
+		UpdateCurrentPositionToCursor(Cursor);
+		UpdateBeginningPositionToCursor(Cursor);
+	}
+
+	void UpdateCurrentPositionToCursor(FVector2D Cursor)
+	{
+		CurrentPosition = FVector(Cursor.X, Cursor.Y, 0);
+	}
+
+	void UpdateBeginningPositionToCursor(FVector2D Cursor)
+	{
+		BeginningPosition = FVector(Cursor.X, Cursor.Y, 0);
+	}
+
+	FVector CalculateDeltaVector()
+	{
+		return BeginningPosition - CurrentPosition;
+	}
 };
