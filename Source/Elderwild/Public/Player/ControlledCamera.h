@@ -26,7 +26,7 @@ protected:
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
 
 public:
-	FCameraBoundaries GetCameraBoundaries() {return CameraBoundaries;}
+	FCameraBoundaries GetCameraBoundaries() const {return CameraBoundaries;}
 	
 	void ZoomCamera(float Direction);
 
