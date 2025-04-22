@@ -75,7 +75,7 @@ void UCalendar::SetSunPositionInSky()
 	
 	float PercentThroughDay = SeasonCycler->GetDayCycler()->PercentWayThroughDay();
 	
-	float Elevation = FMath::Lerp(0.f, -40.f, FMath::Sin(PercentThroughDay * PI));
+	float Elevation = FMath::Lerp(5.f, -55.f, FMath::Sin(PercentThroughDay * 2 * PI));
 	float HorizonRotation = PercentThroughDay * 360.f;
 
 	FRotator SunRotation = FRotator(Elevation, HorizonRotation, 0.0f);
