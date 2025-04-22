@@ -69,10 +69,7 @@ void ACameraController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	if (CursorInteractor)
-	{
-		CursorInteractor->UpdateHover();
-	}
+	if (CursorInteractor) CursorInteractor->UpdateHover();
 }
 
 void ACameraController::SetAndCheckPointers()
@@ -99,10 +96,7 @@ void ACameraController::SetAndCheckPointers()
 
 void ACameraController::OnClick()
 {
-	if (CursorInteractor)
-	{
-		CursorInteractor->HandleClick();
-	}
+	if (CursorInteractor) CursorInteractor->HandleClick();
 }
 
 void ACameraController::ZoomCamera(const FInputActionValue& Value)
@@ -119,69 +113,41 @@ void ACameraController::MoveCameraOnXYPlane(const FInputActionValue& Value)
 
 void ACameraController::BeginDragMoveCamera(const FInputActionValue& Value)
 {
-	UpdateVariablesWithCursorPosition(BeginningMousePositionMove, CurrentMousePositionMove);
+	FVector2d Cursor = FVector2D::ZeroVector;
+	if (GetMousePosition(Cursor.X, Cursor.Y) && CameraComponent)
+	{
+		CameraComponent->BeginDragMovement(Cursor);
+	}
 }
 
 void ACameraController::DragMoveCamera(const FInputActionValue& Value)
 {
 	FVector2d Cursor = FVector2d::Zero();
-	if (GetMousePosition(Cursor.X, Cursor.Y))
+	if (GetMousePosition(Cursor.X, Cursor.Y) && CameraComponent)
 	{
-		FVector MouseDeltaPosition = UpdateMousePositionsAndGetDelta(BeginningMousePositionMove, CurrentMousePositionMove, Cursor);
-		MouseDeltaPosition *= -1;
-		
-		FVector ForwardVectorXY = CameraComponent->GetForwardXYVector();
-		FVector ForwardMovement = ForwardVectorXY * MouseDeltaPosition.Y * DragCameraMoveSensitivity;
-
-		FVector RightVector = CameraComponent->GetRightVector();
-		FVector SidewaysMovement = -1 * RightVector * MouseDeltaPosition.X * DragCameraMoveSensitivity;
-
-		FVector CurrentLocation = CameraComponent->GetComponentLocation();
-
-		FVector NewLocation = CurrentLocation + ForwardMovement + SidewaysMovement;
-		
-		CameraComponent->SetWorldLocation(NewLocation);
+		CameraComponent->DragMove(Cursor);
 	}
 }
 
 void ACameraController::BeginDragRotatingCamera(const FInputActionValue& Value)
 {
-	UpdateVariablesWithCursorPosition(BeginningMousePositionRotate, CurrentMousePositionRotate);
+	FVector2d Cursor = FVector2D::ZeroVector;
+	if (GetMousePosition(Cursor.X, Cursor.Y) && CameraComponent)
+	{
+		CameraComponent->BeginDragRotate(Cursor);
+	}
 }
 
 void ACameraController::DragRotateCamera(const FInputActionValue& Value)
 {
 	FVector2D Cursor = FVector2d::Zero();
-	if (GetMousePosition(Cursor.X, Cursor.Y))
+	if (GetMousePosition(Cursor.X, Cursor.Y) && CameraComponent)
 	{
-		FVector MouseDeltaPosition = UpdateMousePositionsAndGetDelta(BeginningMousePositionRotate, CurrentMousePositionRotate, Cursor);
-		const float RotationMagnitude = DragCameraRotateSensitivity * MouseDeltaPosition.X;
-		CameraComponent->RotateAroundYawAxis(RotationMagnitude);
+		CameraComponent->DragRotate(Cursor);
 	}
 }
 
 void ACameraController::RotateCameraAroundYawAxis(const FInputActionValue& Value)
 {
-	const float DeltaTime = UGameplayStatics::GetWorldDeltaSeconds(this);
-	const float RotationMagnitude = DeltaTime * RotationSpeed * Value.GetMagnitude();
-	CameraComponent->RotateAroundYawAxis(RotationMagnitude);
-}
-
-void ACameraController::UpdateVariablesWithCursorPosition(FVector& BeginningPosition, FVector& CurrentPosition)
-{
-	FVector2d Cursor = FVector2D::ZeroVector;
-   	if (GetMousePosition(Cursor.X, Cursor.Y))
-   	{
-   		CurrentPosition = FVector{Cursor.X, Cursor.Y, 0.0f};
-   		BeginningPosition = CurrentPosition;
-   	}
-}
-
-FVector ACameraController::UpdateMousePositionsAndGetDelta(FVector& BeginningPosition, FVector& CurrentPosition, const FVector2d Cursor)
-{
-	CurrentPosition = FVector{Cursor.X, Cursor.Y, 0.0f};
-	const FVector MouseDeltaPosition = BeginningPosition - CurrentPosition;
-	BeginningPosition = CurrentPosition;
-
-	return MouseDeltaPosition;
+	CameraComponent->RotateAroundYawAxis(Value.GetMagnitude());
 }
