@@ -5,9 +5,13 @@
 #include "DayCycler.generated.h"
 
 UENUM(BlueprintType)
-enum FDayNight : int { DAY, NIGHT };
+enum class EDayNight : uint8
+{
+	Day,
+	Night
+};
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDayStateChanged, FDayNight, NewState);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDayStateChanged, EDayNight, NewState);
 
 typedef float Seconds;
 
@@ -27,18 +31,18 @@ public:
 
 	float PercentWayThroughDay() const;
 
-	FDayNight GetCurrentTimePeriod() const;
+	EDayNight GetCurrentTimePeriod() const;
 	
 private:
 	FTimerHandle DayCyclingTimerHandle;
 
 	Seconds GetTimeRemainingForTheDay() const;
 	
-	Seconds DaytimeLength = 60.f;
-	Seconds NightLength = 60.f;
+	Seconds DaytimeLength = 5.f;
+	Seconds NightLength = 5.f;
 	Seconds FullDayCycle = DaytimeLength + NightLength;
 
-	FDayNight TimePeriod = DAY;
+	EDayNight TimePeriod = EDayNight::Day;
 	
 	void TransitionToDay();
 	void TransitionToNight();

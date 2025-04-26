@@ -29,7 +29,7 @@ float UDayCycler::PercentWayThroughDay() const
 	return (1 - GetTimeRemainingForTheDay() / FullDayCycle);
 }
 
-FDayNight UDayCycler::GetCurrentTimePeriod() const
+EDayNight UDayCycler::GetCurrentTimePeriod() const
 {
 	return TimePeriod;
 }
@@ -40,7 +40,7 @@ Seconds UDayCycler::GetTimeRemainingForTheDay() const
 	
 	Seconds TimeRemaining = GetWorld()->GetTimerManager().GetTimerRemaining(DayCyclingTimerHandle);
 
-	if (GetCurrentTimePeriod() == DAY)
+	if (GetCurrentTimePeriod() == EDayNight::Day)
 	{
 		TimeRemaining += NightLength;
 	}
@@ -60,10 +60,8 @@ void UDayCycler::TransitionToDay()
         	false);
 	}
 	
-	TimePeriod = DAY;
+	TimePeriod = EDayNight::Day;
 	DayStateChanged.Broadcast(GetCurrentTimePeriod());
-
-	UE_LOG(LogTemp, Log, TEXT("Day Time"));
 }
 
 void UDayCycler::TransitionToNight()
@@ -78,8 +76,6 @@ void UDayCycler::TransitionToNight()
         	false);
 	}
 
-	TimePeriod = NIGHT;
+	TimePeriod = EDayNight::Night;
 	DayStateChanged.Broadcast(GetCurrentTimePeriod());
-	
-	UE_LOG(LogTemp, Log, TEXT("Night Time"));
 }
