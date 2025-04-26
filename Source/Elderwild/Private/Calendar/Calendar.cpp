@@ -5,6 +5,7 @@
 
 #include "Calendar/DayCycler.h"
 #include "Calendar/SeasonCycler.h"
+#include "Calendar/CalendarWidget.h"
 
 
 UCalendar::UCalendar()
@@ -16,8 +17,20 @@ void UCalendar::BeginPlay()
 {
 	Super::BeginPlay();
 
+	APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0);
+	if (CalendarWidgetClass && Controller)
+	{
+		CalendarWidget = CreateWidget<UCalendarWidget>(Controller, CalendarWidgetClass);
+			
+		if (CalendarWidget)
+		{
+			CalendarWidget->AddToPlayerScreen();
+		}
+	}
+	
 	SeasonCycler = NewObject<USeasonCycler>(this);
 	checkf(SeasonCycler, TEXT("Season Cycler not initialized properly"));
+	SeasonCycler->SeasonIsChanging.AddDynamic(this, &UCalendar::SendSeasonInfoToUI);
 
 	UDayCycler* DayCycler = NewObject<UDayCycler>(this);
 	SeasonCycler->Init(DayCycler);
@@ -32,6 +45,9 @@ void UCalendar::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorC
 	{
 		SetSunPositionInSky();
 	}
+
+	SendDayInfoToUI();
+	SendTimeInfoToUI();
 }
 
 TArray<AActor*> UCalendar::GetActorsWithSunTag()
@@ -81,4 +97,33 @@ void UCalendar::SetSunPositionInSky()
 	FRotator SunRotation = FRotator(Elevation, HorizonRotation, 0.0f);
 	
 	Sunlight->SetActorRotation(SunRotation);
+}
+
+void UCalendar::SendSeasonInfoToUI(ESeason NewSeason)
+{
+	if (!CalendarWidget) return;
+	
+	FString SeasonName = UEnum::GetDisplayValueAsText(NewSeason).ToString();
+	
+	FString SeasonInfo = FString::Printf(TEXT("Current Season : %s"), *SeasonName);
+
+	CalendarWidget->UpdateSeasonInformation(SeasonInfo);
+}
+
+void UCalendar::SendDayInfoToUI()
+{
+	if (!CalendarWidget || !SeasonCycler) return;
+
+	int32 DayNumber = SeasonCycler->GetCurrentDay();
+	FString DayInfo = FString::Printf(TEXT("Current Day : %i"), DayNumber);
+	CalendarWidget->UpdateDayInformation(DayInfo);
+}
+
+void UCalendar::SendTimeInfoToUI()
+{
+	if (!CalendarWidget || !SeasonCycler || !SeasonCycler->GetDayCycler()) return;
+
+	float PercentThroughDay = SeasonCycler->GetDayCycler()->PercentWayThroughDay();
+	FString TimeInfo = FString::Printf(TEXT("%.1f through the day"), PercentThroughDay);
+	CalendarWidget->UpdateTimeInformation(TimeInfo);
 }

@@ -6,6 +6,9 @@
 
 class USeasonCycler;
 class ADirectionalLight;
+class UCalendarWidget;
+
+enum class ESeason : uint8;
 
 UCLASS()
 class ELDERWILD_API UCalendar : public UActorComponent
@@ -28,8 +31,20 @@ private:
 	ADirectionalLight* Sunlight = nullptr;
 
 	TArray<AActor*> GetActorsWithSunTag();
-
 	ADirectionalLight* SearchArrayForDirectionalLight(TArray<AActor*> SunActors);
-
 	void SetSunPositionInSky();
+
+	UFUNCTION()
+	void SendSeasonInfoToUI(ESeason NewSeason);
+
+	UFUNCTION()
+	void SendDayInfoToUI();
+	
+	void SendTimeInfoToUI();
+
+	UPROPERTY()
+	UCalendarWidget* CalendarWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="UI", meta=(AllowPrivateAccess = "true"))
+	TSubclassOf<UCalendarWidget> CalendarWidgetClass;
 };
