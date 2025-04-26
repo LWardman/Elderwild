@@ -34,6 +34,6 @@ public:
 	FCameraBoundaries CalculateCameraBoundariesFromGrid();
 
 private:
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, Category="Calendar")
 	UCalendar* Calendar;
 };
