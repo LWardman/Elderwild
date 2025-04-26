@@ -5,18 +5,18 @@
 #include "SeasonCycler.generated.h"
 
 UENUM(BlueprintType)
-enum FSeason
+enum class ESeason : uint8
 {
-	SPRING,
-	SUMMER,
-	AUTUMN,
-	WINTER
+	Spring	UMETA(DisplayName = "Spring"),
+	Summer	UMETA(DisplayName = "Summer"),
+	Autumn	UMETA(DisplayName = "Autumn"),
+	Winter	UMETA(DisplayName = "Winter")
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSeasonChangeDelegate, FSeason, NewSeason);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSeasonChangeDelegate, ESeason, NewSeason);
 
 class UDayCycler;
-enum FDayNight : int;
+enum class EDayNight : uint8;
 
 UCLASS()
 class ELDERWILD_API USeasonCycler : public UObject
@@ -29,19 +29,23 @@ public:
 	UDayCycler* GetDayCycler() const;
 	
 	int32 GetNumberOfDaysLeft() const;
+	int32 GetCurrentDay() const {return CurrentDay;}
 
 	bool IsLastDayOfMonth() const;
 
-	FSeason GetSeason() const;
+	ESeason GetSeason() const;
+
+	UPROPERTY(BlueprintAssignable, Category = "Season Events")
+	FSeasonChangeDelegate SeasonIsChanging;
 
 private:
 	UFUNCTION()
-	void OnDayChange(FDayNight NewState);
+	void OnDayChange(EDayNight NewState);
 
-	FSeason CurrentSeason = SPRING;
+	ESeason CurrentSeason = ESeason::Spring;
 
 	UFUNCTION()
-	FSeason GetNextSeason() const;
+	ESeason GetNextSeason() const;
 
 	void ChangeSeason();
 	
@@ -50,7 +54,4 @@ private:
 
 	int32 CurrentDay = 1;
 	int32 MonthLength = 28;
-	
-	UPROPERTY(BlueprintAssignable, Category = "Day Events")
-	FSeasonChangeDelegate SeasonIsChanging;
 };

@@ -11,6 +11,8 @@ void USeasonCycler::Init(UDayCycler* DayCycler)
 		Day->BeginCycling();
 		Day->DayStateChanged.AddDynamic(this, &USeasonCycler::OnDayChange);
 	}
+
+	SeasonIsChanging.Broadcast(CurrentSeason);
 }
 
 UDayCycler* USeasonCycler::GetDayCycler() const
@@ -28,14 +30,14 @@ bool USeasonCycler::IsLastDayOfMonth() const
 	return GetNumberOfDaysLeft() == 0;
 }
 
-FSeason USeasonCycler::GetSeason() const
+ESeason USeasonCycler::GetSeason() const
 {
 	return CurrentSeason;
 }
 
-void USeasonCycler::OnDayChange(FDayNight NewState)
+void USeasonCycler::OnDayChange(EDayNight NewState)
 {
-	if (NewState == DAY)
+	if (NewState == EDayNight::Day)
 	{
 		if (IsLastDayOfMonth())
 		{
@@ -48,13 +50,11 @@ void USeasonCycler::OnDayChange(FDayNight NewState)
 	}
 }
 
-FSeason USeasonCycler::GetNextSeason() const 
+ESeason USeasonCycler::GetNextSeason() const 
 {
-	int CurrentSeasonIndex = CurrentSeason;
-	CurrentSeasonIndex += 1;
-	CurrentSeasonIndex %= 4;
-	
-	return StaticCast<FSeason>(CurrentSeasonIndex);
+	int32 SeasonValue = static_cast<int32>(CurrentSeason);
+	SeasonValue = (SeasonValue + 1) % 4;
+	return static_cast<ESeason>(SeasonValue);
 }
 
 void USeasonCycler::ChangeSeason()
