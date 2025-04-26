@@ -39,7 +39,7 @@ protected:
 	virtual void BeginPlay() override;
     
 	virtual void Tick(float DeltaSeconds) override;
-	
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input", meta=(AllowPrivateAccess = "true"))
 	UInputMappingContext* IMC_StandardPlay;
