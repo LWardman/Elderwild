@@ -6,7 +6,6 @@
 
 class UTextBlock;
 
-// TODO : hook this up in the calendar class
 UCLASS()
 class ELDERWILD_API UCalendarWidget : public UUserWidget
 {
@@ -17,7 +16,13 @@ protected:
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void UpdateCalendarDisplay(const FString& Day, const FString& TimeOfDay, const FString& Season);
+	void UpdateSeasonInformation(const FString& SeasonInfo);
+	
+	UFUNCTION(BlueprintCallable)
+	void UpdateDayInformation(const FString& DayInfo);
+	
+	UFUNCTION(BlueprintCallable)
+	void UpdateTimeInformation(const FString& TimeInfo);
 
 protected:
 	UPROPERTY(meta = (BindWidget))
