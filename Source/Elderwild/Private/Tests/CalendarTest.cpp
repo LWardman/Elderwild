@@ -15,16 +15,16 @@ bool FCalendar::RunTest(const FString& Parameters)
 	
 	for (int seasonNum = 0; seasonNum < 4; seasonNum++)
 	{
-		TestEqual(TEXT("Season is correct"), Season->GetSeason(), StaticCast<FSeason>(seasonNum));
+		TestEqual(TEXT("Season is correct"), Season->GetSeason(), StaticCast<ESeason>(seasonNum));
         
         // Get to the last day of the month
         for (int dayNum = 27; dayNum > 0; dayNum--)
         {
         	TestEqual(TEXT("GetNumberOfDaysLeft"), Season->GetNumberOfDaysLeft(), dayNum);
         
-        	TestEqual(TEXT("Is Day Time"), Day->GetCurrentTimePeriod(), DAY);
+        	TestEqual(TEXT("Is Day Time"), Day->GetCurrentTimePeriod(), EDayNight::Day);
             Day->ForceTransitionToNight();
-            TestEqual(TEXT("Is Night Time"), Day->GetCurrentTimePeriod(), NIGHT);
+            TestEqual(TEXT("Is Night Time"), Day->GetCurrentTimePeriod(), EDayNight::Night);
             Day->ForceTransitionToDay();
         }
         
@@ -34,7 +34,7 @@ bool FCalendar::RunTest(const FString& Parameters)
         Day->ForceTransitionToDay();
 	}
 
-	TestEqual(TEXT("Year has repeated"), Season->GetSeason(), SPRING);
+	TestEqual(TEXT("Year has repeated"), Season->GetSeason(), ESeason::Spring);
 	
 	return true;
 }
