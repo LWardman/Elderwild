@@ -11,9 +11,6 @@ class ELDERWILD_API UCalendarWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
-protected:
-	virtual void NativeConstruct() override;
-
 public:
 	UFUNCTION(BlueprintCallable)
 	void UpdateSeasonInformation(const FString& SeasonInfo);
