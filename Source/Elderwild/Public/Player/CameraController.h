@@ -32,7 +32,10 @@ public:
 
 	UPROPERTY()
 	AGrid* Grid;
-
+	
+	UPROPERTY(EditAnywhere)
+	UCursorInteractor* CursorInteractor;
+	
 protected:
 	virtual void SetupInputComponent() override;
     	
@@ -46,10 +49,7 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput", meta=(AllowPrivateAccess = "true"))
 	UInputDataConfig* InputActions;
-
-	UPROPERTY()
-	UCursorInteractor* CursorInteractor;
-
+	
 	// TODO : seems like bad design to do this
 	void SetAndCheckPointers();
 

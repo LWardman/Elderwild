@@ -20,6 +20,9 @@ ACameraController::ACameraController()
 	bEnableClickEvents = true; 
 	bEnableMouseOverEvents = true;
 	DefaultMouseCursor = EMouseCursor::Default;
+
+	CursorInteractor = CreateDefaultSubobject<UCursorInteractor>(TEXT("Cursor Interactor"));
+	checkf(CursorInteractor, TEXT("CursorInteractor not initialized properly"));
 }
 
 void ACameraController::SetupInputComponent()
@@ -63,6 +66,10 @@ void ACameraController::BeginPlay()
 	Super::BeginPlay();
 
 	SetAndCheckPointers();
+    if (CursorInteractor && Grid)
+    {
+    	CursorInteractor->Initialize(this, Grid);
+    }
 }
 
 void ACameraController::Tick(float DeltaSeconds)
@@ -88,10 +95,6 @@ void ACameraController::SetAndCheckPointers()
 
 	Grid = GameMode->GetGrid();
 	checkf(Grid, TEXT("Handling player cursor could not be done because the grid cannot be found"));
-
-	CursorInteractor = NewObject<UCursorInteractor>();
-	CursorInteractor->Initialize(this, Grid);
-	checkf(CursorInteractor, TEXT("CursorInteractor not initialized properly"));
 }
 
 void ACameraController::OnClick()
