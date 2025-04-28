@@ -1,13 +1,17 @@
 #include "Player/CursorInteractor.h"
 
 #include "Player/CameraController.h"
+#include "Player/BuildingModeWidget.h"
 #include "Gridmap/Grid.h"
 #include "Gridmap/GridDimensions.h"
+
 
 void UCursorInteractor::Initialize(ACameraController* InController, AGrid* InGrid)
 {
 	Controller = InController;
 	Grid = InGrid;
+
+	CreateMouseModeWidget();
 }
 
 void UCursorInteractor::UpdateHover()
@@ -60,5 +64,22 @@ void UCursorInteractor::ClickedInBuildMode()
 	{
 		const FIntVector2 GridTile = Grid->GridDimensions->LocationToTile(Hit.Location);
 		Grid->TryBuild(GridTile);
+	}
+}
+
+void UCursorInteractor::CreateMouseModeWidget()
+{
+	UE_LOG(LogTemp, Display, TEXT("Step 1"));
+	if (MouseModeWidgetClass && Controller)
+	{
+		
+		UE_LOG(LogTemp, Display, TEXT("Step 2"));
+		MouseModeWidget = CreateWidget<UBuildingModeWidget>(Controller, MouseModeWidgetClass);
+			
+		if (MouseModeWidget)
+		{
+			UE_LOG(LogTemp, Display, TEXT("Step 3"));
+			MouseModeWidget->AddToPlayerScreen();
+		}
 	}
 }

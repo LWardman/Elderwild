@@ -1,11 +1,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/Object.h"
+#include "Components/ActorComponent.h"
 #include "CursorInteractor.generated.h"
 
 class AGrid;
 class ACameraController;
+class UBuildingModeWidget;
 
 UENUM()
 enum class FMouseMode
@@ -15,7 +16,7 @@ enum class FMouseMode
 };
 
 UCLASS()
-class ELDERWILD_API UCursorInteractor : public UObject
+class ELDERWILD_API UCursorInteractor : public UActorComponent
 {
 	GENERATED_BODY()
 
@@ -29,7 +30,7 @@ public:
 
 private:
 	UPROPERTY()
-	ACameraController* Controller;
+	ACameraController* Controller; // TODO : does this need to be ACameraController? Why not APlayerController?
 
 	UPROPERTY()
 	AGrid* Grid;
@@ -40,4 +41,12 @@ private:
 	void ClickedInDefaultMode();
 
 	void ClickedInBuildMode();
+
+	void CreateMouseModeWidget();
+
+	UPROPERTY()
+	UBuildingModeWidget* MouseModeWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="UI", meta=(AllowPrivateAccess = "true"))
+	TSubclassOf<UBuildingModeWidget> MouseModeWidgetClass;
 };
