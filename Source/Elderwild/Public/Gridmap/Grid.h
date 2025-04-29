@@ -13,6 +13,7 @@ struct FGridRenderData;
 struct FLine;
 
 // TODO : write tests?
+// TODO : factor out colour selector into its own class
 UCLASS()
 class ELDERWILD_API AGrid : public AActor
 {
@@ -34,7 +35,13 @@ public:
 	float LineOpacity = 0.5f;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants")
-	FLinearColor SelectionColor = FLinearColor::Black;
+	FLinearColor SelectionColorBuildValid = FLinearColor::Green;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants")
+	FLinearColor SelectionColorBuildInvalid = FLinearColor::Red;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants")
+	FLinearColor SelectionColorInspect = FLinearColor::Gray;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants")
 	float SelectionOpacity = 0.5f;
@@ -67,9 +74,15 @@ public:
 	void UnhoverTile();
 
 	void TryBuild(FIntVector2 TileToBuildOn);
+
+	void SetSelectionMaterialColour(FLinearColor NewColor);
+
+	void SetSelectionMaterialBasedOnBuildValidity(FIntVector2 Coord);
 	
 	UPROPERTY(EditAnywhere, Category = "Grid")
-    	UGridDimensions* GridDimensions;
+	UGridDimensions* GridDimensions;
+
+	bool IsInBuildMode = false;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Buildings", meta = (AllowPrivateAccess = "true"))

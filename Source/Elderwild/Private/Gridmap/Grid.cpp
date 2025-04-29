@@ -19,7 +19,7 @@ AGrid::AGrid()
 void AGrid::OnConstruction(const FTransform &Transform)
 {
 	LineMaterial = CreateMaterialInstance(LineColor, LineOpacity);
-	SelectionMaterial = CreateMaterialInstance(SelectionColor, SelectionOpacity);
+	SetSelectionMaterialColour(SelectionColorInspect);
 	
 	checkf(GridFactory, TEXT("Grid factory not created"));
 	checkf(GridDimensions, TEXT("GridDimensions not initialized properly"));
@@ -97,6 +97,7 @@ void AGrid::HoverTile(FVector Location)
 	checkf(GridDimensions, TEXT("GridDimensions not initialized properly"));
 	FIntVector2 Coord = GridDimensions->LocationToTile(Location);
 	SetSelectedTile(Coord);
+	SetSelectionMaterialBasedOnBuildValidity(Coord);
 }
 
 void AGrid::UnhoverTile()
@@ -107,7 +108,7 @@ void AGrid::UnhoverTile()
 void AGrid::TryBuild(FIntVector2 TileToBuildOn)
 {
 	if (!Building || !OccupancyMap) return;
-	if (OccupancyMap->GetTileOccupancyState(TileToBuildOn) == OCCUPIED) return;
+	if (OccupancyMap->GetTileOccupancyState(TileToBuildOn) == EOccupancyState::OCCUPIED) return;
 
 	UE_LOG(LogTemp, Display, TEXT("TryBuild"));
 
@@ -118,5 +119,31 @@ void AGrid::TryBuild(FIntVector2 TileToBuildOn)
 	FActorSpawnParameters SpawnInfo;
 	GetWorld()->SpawnActor<AActor>(Building, LocalLocation, Rotation, SpawnInfo);
 	
-	OccupancyMap->SetTileOccupancyState(TileToBuildOn, OCCUPIED);
+	OccupancyMap->SetTileOccupancyState(TileToBuildOn, EOccupancyState::OCCUPIED);
+}
+
+void AGrid::SetSelectionMaterialColour(FLinearColor NewColor)
+{
+	SelectionMaterial = CreateMaterialInstance(NewColor, SelectionOpacity);
+
+	if (SelectionProceduralMesh && SelectionMaterial)
+	{
+		SelectionProceduralMesh->SetMaterial(0, SelectionMaterial);
+	}
+}
+
+void AGrid::SetSelectionMaterialBasedOnBuildValidity(FIntVector2 Coord)
+{
+	if (!GridDimensions || !OccupancyMap) return;
+	if (!GridDimensions->TileIsValid(Coord)) return;
+	if (!IsInBuildMode) return;
+
+	if (OccupancyMap->GetTileOccupancyState(Coord) == EOccupancyState::EMPTY)
+	{
+		SetSelectionMaterialColour(SelectionColorBuildValid);
+	}
+	else
+	{
+		SetSelectionMaterialColour(SelectionColorBuildInvalid);
+	}
 }
