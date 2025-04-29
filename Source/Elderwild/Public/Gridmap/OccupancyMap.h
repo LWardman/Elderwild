@@ -5,13 +5,13 @@
 #include "OccupancyMap.generated.h"
 
 UENUM(BlueprintType)
-enum FOccupancyState : uint8
+enum class EOccupancyState : uint8
 {
 	EMPTY,
 	OCCUPIED
 };
 
-typedef TArray<TArray<FOccupancyState>> OccupancyMatrix;
+typedef TArray<TArray<EOccupancyState>> OccupancyMatrix;
 
 UCLASS()
 class ELDERWILD_API UOccupancyMap : public UObject
@@ -21,9 +21,9 @@ class ELDERWILD_API UOccupancyMap : public UObject
 public:
 	void Init(int32 _GridWidth, int32 _GridHeight);
 
-	FOccupancyState GetTileOccupancyState(FIntVector2 Coord);
+	EOccupancyState GetTileOccupancyState(FIntVector2 Coord);
 
-	void SetTileOccupancyState(FIntVector2 Coord, FOccupancyState State);
+	void SetTileOccupancyState(FIntVector2 Coord, EOccupancyState State);
 	
 private:
 	bool IndexIsValid(FIntVector2 Coord);

@@ -12,21 +12,21 @@ void UOccupancyMap::Init(int32 _GridWidth, int32 _GridHeight)
 	Map.SetNum(GridHeight);
 	ParallelFor(GridHeight, [this](int32 x)
 	{
-		Map[x].Init(EMPTY, GridWidth);
+		Map[x].Init(EOccupancyState::EMPTY, GridWidth);
 	});
 
 	double Elapsed = FPlatformTime::Seconds() - Start;
 	UE_LOG(LogTemp, Warning, TEXT("Init took %f seconds"), Elapsed);
 }
 
-FOccupancyState UOccupancyMap::GetTileOccupancyState(FIntVector2 Coord)
+EOccupancyState UOccupancyMap::GetTileOccupancyState(FIntVector2 Coord)
 {
-	if (!IndexIsValid(Coord)) return OCCUPIED;
+	if (!IndexIsValid(Coord)) return EOccupancyState::OCCUPIED;
 
 	return Map[Coord.X][Coord.Y];
 }
 
-void UOccupancyMap::SetTileOccupancyState(FIntVector2 Coord, FOccupancyState State)
+void UOccupancyMap::SetTileOccupancyState(FIntVector2 Coord, EOccupancyState State)
 {
 	if (!IndexIsValid(Coord)) return;
 	Map[Coord.X][Coord.Y] = State;
