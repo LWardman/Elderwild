@@ -47,6 +47,22 @@ void UCursorInteractor::HandleClick()
 void UCursorInteractor::ChangeMouseMode(FMouseMode NewMouseMode)
 {
 	MouseMode = NewMouseMode;
+
+	if (Grid)
+	{
+		switch(MouseMode)
+		{
+			case FMouseMode::DEFAULT:
+				Grid->SetSelectionMaterialColour(Grid->SelectionColorInspect);
+				Grid->IsInBuildMode = false;
+				break;
+						
+			case FMouseMode::BUILDING:
+				Grid->SetSelectionMaterialColour(Grid->SelectionColorBuildValid);
+				Grid->IsInBuildMode = true;
+				break;
+		}
+	}
 }
 
 void UCursorInteractor::ClickedInDefaultMode()

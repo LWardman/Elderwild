@@ -36,7 +36,7 @@ private:
 	AGrid* Grid;
 
 	UPROPERTY()
-	FMouseMode MouseMode = FMouseMode::BUILDING;
+	FMouseMode MouseMode = FMouseMode::DEFAULT;
 
 	void ClickedInDefaultMode();
 
