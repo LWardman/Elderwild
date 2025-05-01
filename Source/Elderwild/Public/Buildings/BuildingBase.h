@@ -17,4 +17,8 @@ protected:
 
 public:	
 	virtual void Tick(float DeltaTime) override;
+
+private:
+	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess))
+	int32 MaxNumberOfInhabitants = 3;
 };
