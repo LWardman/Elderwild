@@ -1,13 +1,11 @@
 #include "Player/CursorInteractor.h"
 
-#include "Player/CameraController.h"
-#include "Player/BuildingModeWidget.h"
+#include "Player/MouseModeWidget.h"
 #include "Gridmap/Grid.h"
 #include "Gridmap/GridDimensions.h"
-#include "Gridmap/GridVisuals.h"
 
 
-void UCursorInteractor::Initialize(ACameraController* InController, AGrid* InGrid)
+void UCursorInteractor::Initialize(APlayerController* InController, AGrid* InGrid)
 {
 	Controller = InController;
 	Grid = InGrid;
@@ -32,37 +30,27 @@ void UCursorInteractor::UpdateHover()
 
 void UCursorInteractor::HandleClick()
 {
-	// TODO : this is fine for a small number of modes, use inheritance if/when this gets too big.
+	// Fine for a small number of modes, when this gets over 3 cases then refactor.
 	switch(MouseMode)
 	{
-		case FMouseMode::DEFAULT:
+		case EMouseMode::DEFAULT:
 			ClickedInDefaultMode();
 			break;
 			
-		case FMouseMode::BUILDING:
+		case EMouseMode::BUILDING:
 			ClickedInBuildMode();
 			break;
 	}
 }
 
-void UCursorInteractor::ChangeMouseMode(FMouseMode NewMouseMode)
+void UCursorInteractor::ChangeMouseMode(EMouseMode NewMouseMode)
 {
 	MouseMode = NewMouseMode;
 
-	if (Grid && Grid->GridVisuals)
+	if (Grid)
 	{
-		switch(MouseMode)
-		{
-			case FMouseMode::DEFAULT:
-				Grid->SetSelectionMaterialColour(Grid->GridVisuals->InspectColor);
-				Grid->IsInBuildMode = false;
-				break;
-						
-			case FMouseMode::BUILDING:
-				Grid->SetSelectionMaterialColour(Grid->GridVisuals->BuildValidColor);
-				Grid->IsInBuildMode = true;
-				break;
-		}
+		Grid->MouseMode = NewMouseMode;
+		Grid->SetSelectionMaterialFromMouseMode();
 	}
 }
 
@@ -73,7 +61,6 @@ void UCursorInteractor::ClickedInDefaultMode()
 
 void UCursorInteractor::ClickedInBuildMode()
 {
-	UE_LOG(LogTemp, Display, TEXT("Clicked in build mode"));
 	checkf(Controller && Grid && Grid->GridDimensions, TEXT("Nullptr in Cursor Interactor, HandleClick()"));
 	
 	FHitResult Hit;
@@ -86,17 +73,10 @@ void UCursorInteractor::ClickedInBuildMode()
 
 void UCursorInteractor::CreateMouseModeWidget()
 {
-	UE_LOG(LogTemp, Display, TEXT("Step 1"));
 	if (MouseModeWidgetClass && Controller)
 	{
-		
-		UE_LOG(LogTemp, Display, TEXT("Step 2"));
-		MouseModeWidget = CreateWidget<UBuildingModeWidget>(Controller, MouseModeWidgetClass);
+		MouseModeWidget = CreateWidget<UMouseModeWidget>(Controller, MouseModeWidgetClass);
 			
-		if (MouseModeWidget)
-		{
-			UE_LOG(LogTemp, Display, TEXT("Step 3"));
-			MouseModeWidget->AddToPlayerScreen();
-		}
+		if (MouseModeWidget) MouseModeWidget->AddToPlayerScreen();
 	}
 }

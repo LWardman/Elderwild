@@ -5,39 +5,37 @@
 #include "CursorInteractor.generated.h"
 
 class AGrid;
-class ACameraController;
-class UBuildingModeWidget;
+class UMouseModeWidget;
 
 UENUM()
-enum class FMouseMode
+enum class EMouseMode : uint8
 {
 	DEFAULT,
 	BUILDING
 };
 
-// TODO : this class shouldn't know the internals of AGrid, it should just pass the mouse mode to it.
 UCLASS()
 class ELDERWILD_API UCursorInteractor : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:
-	void Initialize(ACameraController* InController, AGrid* InGrid);
+	void Initialize(APlayerController* InController, AGrid* InGrid);
 
 	void UpdateHover();
 	void HandleClick();
 
-	void ChangeMouseMode(FMouseMode NewMouseMode);
+	void ChangeMouseMode(EMouseMode NewMouseMode);
 
 private:
 	UPROPERTY()
-	ACameraController* Controller; // TODO : does this need to be ACameraController? Why not APlayerController?
+	APlayerController* Controller;
 
 	UPROPERTY()
 	AGrid* Grid;
 
 	UPROPERTY()
-	FMouseMode MouseMode = FMouseMode::DEFAULT;
+	EMouseMode MouseMode = EMouseMode::DEFAULT;
 
 	void ClickedInDefaultMode();
 
@@ -46,8 +44,8 @@ private:
 	void CreateMouseModeWidget();
 
 	UPROPERTY()
-	UBuildingModeWidget* MouseModeWidget;
+	UMouseModeWidget* MouseModeWidget;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="UI", meta=(AllowPrivateAccess = "true"))
-	TSubclassOf<UBuildingModeWidget> MouseModeWidgetClass;
+	TSubclassOf<UMouseModeWidget> MouseModeWidgetClass;
 };
