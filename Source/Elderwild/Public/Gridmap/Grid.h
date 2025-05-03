@@ -13,8 +13,9 @@ class UGridVisuals;
 struct FGridRenderData;
 struct FLine;
 
+enum class EMouseMode : uint8;
+
 // TODO : write tests?
-// TODO : factor out colour selector into its own class
 UCLASS()
 class ELDERWILD_API AGrid : public AActor
 {
@@ -29,9 +30,13 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Visuals")
-	UGridVisuals* GridVisuals;
+	UPROPERTY(EditAnywhere, Category = "Construction")
+	UGridDimensions* GridDimensions;
 
+private:
+	UPROPERTY(EditDefaultsOnly, Category = "Visuals", meta=(AllowPrivateAccess))
+	UGridVisuals* GridVisuals;
+	
 	UPROPERTY()
 	UMaterialInstanceDynamic* LineMaterial;
 	
@@ -44,7 +49,6 @@ public:
 	UPROPERTY()
 	UProceduralMeshComponent* SelectionProceduralMesh;
 
-private:
 	void CreateMeshSectionFromRenderData(UProceduralMeshComponent* Mesh, FGridRenderData& GridRenderData);
 
 	UMaterialInstanceDynamic* CreateMaterialInstance(FLinearColor Color, float Opacity);
@@ -61,11 +65,10 @@ public:
 	void SetSelectionMaterialColour(FLinearColor NewColor);
 
 	void SetSelectionMaterialBasedOnBuildValidity(FIntVector2 Coord);
-	
-	UPROPERTY(EditAnywhere, Category = "Grid")
-	UGridDimensions* GridDimensions;
 
-	bool IsInBuildMode = false;
+	void SetSelectionMaterialFromMouseMode();
+
+	EMouseMode MouseMode;
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Buildings", meta = (AllowPrivateAccess = "true"))
@@ -74,6 +77,6 @@ private:
 	UPROPERTY()
 	UOccupancyMap* OccupancyMap = nullptr;
 
-	UPROPERTY(EditAnywhere, Category = "Grid")
+	UPROPERTY(EditAnywhere, Category = "Construction")
 	UGridFactory* GridFactory;
 };

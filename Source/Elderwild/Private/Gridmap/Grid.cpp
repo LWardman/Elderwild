@@ -6,6 +6,7 @@
 #include "Gridmap/OccupancyMap.h"
 #include "Gridmap/GridRenderData.h"
 #include "Gridmap/GridVisuals.h"
+#include "Player/CursorInteractor.h"
 
 AGrid::AGrid()
 {
@@ -100,7 +101,11 @@ void AGrid::HoverTile(FVector Location)
 	checkf(GridDimensions, TEXT("GridDimensions not initialized properly"));
 	FIntVector2 Coord = GridDimensions->LocationToTile(Location);
 	SetSelectedTile(Coord);
-	SetSelectionMaterialBasedOnBuildValidity(Coord);
+
+	if (MouseMode == EMouseMode::BUILDING)
+	{
+		SetSelectionMaterialBasedOnBuildValidity(Coord);
+	}
 }
 
 void AGrid::UnhoverTile()
@@ -112,8 +117,6 @@ void AGrid::TryBuild(FIntVector2 TileToBuildOn)
 {
 	if (!Building || !OccupancyMap) return;
 	if (OccupancyMap->GetTileOccupancyState(TileToBuildOn) == EOccupancyState::OCCUPIED) return;
-
-	UE_LOG(LogTemp, Display, TEXT("TryBuild"));
 
 	checkf(GridDimensions, TEXT("GridDimensions not initialized properly"));
 	FVector2D TileCenter = GridDimensions->CenterOfTileToGridLocation(TileToBuildOn);
@@ -137,16 +140,28 @@ void AGrid::SetSelectionMaterialColour(FLinearColor NewColor)
 
 void AGrid::SetSelectionMaterialBasedOnBuildValidity(FIntVector2 Coord)
 {
-	if (!GridDimensions || !OccupancyMap) return;
-	if (!GridDimensions->TileIsValid(Coord)) return;
-	if (!IsInBuildMode) return;
+	if (GridDimensions && !GridDimensions->TileIsValid(Coord)) return;
 
-	if (OccupancyMap->GetTileOccupancyState(Coord) == EOccupancyState::EMPTY)
+	if (OccupancyMap && OccupancyMap->GetTileOccupancyState(Coord) == EOccupancyState::EMPTY)
 	{
 		SetSelectionMaterialColour(GridVisuals->BuildValidColor);
+		return;
 	}
-	else
+	SetSelectionMaterialColour(GridVisuals->BuildInvalidColor);
+}
+
+void AGrid::SetSelectionMaterialFromMouseMode()
+{
+	if (!GridVisuals) return;
+	
+	switch (MouseMode)
 	{
-		SetSelectionMaterialColour(GridVisuals->BuildInvalidColor);
+		case EMouseMode::DEFAULT:
+			SetSelectionMaterialColour(GridVisuals->InspectColor);
+			break;
+			
+		case EMouseMode::BUILDING:
+			SetSelectionMaterialColour(GridVisuals->BuildValidColor);
+			break;
 	}
 }
