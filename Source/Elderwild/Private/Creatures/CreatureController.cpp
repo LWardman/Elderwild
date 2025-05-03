@@ -1,10 +1,10 @@
-#include "Creatures/AICreatureController.h"
+#include "Creatures/CreatureController.h"
 
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
 
 
-AAICreatureController::AAICreatureController()
+ACreatureController::ACreatureController()
 {
 	BehaviorTreeManager = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorTreeComponent"));
 	checkf(BehaviorTreeManager, TEXT("BehaviorTreeManager could not be created"));
@@ -12,7 +12,7 @@ AAICreatureController::AAICreatureController()
 	bStartAILogicOnPossess = true;
 }
 
-void AAICreatureController::OnPossess(APawn* InPawn)
+void ACreatureController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 

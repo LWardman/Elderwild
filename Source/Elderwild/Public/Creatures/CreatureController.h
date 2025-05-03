@@ -2,19 +2,18 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
-#include "AICreatureController.generated.h"
+#include "CreatureController.generated.h"
 
 class UBehaviorTree;
 class UBehaviorTreeComponent;
-class UBlackboardComponent;
 
 UCLASS()
-class ELDERWILD_API AAICreatureController : public AAIController
+class ELDERWILD_API ACreatureController : public AAIController
 {
 	GENERATED_BODY()
 	
 public:
-	AAICreatureController();
+	ACreatureController();
 	
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	UBehaviorTree* BehaviorTree;
