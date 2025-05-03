@@ -8,6 +8,7 @@ class UOccupancyMap;
 class UProceduralMeshComponent;
 class UGridFactory;
 class UGridDimensions;
+class UGridVisuals;
 
 struct FGridRenderData;
 struct FLine;
@@ -28,26 +29,8 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants")
-	FLinearColor LineColor = FLinearColor::Black;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants")
-	float LineOpacity = 0.5f;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants")
-	FLinearColor SelectionColorBuildValid = FLinearColor::Green;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants")
-	FLinearColor SelectionColorBuildInvalid = FLinearColor::Red;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants")
-	FLinearColor SelectionColorInspect = FLinearColor::Gray;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Constants")
-	float SelectionOpacity = 0.5f;
-
-	UPROPERTY(EditAnywhere, Category = "Constants")
-	UMaterialInterface* Material;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Visuals")
+	UGridVisuals* GridVisuals;
 
 	UPROPERTY()
 	UMaterialInstanceDynamic* LineMaterial;

@@ -4,6 +4,7 @@
 #include "Player/BuildingModeWidget.h"
 #include "Gridmap/Grid.h"
 #include "Gridmap/GridDimensions.h"
+#include "Gridmap/GridVisuals.h"
 
 
 void UCursorInteractor::Initialize(ACameraController* InController, AGrid* InGrid)
@@ -48,17 +49,17 @@ void UCursorInteractor::ChangeMouseMode(FMouseMode NewMouseMode)
 {
 	MouseMode = NewMouseMode;
 
-	if (Grid)
+	if (Grid && Grid->GridVisuals)
 	{
 		switch(MouseMode)
 		{
 			case FMouseMode::DEFAULT:
-				Grid->SetSelectionMaterialColour(Grid->SelectionColorInspect);
+				Grid->SetSelectionMaterialColour(Grid->GridVisuals->InspectColor);
 				Grid->IsInBuildMode = false;
 				break;
 						
 			case FMouseMode::BUILDING:
-				Grid->SetSelectionMaterialColour(Grid->SelectionColorBuildValid);
+				Grid->SetSelectionMaterialColour(Grid->GridVisuals->BuildValidColor);
 				Grid->IsInBuildMode = true;
 				break;
 		}

@@ -15,6 +15,7 @@ enum class FMouseMode
 	BUILDING
 };
 
+// TODO : this class shouldn't know the internals of AGrid, it should just pass the mouse mode to it.
 UCLASS()
 class ELDERWILD_API UCursorInteractor : public UActorComponent
 {

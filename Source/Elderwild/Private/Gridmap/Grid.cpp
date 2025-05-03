@@ -5,6 +5,7 @@
 #include "Gridmap/GridFactory.h"
 #include "Gridmap/OccupancyMap.h"
 #include "Gridmap/GridRenderData.h"
+#include "Gridmap/GridVisuals.h"
 
 AGrid::AGrid()
 {
@@ -18,8 +19,9 @@ AGrid::AGrid()
 
 void AGrid::OnConstruction(const FTransform &Transform)
 {
-	LineMaterial = CreateMaterialInstance(LineColor, LineOpacity);
-	SetSelectionMaterialColour(SelectionColorInspect);
+	checkf(GridVisuals, TEXT("No grid visuals given to the grid"));
+	LineMaterial = CreateMaterialInstance(GridVisuals->LineColor, GridVisuals->LineOpacity);
+	SetSelectionMaterialColour(GridVisuals->InspectColor);
 	
 	checkf(GridFactory, TEXT("Grid factory not created"));
 	checkf(GridDimensions, TEXT("GridDimensions not initialized properly"));
@@ -66,9 +68,10 @@ void AGrid::CreateMeshSectionFromRenderData(UProceduralMeshComponent* Mesh, FGri
 
 UMaterialInstanceDynamic* AGrid::CreateMaterialInstance(FLinearColor Color, float Opacity)
 {
-	checkf(Material, TEXT("AGrid cannot create dynamic material instance, because no parent material is set"));
+	checkf(GridVisuals, TEXT("No grid visuals given to the grid"));
+	checkf(GridVisuals->Material, TEXT("AGrid cannot create dynamic material instance, because no parent material is set"));
 	
-	UMaterialInstanceDynamic* DynMaterial = UMaterialInstanceDynamic::Create(Material, this);
+	UMaterialInstanceDynamic* DynMaterial = UMaterialInstanceDynamic::Create(GridVisuals->Material, this);
 	DynMaterial->SetVectorParameterValue("Color", Color);
 	DynMaterial->SetScalarParameterValue("Opacity", Opacity);
 	
@@ -124,7 +127,7 @@ void AGrid::TryBuild(FIntVector2 TileToBuildOn)
 
 void AGrid::SetSelectionMaterialColour(FLinearColor NewColor)
 {
-	SelectionMaterial = CreateMaterialInstance(NewColor, SelectionOpacity);
+	SelectionMaterial = CreateMaterialInstance(NewColor, GridVisuals->SelectionOpacity);
 
 	if (SelectionProceduralMesh && SelectionMaterial)
 	{
@@ -140,10 +143,10 @@ void AGrid::SetSelectionMaterialBasedOnBuildValidity(FIntVector2 Coord)
 
 	if (OccupancyMap->GetTileOccupancyState(Coord) == EOccupancyState::EMPTY)
 	{
-		SetSelectionMaterialColour(SelectionColorBuildValid);
+		SetSelectionMaterialColour(GridVisuals->BuildValidColor);
 	}
 	else
 	{
-		SetSelectionMaterialColour(SelectionColorBuildInvalid);
+		SetSelectionMaterialColour(GridVisuals->BuildInvalidColor);
 	}
 }
