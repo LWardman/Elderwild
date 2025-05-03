@@ -65,22 +65,6 @@ void ACameraController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SetAndCheckPointers();
-    if (CursorInteractor && Grid)
-    {
-    	CursorInteractor->Initialize(this, Grid);
-    }
-}
-
-void ACameraController::Tick(float DeltaSeconds)
-{
-	Super::Tick(DeltaSeconds);
-
-	if (CursorInteractor) CursorInteractor->UpdateHover();
-}
-
-void ACameraController::SetAndCheckPointers()
-{
 	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(GetPawn());
 	checkf(PlayerPawn, TEXT("Controller could not find the player pawn"));
 
@@ -95,6 +79,18 @@ void ACameraController::SetAndCheckPointers()
 
 	Grid = GameMode->GetGrid();
 	checkf(Grid, TEXT("Handling player cursor could not be done because the grid cannot be found"));
+	
+    if (CursorInteractor && Grid)
+    {
+    	CursorInteractor->Initialize(this, Grid);
+    }
+}
+
+void ACameraController::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if (CursorInteractor) CursorInteractor->UpdateHover();
 }
 
 void ACameraController::OnClick()

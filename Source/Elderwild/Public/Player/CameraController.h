@@ -49,9 +49,6 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput", meta=(AllowPrivateAccess = "true"))
 	UInputDataConfig* InputActions;
-	
-	// TODO : seems like bad design to do this
-	void SetAndCheckPointers();
 
 	void OnClick();
 
