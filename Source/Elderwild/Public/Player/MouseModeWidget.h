@@ -2,15 +2,13 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "BuildingModeWidget.generated.h"
+#include "MouseModeWidget.generated.h"
 
 class UButton;
-
 class UCursorInteractor;
 
-// TODO : rename to UMouseModeWidget
 UCLASS()
-class ELDERWILD_API UBuildingModeWidget : public UUserWidget
+class ELDERWILD_API UMouseModeWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	

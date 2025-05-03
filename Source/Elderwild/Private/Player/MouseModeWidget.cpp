@@ -1,4 +1,4 @@
-#include "Player/BuildingModeWidget.h"
+#include "Player/MouseModeWidget.h"
 
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
@@ -7,43 +7,42 @@
 #include "Player/CursorInteractor.h"
 
 
-void UBuildingModeWidget::NativeConstruct()
+void UMouseModeWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
 	if (DefaultButton)
 	{
-		DefaultButton->OnReleased.AddDynamic(this, &UBuildingModeWidget::OnDefaultButtonPressed);
+		DefaultButton->OnReleased.AddDynamic(this, &UMouseModeWidget::OnDefaultButtonPressed);
 	}
 	if (BuildButton)
 	{
-		BuildButton->OnReleased.AddDynamic(this, &UBuildingModeWidget::OnBuildButtonPressed);
+		BuildButton->OnReleased.AddDynamic(this, &UMouseModeWidget::OnBuildButtonPressed);
 	}
 
 	SetCursorInteractor();
 }
 
-void UBuildingModeWidget::OnDefaultButtonPressed()
+void UMouseModeWidget::OnDefaultButtonPressed()
 {
 	UE_LOG(LogTemp, Display, TEXT("Default mode"));
 	if (CursorInteractor)
 	{
-		CursorInteractor->ChangeMouseMode(FMouseMode::DEFAULT);
+		CursorInteractor->ChangeMouseMode(EMouseMode::DEFAULT);
 	}
 }
 
-void UBuildingModeWidget::OnBuildButtonPressed()
+void UMouseModeWidget::OnBuildButtonPressed()
 {
 	UE_LOG(LogTemp, Display, TEXT("Build mode"));
 	if (CursorInteractor)
 	{
-		CursorInteractor->ChangeMouseMode(FMouseMode::BUILDING);
+		CursorInteractor->ChangeMouseMode(EMouseMode::BUILDING);
 	}
 }
 
-void UBuildingModeWidget::SetCursorInteractor()
+void UMouseModeWidget::SetCursorInteractor()
 {
-	// Is this a valid world context object?
 	APlayerController* FoundController = UGameplayStatics::GetPlayerController(this, 0);
 	if (ACameraController* Controller = Cast<ACameraController>(FoundController))
 	{
