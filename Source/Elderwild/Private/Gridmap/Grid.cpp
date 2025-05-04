@@ -48,7 +48,7 @@ void AGrid::BeginPlay()
 	OccupancyMap = NewObject<UOccupancyMap>();
 	checkf(OccupancyMap, TEXT("OccupancyMap not initialized properly"));
 	checkf(GridDimensions, TEXT("GridDimensions not initialized properly"));
-	OccupancyMap->Init(GridDimensions->GetGridWidth(), GridDimensions->GetGridHeight());
+	OccupancyMap->Init(GridDimensions->GetNumCols(), GridDimensions->GetNumRows());
 }
 
 void AGrid::CreateMeshSectionFromRenderData(UProceduralMeshComponent* Mesh, FGridRenderData& GridRenderData)
