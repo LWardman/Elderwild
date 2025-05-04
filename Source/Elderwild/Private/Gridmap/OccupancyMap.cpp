@@ -3,10 +3,8 @@
 
 void UOccupancyMap::Init(int32 _GridWidth, int32 _GridHeight)
 {
-	double Start = FPlatformTime::Seconds();
-	
-	GridWidth = _GridWidth;
-	GridHeight = _GridHeight;
+	GridWidth = FMath::Max(0, _GridWidth);	// Ensures no negative dimensions are ever taken seriously.
+	GridHeight = FMath::Max(0, _GridHeight);
 
 	// Multithreaded 'for loop' for speed. Does 100x100 at 0.05s, compared to standard for loop at 1s
 	Map.SetNum(GridHeight);
@@ -14,14 +12,11 @@ void UOccupancyMap::Init(int32 _GridWidth, int32 _GridHeight)
 	{
 		Map[x].Init(EOccupancyState::EMPTY, GridWidth);
 	});
-
-	double Elapsed = FPlatformTime::Seconds() - Start;
-	UE_LOG(LogTemp, Warning, TEXT("Init took %f seconds"), Elapsed);
 }
 
 EOccupancyState UOccupancyMap::GetTileOccupancyState(FIntVector2 Coord)
 {
-	if (!IndexIsValid(Coord)) return EOccupancyState::OCCUPIED;
+	if (!IndexIsValid(Coord)) return EOccupancyState::NOT_A_TILE;
 
 	return Map[Coord.X][Coord.Y];
 }

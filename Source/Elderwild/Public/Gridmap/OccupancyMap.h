@@ -8,7 +8,8 @@ UENUM(BlueprintType)
 enum class EOccupancyState : uint8
 {
 	EMPTY,
-	OCCUPIED
+	OCCUPIED,
+	NOT_A_TILE
 };
 
 typedef TArray<TArray<EOccupancyState>> OccupancyMatrix;
@@ -28,8 +29,8 @@ public:
 private:
 	bool IndexIsValid(FIntVector2 Coord);
 	
-	int32 GridWidth;
-	int32 GridHeight;
+	int32 GridWidth = 0;
+	int32 GridHeight = 0;
 
 	OccupancyMatrix Map;
 };
