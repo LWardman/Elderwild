@@ -9,6 +9,7 @@ class ADirectionalLight;
 class UCalendarWidget;
 
 enum class ESeason : uint8;
+enum class EDayNight : uint8;
 
 UCLASS()
 class ELDERWILD_API UCalendar : public UActorComponent
@@ -22,6 +23,9 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+public:
+	EDayNight GetDayState();
 
 private:
 	UPROPERTY()

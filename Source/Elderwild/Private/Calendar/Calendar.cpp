@@ -50,6 +50,15 @@ void UCalendar::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorC
 	SendTimeInfoToUI();
 }
 
+EDayNight UCalendar::GetDayState()
+{
+	if (SeasonCycler && SeasonCycler->GetDayCycler())
+	{
+		return SeasonCycler->GetDayCycler()->GetCurrentTimePeriod();
+	}
+	return EDayNight::Day;
+}
+
 TArray<AActor*> UCalendar::GetActorsWithSunTag()
 {
 	TArray<AActor*> SunActors;
