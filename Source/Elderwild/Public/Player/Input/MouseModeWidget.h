@@ -6,6 +6,7 @@
 
 class UButton;
 class UCursorInteractor;
+class UMouseMode;
 
 UCLASS()
 class ELDERWILD_API UMouseModeWidget : public UUserWidget
@@ -17,21 +18,36 @@ protected:
 	
 public:
 	UFUNCTION()
-	void OnDefaultButtonPressed();
+	void OnInspectButtonPressed();
 
 	UFUNCTION()
 	void OnBuildButtonPressed();
+
+	UFUNCTION()
+	void OnDialogueButtonPressed();
 	
 protected:
 	UPROPERTY(meta = (BindWidget))
-	UButton* DefaultButton;
+	UButton* InspectButton;
 
 	UPROPERTY(meta = (BindWidget))
 	UButton* BuildButton;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* DialogueButton;
 
 private:
 	UPROPERTY()
 	UCursorInteractor* CursorInteractor;
 
 	void SetCursorInteractor();
+
+	UPROPERTY(EditAnywhere, Category="Mouse Modes", meta=(AllowPrivateAccess))
+	TSubclassOf<UMouseMode> InspectModeClass;
+
+	UPROPERTY(EditAnywhere, Category="Mouse Modes", meta=(AllowPrivateAccess))
+	TSubclassOf<UMouseMode> BuildModeClass;
+
+	UPROPERTY(EditAnywhere, Category="Mouse Modes", meta=(AllowPrivateAccess))
+	TSubclassOf<UMouseMode> DialogueModeClass;
 };
