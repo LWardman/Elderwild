@@ -1,9 +1,20 @@
 #include "Gridmap/GridDimensions.h"
 
-FVector2D UGridDimensions::CenterAdjustment()
+
+UGridDimensions::UGridDimensions()
 {
-	float HalfTileLength = TileSize / 2;
-	return FVector2D{HalfTileLength, HalfTileLength};
+	// Passing default values into Init will sanitize them, in case some are set wrong.
+	Init(NumRows, NumCols, TileSize, LineThickness);
+}
+
+void UGridDimensions::Init(int32 _NumRows, int32 _NumCols, int32 _TileSize, int32 _LineThickness)
+{
+	NumRows = FMath::Max(0, _NumRows);
+	NumCols = FMath::Max(0, _NumCols);
+	
+	TileSize = FMath::Max(1, _TileSize);
+
+	LineThickness = FMath::Max(0, _LineThickness);
 }
 
 FVector2D UGridDimensions::CenterOfTileToGridLocation(FIntVector2 Coord)
@@ -13,7 +24,8 @@ FVector2D UGridDimensions::CenterOfTileToGridLocation(FIntVector2 Coord)
 
 FVector2D UGridDimensions::CornerOfTileToGridLocation(FIntVector2 Coord)
 {
-	FVector GridLocation = GetOwner()->GetActorLocation();
+	FVector GridLocation = GetWorldLocation();
+	
 	float TileCornerX = Coord.X * TileSize + GridLocation.X;
 	float TileCornerY = Coord.Y * TileSize + GridLocation.Y;
 	return FVector2D{TileCornerX, TileCornerY};
@@ -26,11 +38,22 @@ bool UGridDimensions::TileIsValid(const FIntVector2 Coord) const
 
 FIntVector2 UGridDimensions::LocationToTile(FVector HitLocation) const
 {
-	if (!TileHasValidDimensions()) return FIntVector2(-1, -1);
+	if (!GridHasValidDimensions()) return FIntVector2(-1, -1);
 		
-	const FVector LocalHitLocation = HitLocation - GetOwner()->GetActorLocation();
+	const FVector LocalHitLocation = HitLocation - GetWorldLocation();
 	
 	return LocalLocationToTile(LocalHitLocation);
+}
+
+bool UGridDimensions::GridHasValidDimensions() const
+{
+	return NumRows > 0 && NumCols > 0;
+}
+
+FVector2D UGridDimensions::CenterAdjustment()
+{
+	float HalfTileLength = TileSize / 2;
+	return FVector2D{HalfTileLength, HalfTileLength};
 }
 
 FIntVector2 UGridDimensions::LocalLocationToTile(FVector LocalHitLocation) const
@@ -42,7 +65,8 @@ FIntVector2 UGridDimensions::LocalLocationToTile(FVector LocalHitLocation) const
 	return TileCornerLocation;
 }
 
-bool UGridDimensions::TileHasValidDimensions() const
+FVector UGridDimensions::GetWorldLocation() const
 {
-	return NumRows > 0 && NumCols > 0;
+	if (GetOwner()) return GetOwner()->GetActorLocation();
+	return FVector::ZeroVector;
 }
