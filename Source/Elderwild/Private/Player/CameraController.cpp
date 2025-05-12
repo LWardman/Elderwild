@@ -10,8 +10,8 @@
 #include "GameModes/DevGameMode.h"
 #include "Player/PlayerPawn.h"
 #include "Player/ControlledCamera.h"
-#include "Player/InputDataConfig.h"
-#include "Player/CursorInteractor.h"
+#include "Player/Input/InputDataConfig.h"
+#include "Player/Input/CursorInteractor.h"
 
 
 ACameraController::ACameraController()
