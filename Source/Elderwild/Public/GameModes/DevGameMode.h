@@ -33,6 +33,8 @@ public:
 	AGrid* GetGrid() const;
 	FCameraBoundaries CalculateCameraBoundariesFromGrid();
 
+	UCalendar* GetCalendar() const {return Calendar;}
+
 private:
 	UPROPERTY(EditAnywhere, Category="Calendar")
 	UCalendar* Calendar;

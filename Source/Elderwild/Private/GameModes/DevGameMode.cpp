@@ -61,15 +61,15 @@ AGrid* ADevGameMode::GetGrid() const
 // TODO : is this the right place to be doing this?
 FCameraBoundaries ADevGameMode::CalculateCameraBoundariesFromGrid()
 {
-	if (GetGrid() == nullptr || GetGrid()->GridDimensions == nullptr)
+	if (GetGrid() == nullptr || GetGrid()->GetGridDimensions() == nullptr)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Grid or its dimensions is a nullptr"));
 	}
 
 	FVector GridMinimum = GetGrid()->GetActorLocation();
 	FVector GridMaximum = GridMinimum;
-	GridMaximum.X += GetGrid()->GridDimensions->GetGridWidth();
-	GridMaximum.Y += GetGrid()->GridDimensions->GetGridHeight();
+	GridMaximum.X += GetGrid()->GetGridDimensions()->GetGridWidth();
+	GridMaximum.Y += GetGrid()->GetGridDimensions()->GetGridHeight();
 
 	FVector GridPadding = FVector(500, 500, 0);
 	
