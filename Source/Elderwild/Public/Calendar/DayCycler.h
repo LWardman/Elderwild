@@ -38,8 +38,8 @@ private:
 
 	Seconds GetTimeRemainingForTheDay() const;
 	
-	Seconds DaytimeLength = 90.f;
-	Seconds NightLength = 90.f;
+	Seconds DaytimeLength = 5.f;
+	Seconds NightLength = 5.f;
 	Seconds FullDayCycle = DaytimeLength + NightLength;
 
 	EDayNight TimePeriod = EDayNight::Day;
