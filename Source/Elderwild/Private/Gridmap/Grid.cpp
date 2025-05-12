@@ -6,7 +6,6 @@
 #include "Gridmap/OccupancyMap.h"
 #include "Gridmap/GridRenderData.h"
 #include "Gridmap/GridVisuals.h"
-#include "Player/CursorInteractor.h"
 
 AGrid::AGrid()
 {
@@ -49,6 +48,33 @@ void AGrid::BeginPlay()
 	checkf(OccupancyMap, TEXT("OccupancyMap not initialized properly"));
 	checkf(GridDimensions, TEXT("GridDimensions not initialized properly"));
 	OccupancyMap->Init(GridDimensions->GetNumCols(), GridDimensions->GetNumRows());
+}
+
+void AGrid::HoverTile(FVector Location)
+{
+	checkf(GridDimensions, TEXT("GridDimensions not initialized properly"));
+	FIntVector2 Coord = GridDimensions->LocationToTile(Location);
+	SetSelectedTile(Coord);
+}
+
+void AGrid::UnhoverTile()
+{
+	SetSelectedTile(FIntVector2(-1, -1));
+}
+
+void AGrid::TryBuild(FIntVector2 TileToBuildOn)
+{
+	if (!Building || !OccupancyMap) return;
+	if (OccupancyMap->GetTileOccupancyState(TileToBuildOn) == EOccupancyState::OCCUPIED) return;
+
+	checkf(GridDimensions, TEXT("GridDimensions not initialized properly"));
+	FVector2D TileCenter = GridDimensions->CenterOfTileToGridLocation(TileToBuildOn);
+	FVector LocalLocation = FVector(TileCenter.X, TileCenter.Y, GetActorLocation().Z);
+	FRotator Rotation(0.0f, 0.0f, 0.0f);
+	FActorSpawnParameters SpawnInfo;
+	GetWorld()->SpawnActor<AActor>(Building, LocalLocation, Rotation, SpawnInfo);
+	
+	OccupancyMap->SetTileOccupancyState(TileToBuildOn, EOccupancyState::OCCUPIED);
 }
 
 void AGrid::CreateMeshSectionFromRenderData(UProceduralMeshComponent* Mesh, FGridRenderData& GridRenderData)
@@ -96,38 +122,6 @@ void AGrid::SetSelectedTile(FIntVector2 Coord)
 	}
 }
 
-void AGrid::HoverTile(FVector Location)
-{
-	checkf(GridDimensions, TEXT("GridDimensions not initialized properly"));
-	FIntVector2 Coord = GridDimensions->LocationToTile(Location);
-	SetSelectedTile(Coord);
-
-	if (MouseMode == EMouseMode::BUILDING)
-	{
-		SetSelectionMaterialBasedOnBuildValidity(Coord);
-	}
-}
-
-void AGrid::UnhoverTile()
-{
-	SetSelectedTile(FIntVector2(-1, -1));
-}
-
-void AGrid::TryBuild(FIntVector2 TileToBuildOn)
-{
-	if (!Building || !OccupancyMap) return;
-	if (OccupancyMap->GetTileOccupancyState(TileToBuildOn) == EOccupancyState::OCCUPIED) return;
-
-	checkf(GridDimensions, TEXT("GridDimensions not initialized properly"));
-	FVector2D TileCenter = GridDimensions->CenterOfTileToGridLocation(TileToBuildOn);
-	FVector LocalLocation = FVector(TileCenter.X, TileCenter.Y, GetActorLocation().Z);
-	FRotator Rotation(0.0f, 0.0f, 0.0f);
-	FActorSpawnParameters SpawnInfo;
-	GetWorld()->SpawnActor<AActor>(Building, LocalLocation, Rotation, SpawnInfo);
-	
-	OccupancyMap->SetTileOccupancyState(TileToBuildOn, EOccupancyState::OCCUPIED);
-}
-
 void AGrid::SetSelectionMaterialColour(FLinearColor NewColor)
 {
 	SelectionMaterial = CreateMaterialInstance(NewColor, GridVisuals->SelectionOpacity);
@@ -148,20 +142,4 @@ void AGrid::SetSelectionMaterialBasedOnBuildValidity(FIntVector2 Coord)
 		return;
 	}
 	SetSelectionMaterialColour(GridVisuals->BuildInvalidColor);
-}
-
-void AGrid::SetSelectionMaterialFromMouseMode()
-{
-	if (!GridVisuals) return;
-	
-	switch (MouseMode)
-	{
-		case EMouseMode::DEFAULT:
-			SetSelectionMaterialColour(GridVisuals->InspectColor);
-			break;
-			
-		case EMouseMode::BUILDING:
-			SetSelectionMaterialColour(GridVisuals->BuildValidColor);
-			break;
-	}
 }

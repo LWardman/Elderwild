@@ -13,9 +13,7 @@ class UGridVisuals;
 struct FGridRenderData;
 struct FLine;
 
-enum class EMouseMode : uint8;
-
-// TODO : write tests?
+// TODO : write tests
 UCLASS()
 class ELDERWILD_API AGrid : public AActor
 {
@@ -30,12 +28,31 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	UPROPERTY(EditAnywhere, Category = "Construction")
-	UGridDimensions* GridDimensions;
+	UGridDimensions* GetGridDimensions() {return GridDimensions;}
+
+	UGridVisuals* GetGridVisuals() {return GridVisuals;}
+
+	UOccupancyMap* GetOccupancyMap() {return OccupancyMap;}
+	
+	void HoverTile(FVector Location);
+
+	void UnhoverTile();
+
+	void TryBuild(FIntVector2 TileToBuildOn);
+
+	void SetSelectionMaterialColour(FLinearColor NewColor);
 
 private:
-	UPROPERTY(EditDefaultsOnly, Category = "Visuals", meta=(AllowPrivateAccess))
-	UGridVisuals* GridVisuals;
+	void SetSelectionMaterialFromMouseMode();
+
+	// TODO : Move to factory?
+	void CreateMeshSectionFromRenderData(UProceduralMeshComponent* Mesh, FGridRenderData& GridRenderData);
+
+	UMaterialInstanceDynamic* CreateMaterialInstance(FLinearColor Color, float Opacity);
+
+	void SetSelectedTile(FIntVector2 Coord);
+
+	void SetSelectionMaterialBasedOnBuildValidity(FIntVector2 Coord);
 	
 	UPROPERTY()
 	UMaterialInstanceDynamic* LineMaterial;
@@ -49,28 +66,9 @@ private:
 	UPROPERTY()
 	UProceduralMeshComponent* SelectionProceduralMesh;
 
-	void CreateMeshSectionFromRenderData(UProceduralMeshComponent* Mesh, FGridRenderData& GridRenderData);
-
-	UMaterialInstanceDynamic* CreateMaterialInstance(FLinearColor Color, float Opacity);
-
-public:
-	void SetSelectedTile(FIntVector2 Coord);
-
-	void HoverTile(FVector Location);
-
-	void UnhoverTile();
-
-	void TryBuild(FIntVector2 TileToBuildOn);
-
-	void SetSelectionMaterialColour(FLinearColor NewColor);
-
-	void SetSelectionMaterialBasedOnBuildValidity(FIntVector2 Coord);
-
-	void SetSelectionMaterialFromMouseMode();
-
-	EMouseMode MouseMode;
-
-private:
+	UPROPERTY(EditAnywhere, Category = "Construction", meta=(AllowPrivateAccess))
+	UGridDimensions* GridDimensions;
+	
 	UPROPERTY(EditAnywhere, Category = "Buildings", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<AActor> Building;
 	
@@ -79,4 +77,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Construction")
 	UGridFactory* GridFactory;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Visuals", meta=(AllowPrivateAccess))
+	UGridVisuals* GridVisuals;
 };
