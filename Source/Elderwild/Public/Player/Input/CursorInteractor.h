@@ -5,15 +5,10 @@
 #include "CursorInteractor.generated.h"
 
 class AGrid;
+class UMouseMode;
 class UMouseModeWidget;
 
-UENUM()
-enum class EMouseMode : uint8
-{
-	DEFAULT,
-	BUILDING
-};
-
+// TODO : is there a point to having this class anymore?
 UCLASS()
 class ELDERWILD_API UCursorInteractor : public UActorComponent
 {
@@ -25,7 +20,7 @@ public:
 	void UpdateHover();
 	void HandleClick();
 
-	void ChangeMouseMode(EMouseMode NewMouseMode);
+	void ChangeMouseMode(TSubclassOf<UMouseMode> ModeClass);
 
 private:
 	UPROPERTY()
@@ -35,11 +30,7 @@ private:
 	AGrid* Grid;
 
 	UPROPERTY()
-	EMouseMode MouseMode = EMouseMode::DEFAULT;
-
-	void ClickedInDefaultMode();
-
-	void ClickedInBuildMode();
+	UMouseMode* MouseMode;
 
 	void CreateMouseModeWidget();
 
