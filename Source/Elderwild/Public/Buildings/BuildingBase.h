@@ -4,6 +4,8 @@
 #include "GameFramework/Actor.h"
 #include "BuildingBase.generated.h"
 
+class ACreatureBase;
+
 UCLASS()
 class ELDERWILD_API ABuildingBase : public AActor
 {
@@ -18,7 +20,11 @@ protected:
 public:	
 	virtual void Tick(float DeltaTime) override;
 
-private:
+	int32 GetNumberOfInhabitants();
+
 	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess))
-	int32 MaxNumberOfInhabitants = 3;
+	int32 MaxNumberOfCreatures = 3;
+
+	UPROPERTY()
+	TArray<ACreatureBase*> InhabitingCreatures;
 };
