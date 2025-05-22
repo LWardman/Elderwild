@@ -4,8 +4,8 @@
 #include "GameFramework/PlayerController.h"
 #include "CameraController.generated.h"
 
-class UInputMappingContext;
 class UInputAction;
+class UInputMappingContext;
 struct FInputActionValue;
 
 class UControlledCamera;
