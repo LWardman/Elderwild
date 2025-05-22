@@ -1,9 +1,11 @@
 #include "Player/Input/MouseModeWidget.h"
 
 #include "Components/Button.h"
+#include "Dialogue/DialogueComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 #include "Player/CameraController.h"
+#include "Player/PlayerPawn.h"
 #include "Player/Input/CursorInteractor.h"
 
 
@@ -51,6 +53,18 @@ void UMouseModeWidget::OnDialogueButtonPressed()
 	if (CursorInteractor)
 	{
 		CursorInteractor->ChangeMouseMode(DialogueModeClass);
+
+		APlayerController* FoundController = UGameplayStatics::GetPlayerController(this, 0);
+		if (!FoundController) return;
+		
+		if (APlayerPawn* Player = Cast<APlayerPawn>(FoundController->GetPawn()))
+		{
+			if (UDialogueComponent* Dialogue = Player->DialogueComponent)
+			{
+				UE_LOG(LogTemp, Display, TEXT("Entering dialogue"));
+				Dialogue->EnterDialogue();
+			}
+		}
 	}
 }
 
