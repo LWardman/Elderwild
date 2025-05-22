@@ -3,6 +3,7 @@
 #include "GameFramework/FloatingPawnMovement.h"
 
 #include "Player/ControlledCamera.h"
+#include "Dialogue/DialogueComponent.h"
 
 
 APlayerPawn::APlayerPawn()
@@ -16,11 +17,15 @@ APlayerPawn::APlayerPawn()
 	Camera->SetRelativeRotation(FRotator(-60, 0, 0));
 
 	Movement = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("Movement"));
+
+	DialogueComponent = CreateDefaultSubobject<UDialogueComponent>(TEXT("Dialogue Component"));
+	checkf(DialogueComponent, TEXT("Dialogue component initialized poorly"));
 }
 
 void APlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
+	DialogueComponent->Init(Cast<APlayerController>(GetController()));
 }
 
 void APlayerPawn::Tick(float DeltaTime)

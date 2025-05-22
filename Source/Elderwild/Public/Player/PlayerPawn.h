@@ -7,6 +7,7 @@
 class UControlledCamera;
 class UFloatingPawnMovement;
 class AGrid;
+class UDialogueComponent;
 
 UCLASS()
 class ELDERWILD_API APlayerPawn : public APawn
@@ -25,6 +26,9 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	UFloatingPawnMovement* Movement;
+
+	UPROPERTY(EditAnywhere)
+	UDialogueComponent* DialogueComponent;
 
 	virtual void Tick(float DeltaTime) override;
 };
