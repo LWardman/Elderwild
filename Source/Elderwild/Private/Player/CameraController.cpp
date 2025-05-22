@@ -121,7 +121,7 @@ void ACameraController::BeginDragMoveCamera(const FInputActionValue& Value)
 
 void ACameraController::DragMoveCamera(const FInputActionValue& Value)
 {
-	FVector2d Cursor = FVector2d::Zero();
+	FVector2D Cursor = FVector2D::Zero();
 	if (GetMousePosition(Cursor.X, Cursor.Y) && CameraComponent)
 	{
 		CameraComponent->DragMove(Cursor);
@@ -130,7 +130,7 @@ void ACameraController::DragMoveCamera(const FInputActionValue& Value)
 
 void ACameraController::BeginDragRotatingCamera(const FInputActionValue& Value)
 {
-	FVector2d Cursor = FVector2D::ZeroVector;
+	FVector2D Cursor = FVector2D::ZeroVector;
 	if (GetMousePosition(Cursor.X, Cursor.Y) && CameraComponent)
 	{
 		CameraComponent->BeginDragRotate(Cursor);
@@ -139,7 +139,7 @@ void ACameraController::BeginDragRotatingCamera(const FInputActionValue& Value)
 
 void ACameraController::DragRotateCamera(const FInputActionValue& Value)
 {
-	FVector2D Cursor = FVector2d::Zero();
+	FVector2D Cursor = FVector2D::Zero();
 	if (GetMousePosition(Cursor.X, Cursor.Y) && CameraComponent)
 	{
 		CameraComponent->DragRotate(Cursor);
