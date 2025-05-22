@@ -13,7 +13,15 @@ class ELDERWILD_API UDialogueDisplay : public UUserWidget
 {
 	GENERATED_BODY()
 
+public:
+	void SetMessageContent(FText NewMessage);
+
+	void SetSlideNumber(FText NewSlideInfo);
+	
 protected:
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* SlideNumber;
+	
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* Message;
 
