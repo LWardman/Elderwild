@@ -63,4 +63,6 @@ private:
 	void DragRotateCamera(const FInputActionValue& Value);
 
 	void RotateCameraAroundYawAxis(const FInputActionValue& Value);
+
+	void RotateBuilding(const FInputActionValue& Value);
 };

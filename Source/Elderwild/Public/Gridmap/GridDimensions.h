@@ -4,6 +4,7 @@
 #include "Components/ActorComponent.h"
 #include "GridDimensions.generated.h"
 
+class AGrid;
 
 UCLASS()
 class ELDERWILD_API UGridDimensions : public UActorComponent
@@ -30,7 +31,7 @@ public:
 
 	bool TileIsValid(const FIntVector2 Coord) const;
 
-	FIntVector2 LocationToTile(FVector HitLocation) const;
+	static FIntVector2 LocationToTile(FVector HitLocation, AGrid* Grid);
 	
 private:
 	UPROPERTY(EditAnywhere, Category = "Constants", meta = (AllowPrivateAccess = "true"))

@@ -1,5 +1,6 @@
 #include "Gridmap/GridDimensions.h"
 
+#include "Gridmap/Grid.h"
 
 UGridDimensions::UGridDimensions()
 {
@@ -36,13 +37,15 @@ bool UGridDimensions::TileIsValid(const FIntVector2 Coord) const
 	return (Coord.X >= 0 && Coord.X < NumRows) && (Coord.Y >= 0 && Coord.Y < NumCols);
 }
 
-FIntVector2 UGridDimensions::LocationToTile(FVector HitLocation) const
+FIntVector2 UGridDimensions::LocationToTile(FVector HitLocation, AGrid* Grid)
 {
-	if (!GridHasValidDimensions()) return FIntVector2(-1, -1);
+	if (!Grid ||
+		!Grid->GetGridDimensions() ||
+		!Grid->GetGridDimensions()->GridHasValidDimensions()) return FIntVector2(-1, -1);
 		
-	const FVector LocalHitLocation = HitLocation - GetWorldLocation();
+	const FVector LocalHitLocation = HitLocation - Grid->GetActorLocation();
 	
-	return LocalLocationToTile(LocalHitLocation);
+	return Grid->GetGridDimensions()->LocalLocationToTile(LocalHitLocation);
 }
 
 bool UGridDimensions::GridHasValidDimensions() const

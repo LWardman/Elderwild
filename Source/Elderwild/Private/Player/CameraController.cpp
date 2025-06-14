@@ -12,6 +12,7 @@
 #include "Player/ControlledCamera.h"
 #include "Player/Input/InputDataConfig.h"
 #include "Player/Input/CursorInteractor.h"
+#include "Buildings/BuildingDirection.h"
 
 
 ACameraController::ACameraController()
@@ -54,6 +55,9 @@ void ACameraController::SetupInputComponent()
 
 		EnhancedInputComponent->BindAction(InputActions->DragRotateCamera, ETriggerEvent::Started, this, &ACameraController::BeginDragRotatingCamera);
 		EnhancedInputComponent->BindAction(InputActions->DragRotateCamera, ETriggerEvent::Triggered, this, &ACameraController::DragRotateCamera);
+
+		// RotatingBuilding
+		EnhancedInputComponent->BindAction(InputActions->RotateBuilding, ETriggerEvent::Completed, this, &ACameraController::RotateBuilding);
 	}
 	else
 	{
@@ -150,3 +154,9 @@ void ACameraController::RotateCameraAroundYawAxis(const FInputActionValue& Value
 {
 	CameraComponent->RotateAroundYawAxis(Value.GetMagnitude());
 }
+
+void ACameraController::RotateBuilding(const FInputActionValue& Value)
+{
+	UBuildingDirection::RotateClockwise();
+}
+

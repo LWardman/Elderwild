@@ -31,4 +31,17 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Constants")
 	UMaterialInterface* Material;
+
+	static UMaterialInstanceDynamic* CreateMaterialInstance(FLinearColor Color, float Opacity, AGrid* Grid)
+	{
+		checkf(Grid, TEXT("Passed in a null grid to create a dynamic material instance."));
+		checkf(Grid->GetGridVisuals(), TEXT("No grid visuals is assigned to the grid.")); // TODO : this feels wrong
+		checkf(Grid->GetGridVisuals()->Material, TEXT("Cannot create dynamic material instance, because no parent material is set"));
+	
+		UMaterialInstanceDynamic* DynMaterial = UMaterialInstanceDynamic::Create(Grid->GetGridVisuals()->Material, Grid);
+		DynMaterial->SetVectorParameterValue("Color", Color);
+		DynMaterial->SetScalarParameterValue("Opacity", Opacity);
+	
+		return DynMaterial;
+	}
 };

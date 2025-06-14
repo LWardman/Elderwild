@@ -15,7 +15,7 @@ void UBuildMode::Click()
 	FHitResult Hit;
 	if (Controller && Controller->GetHitResultUnderCursor(ECC_Visibility, true, Hit))
 	{
-		const FIntVector2 GridTile = Grid->GetGridDimensions()->LocationToTile(Hit.Location);
+		const FIntVector2 GridTile = UGridDimensions::LocationToTile(Hit.Location, Grid);
 		Grid->TryBuild(GridTile);
 	}
 }
@@ -31,7 +31,7 @@ void UBuildMode::Hover()
 	{
 		Grid->HoverTile(Hit.Location);
 
-		FIntVector2 Coord = Grid->GetGridDimensions()->LocationToTile(Hit.Location);
+		FIntVector2 Coord = UGridDimensions::LocationToTile(Hit.Location, Grid);
 		if (Grid->GetOccupancyMap())
 		{
 			switch (Grid->GetOccupancyMap()->GetTileOccupancyState(Coord))
