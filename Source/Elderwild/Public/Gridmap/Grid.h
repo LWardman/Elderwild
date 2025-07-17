@@ -10,6 +10,7 @@ class UGridFactory;
 class UGridDimensions;
 class UGridVisuals;
 class USelectionTile;
+class UBuildingData;
 
 struct FGridRenderData;
 struct FLine;
@@ -36,6 +37,8 @@ public:
 	UGridVisuals* GetGridVisuals() const {return GridVisuals;}
 
 	UOccupancyMap* GetOccupancyMap() const {return OccupancyMap;}
+
+	USelectionTile* GetSelectionTile() const {return SelectionTile;}
 	
 	void HoverTile(FVector Location);
 
@@ -64,7 +67,7 @@ private:
 	UGridDimensions* GridDimensions;
 	
 	UPROPERTY(EditAnywhere, Category = "Buildings", meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<AActor> Building;
+	UBuildingData* BuildingData;
 	
 	UPROPERTY()
 	UOccupancyMap* OccupancyMap = nullptr;

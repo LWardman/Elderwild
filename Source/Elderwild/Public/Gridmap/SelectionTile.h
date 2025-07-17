@@ -20,6 +20,8 @@ public:
 
 	void UpdateSelectedTile(bool IsValidTile, FVector TilePosition);
 
+	TArray<FIntVector2> CalculateRelevantTileLocations(FIntVector2 BaseTile, FIntVector2 BuildingSize);
+
 private:
 
 	void SetVisibleSections(FIntVector2 BuildingSize);
@@ -28,10 +30,11 @@ private:
 
 	TArray<int32> GetRelevantMeshSections(FIntVector2 BuildingSize);
 
-	TArray<FIntVector2> CalculateRelevantTileLocations(FIntVector2 BaseTile, FIntVector2 BuildingSize);
-
 	void RotateRelativeTileAroundBaseBy90(FIntVector2& Tile);
 
+	void LogRelevantTiles(TArray<FIntVector2> Tiles);
+
+	// TODO : add a Building Size variable.
 	FIntVector2 MaxBuildingSize = {3, 3};
 	
 	UPROPERTY()

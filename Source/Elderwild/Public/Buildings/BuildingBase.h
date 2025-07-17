@@ -44,5 +44,6 @@ private:
 
 	void SpawnDebugSphereAtEntrance() const;
 
+	UPROPERTY(EditAnywhere, Category = "Defaults", meta=(AllowPrivateAccess))
 	FIntVector2 BuildingSize = FIntVector2(1, 1);
 };

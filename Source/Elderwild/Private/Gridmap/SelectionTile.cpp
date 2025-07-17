@@ -52,7 +52,7 @@ void USelectionTile::SetSelectionMaterialColour(FLinearColor NewColor)
 void USelectionTile::UpdateSelectedTile(bool IsValidTile, FVector TilePosition)
 {
 	if (!ProcMesh) return;
-	ProcMesh->SetVisibility(true);
+	ProcMesh->SetVisibility(IsValidTile);
 
 	SetVisibleSections({2, 3});
 
@@ -112,9 +112,9 @@ TArray<FIntVector2> USelectionTile::CalculateRelevantTileLocations(FIntVector2 B
 {
 	TArray<FIntVector2> RelativeTiles;
 
-	for (int32 BuildingWidth = 0; BuildingWidth < BuildingSize.X; BuildingWidth++)
+	for (int32 BuildingWidth = 0; BuildingWidth < BuildingSize.Y; BuildingWidth++)
 	{
-		for (int32 BuildingHeight = 0; BuildingHeight < BuildingSize.Y; BuildingHeight++)
+		for (int32 BuildingHeight = 0; BuildingHeight < BuildingSize.X; BuildingHeight++)
 		{
 			RelativeTiles.Add(FIntVector2(BuildingWidth, BuildingHeight));
 		}
@@ -132,7 +132,9 @@ TArray<FIntVector2> USelectionTile::CalculateRelevantTileLocations(FIntVector2 B
 
 		RelevantTiles.Add(BaseTile - Tile);
 	}
-					
+
+	//LogRelevantTiles(RelevantTiles);
+
 	return RelevantTiles;
 }		
 
@@ -141,5 +143,15 @@ void USelectionTile::RotateRelativeTileAroundBaseBy90(FIntVector2& Tile)
 	int32 X = Tile.X;
 	int32 Y = Tile.Y;
 
-	Tile = FIntVector2(Y, -X);
+	Tile.X = -Y;
+	Tile.Y = X;
+}
+void USelectionTile::LogRelevantTiles(TArray<FIntVector2> Tiles)
+{
+	UE_LOG(LogTemp, Display, TEXT("=========="));
+	for (FIntVector2 Tile : Tiles)
+	{
+		UE_LOG(LogTemp, Display, TEXT("Found Tile : %s"), *Tile.ToString());
+	}
+	UE_LOG(LogTemp, Display, TEXT("=========="));
 }
