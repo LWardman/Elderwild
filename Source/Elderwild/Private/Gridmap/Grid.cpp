@@ -1,7 +1,7 @@
 #include "Gridmap/Grid.h"
 
 #include "ProceduralMeshComponent.h"
-#include "Buildings/BuildingBase.h"
+#include "Buildings/Building.h"
 
 #include "Gridmap/GridFactory.h"
 #include "Gridmap/OccupancyMap.h"
@@ -67,7 +67,6 @@ void AGrid::TryBuild(FIntVector2 TileToBuildOn)
 	if (!BuildingData || !BuildingData->BuildingClass || !OccupancyMap || !SelectionTile) return;
 
 	FIntVector2 BuildingSize = BuildingData->BuildingSize;
-	UE_LOG(LogTemp, Display, TEXT("Building size is : %s"), *BuildingSize.ToString());
 	
 	TArray<FIntVector2> RelevantTiles = SelectionTile->CalculateRelevantTileLocations(TileToBuildOn, BuildingSize);
 
@@ -76,15 +75,11 @@ void AGrid::TryBuild(FIntVector2 TileToBuildOn)
 		if (OccupancyMap->GetTileOccupancyState(Tile) == EOccupancyState::OCCUPIED) return;
 	}
 
-	// TODO : this doesnt work because it doesnt account for the buildings different dimensions being rotated
 	ECompassDirection CompassDirection = UBuildingDirection::GetDirection();
 
 	FVector2D Offset = FVector2D::ZeroVector;
 	float BuildingOffsetX = float(BuildingSize.X - 1) / 2;
-	UE_LOG(LogTemp, Display, TEXT("BuildingOffsetX is : %f"), BuildingOffsetX);
-	
 	float BuildingOffsetY = float(BuildingSize.Y - 1) / 2;
-	UE_LOG(LogTemp, Display, TEXT("BuildingOffsetY is : %f"), BuildingOffsetY);
 	
 	switch (CompassDirection)
 	{
@@ -115,7 +110,7 @@ void AGrid::TryBuild(FIntVector2 TileToBuildOn)
 	FRotator Rotation(0.0f, Direction * 90.f, 0.0f);
 
 	FActorSpawnParameters SpawnInfo;
-	ABuildingBase* Building = GetWorld()->SpawnActor<ABuildingBase>(BuildingData->BuildingClass, LocalLocation, Rotation, SpawnInfo);
+	ABuilding* Building = GetWorld()->SpawnActor<ABuilding>(BuildingData->BuildingClass, LocalLocation, Rotation, SpawnInfo);
 	Building->BuildingDirection = CompassDirection;
 
 	for (FIntVector2 Tile : RelevantTiles)

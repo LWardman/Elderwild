@@ -1,12 +1,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Buildings/BuildingBase.h"
+#include "Buildings/Building.h"
 #include "House.generated.h"
 
 
 UCLASS()
-class ELDERWILD_API AHouse : public ABuildingBase
+class ELDERWILD_API AHouse : public ABuilding
 {
 	GENERATED_BODY()
 
