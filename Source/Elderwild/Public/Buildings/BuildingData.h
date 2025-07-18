@@ -14,5 +14,5 @@ public:
 	FIntVector2 BuildingSize;
 
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<class ABuildingBase> BuildingClass;
+	TSubclassOf<class ABuilding> BuildingClass;
 };
