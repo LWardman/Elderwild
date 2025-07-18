@@ -1,4 +1,4 @@
-#include "Buildings/BuildingBase.h"
+#include "Buildings/Building.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
@@ -7,12 +7,12 @@
 #include "Gridmap/GridDimensions.h"
 #include "GameModes/DevGameMode.h"
 
-ABuildingBase::ABuildingBase()
+ABuilding::ABuilding()
 {
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-void ABuildingBase::BeginPlay()
+void ABuilding::BeginPlay()
 {
 	Super::BeginPlay();
 
@@ -20,17 +20,17 @@ void ABuildingBase::BeginPlay()
 	SpawnDebugSphereAtEntrance();
 }
 
-void ABuildingBase::Tick(float DeltaTime)
+void ABuilding::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
 
-int32 ABuildingBase::GetNumberOfInhabitants() const
+int32 ABuilding::GetNumberOfInhabitants() const
 {
 	return InhabitingCreatures.Num();
 }
 
-void ABuildingBase::SetBuildingSize(FIntVector2 NewBuildingSize)
+void ABuilding::SetBuildingSize(FIntVector2 NewBuildingSize)
 {
 	if (NewBuildingSize.X > 0 && NewBuildingSize.Y > 0)
 	{
@@ -43,11 +43,10 @@ void ABuildingBase::SetBuildingSize(FIntVector2 NewBuildingSize)
 	}
 }
 
-void ABuildingBase::FindEntranceLocation()
+void ABuilding::FindEntranceLocation()
 {
-	FVector CurrentLocation = GetActorLocation();
-
 	ADevGameMode* GameMode = Cast<ADevGameMode>(UGameplayStatics::GetGameMode(this));
+	
 	if (!GameMode) return;
 	
 	AGrid* Grid = GameMode->GetGrid();
@@ -55,13 +54,15 @@ void ABuildingBase::FindEntranceLocation()
 
 	int32 TileSize = Grid->GetGridDimensions()->GetTileSize();
 	int32 HalfTileLength = TileSize / 2;
+	int32 BuildingDepth = BuildingSize.Y;
+	
 
 	FVector ForwardVec = GetActorForwardVector();
 
-	EntranceLocation = CurrentLocation + ForwardVec * HalfTileLength;
+	EntranceLocation = GetActorLocation() + ForwardVec * HalfTileLength * BuildingDepth;
 }
 
-void ABuildingBase::SpawnDebugSphereAtEntrance() const
+void ABuilding::SpawnDebugSphereAtEntrance() const
 {
 	DrawDebugSphere(GetWorld(), EntranceLocation, 12, 10, FColor::Red, true);
 }

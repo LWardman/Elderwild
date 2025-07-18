@@ -3,18 +3,18 @@
 #include "CoreMinimal.h"
 #include "BuildingDirection.h"
 #include "GameFramework/Actor.h"
-#include "BuildingBase.generated.h"
+#include "Building.generated.h"
 
 class ACreatureBase;
 enum class ECompassDirection : uint8;
 
 UCLASS()
-class ELDERWILD_API ABuildingBase : public AActor
+class ELDERWILD_API ABuilding : public AActor
 {
 	GENERATED_BODY()
 
 public:	
-	ABuildingBase();
+	ABuilding();
 
 protected:
 	virtual void BeginPlay() override;
