@@ -24,7 +24,11 @@ public:
 
 	EOccupancyState GetTileOccupancyState(FIntVector2 Coord);
 
+	bool AllTilesHaveState(TArray<FIntVector2> Tiles, EOccupancyState State);
+
 	void SetTileOccupancyState(FIntVector2 Coord, EOccupancyState State);
+
+	void SetGroupTileOccupancyState(TArray<FIntVector2> Tiles, EOccupancyState State);
 	
 private:
 	bool IndexIsValid(FIntVector2 Coord);

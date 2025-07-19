@@ -64,59 +64,30 @@ void AGrid::UnhoverTile()
 // TODO : refactor. time for a building component? Should this class even be building stuff?
 void AGrid::TryBuild(FIntVector2 TileToBuildOn)
 {
-	if (!BuildingData || !BuildingData->BuildingClass || !OccupancyMap || !SelectionTile) return;
-
-	FIntVector2 BuildingSize = BuildingData->BuildingSize;
+	if (!BuildingData || !BuildingData->BuildingClass || !OccupancyMap || !SelectionTile || !GridDimensions) return;
 	
+	FIntVector2 BuildingSize = BuildingData->BuildingSize;
 	TArray<FIntVector2> RelevantTiles = SelectionTile->CalculateRelevantTileLocations(TileToBuildOn, BuildingSize);
 
-	for (FIntVector2 Tile : RelevantTiles)
-	{
-		if (OccupancyMap->GetTileOccupancyState(Tile) == EOccupancyState::OCCUPIED) return;
-	}
-
-	ECompassDirection CompassDirection = UBuildingDirection::GetDirection();
-
-	FVector2D Offset = FVector2D::ZeroVector;
+	if (!OccupancyMap->AllTilesHaveState(RelevantTiles, EOccupancyState::EMPTY)) return;
+	
 	float BuildingOffsetX = float(BuildingSize.X - 1) / 2;
 	float BuildingOffsetY = float(BuildingSize.Y - 1) / 2;
+	FVector2D Offset = {BuildingOffsetX, BuildingOffsetY};
 	
-	switch (CompassDirection)
-	{
-		case ECompassDirection::North:
-			Offset = {-BuildingOffsetY, -BuildingOffsetX};
-			break;
-		case ECompassDirection::East:
-			Offset = {BuildingOffsetX, -BuildingOffsetY};
-			break;
-		case ECompassDirection::South:
-			Offset = {BuildingOffsetY, BuildingOffsetX};
-			break;
-		case ECompassDirection::West:
-			Offset = {-BuildingOffsetX, BuildingOffsetY};
-			break;
-		default:
-			break;
-	}
-	checkf(GridDimensions, TEXT("GridDimensions not initialized properly"));
-	float TileSize = GridDimensions->GetTileSize();
-	Offset *= TileSize;
-	UE_LOG(LogTemp, Display, TEXT("Offset is : %s"), *Offset.ToString());
+	ECompassDirection CompassDirection = UBuildingDirection::GetDirection();
+	Offset = UBuildingDirection::CentreOffsetMultiplier(Offset, CompassDirection);
+	Offset *= GridDimensions->GetTileSize();
 
-	FVector2D TileCenter = GridDimensions->CenterOfTileToGridLocation(TileToBuildOn);
-	FVector LocalLocation = FVector(TileCenter.X + Offset.X, TileCenter.Y + Offset.Y, GetActorLocation().Z);
-
-	uint8 Direction = static_cast<uint8>(CompassDirection);
-	FRotator Rotation(0.0f, Direction * 90.f, 0.0f);
+	FVector2D BuildingCentre = GridDimensions->CenterOfTileToGridLocation(TileToBuildOn) + Offset;
+	FVector LocalLocation = FVector(BuildingCentre.X, BuildingCentre.Y, GetActorLocation().Z);
+	FRotator Rotation = UBuildingDirection::DirectionToRotator(CompassDirection);
 
 	FActorSpawnParameters SpawnInfo;
 	ABuilding* Building = GetWorld()->SpawnActor<ABuilding>(BuildingData->BuildingClass, LocalLocation, Rotation, SpawnInfo);
 	Building->BuildingDirection = CompassDirection;
 
-	for (FIntVector2 Tile : RelevantTiles)
-	{
-		OccupancyMap->SetTileOccupancyState(Tile, EOccupancyState::OCCUPIED);
-	}
+	OccupancyMap->SetGroupTileOccupancyState(RelevantTiles, EOccupancyState::OCCUPIED);
 }
 
 void AGrid::SetSelectionMaterialColour(FLinearColor NewColor)

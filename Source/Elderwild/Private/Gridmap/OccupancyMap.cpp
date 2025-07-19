@@ -21,12 +21,28 @@ EOccupancyState UOccupancyMap::GetTileOccupancyState(FIntVector2 Coord)
 	return Map[Coord.X][Coord.Y];
 }
 
+bool UOccupancyMap::AllTilesHaveState(TArray<FIntVector2> Tiles, EOccupancyState State)
+{
+	for (FIntVector2 Tile : Tiles)
+	{
+		if (GetTileOccupancyState(Tile) != State) return false;
+	}
+	return true;
+}
+
 void UOccupancyMap::SetTileOccupancyState(FIntVector2 Coord, EOccupancyState State)
 {
 	if (!IndexIsValid(Coord)) return;
 	Map[Coord.X][Coord.Y] = State;
 }
 
+void UOccupancyMap::SetGroupTileOccupancyState(TArray<FIntVector2> Tiles, EOccupancyState State)
+{
+	for (FIntVector2 Tile : Tiles)
+	{
+		SetTileOccupancyState(Tile, State);
+	}
+}
 bool UOccupancyMap::IndexIsValid(FIntVector2 Coord)
 {
 	return Map.IsValidIndex(Coord.X) && Map[Coord.X].IsValidIndex(Coord.Y); 

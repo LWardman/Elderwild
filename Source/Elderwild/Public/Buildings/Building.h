@@ -36,6 +36,8 @@ public:
 
 	FIntVector2 GetBuildingSize() const {return BuildingSize;}
 
+	
+
 protected:
 	void SetBuildingSize(FIntVector2 NewBuildingSize);
 

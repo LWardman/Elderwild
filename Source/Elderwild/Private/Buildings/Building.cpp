@@ -56,7 +56,6 @@ void ABuilding::FindEntranceLocation()
 	int32 HalfTileLength = TileSize / 2;
 	int32 BuildingDepth = BuildingSize.Y;
 	
-
 	FVector ForwardVec = GetActorForwardVector();
 
 	EntranceLocation = GetActorLocation() + ForwardVec * HalfTileLength * BuildingDepth;

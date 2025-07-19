@@ -23,6 +23,10 @@ public:
 
 	static void RotateClockwise();
 
+	static FRotator DirectionToRotator(ECompassDirection Direction);
+
+	static FVector2D CentreOffsetMultiplier(FVector2D Offset, ECompassDirection Direction);
+
 private:
 	static ECompassDirection Direction;
 	

@@ -7,7 +7,6 @@
 AHouse::AHouse()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	SetBuildingSize(FIntVector2(1, 1));
 }
 
 void AHouse::BeginPlay()
