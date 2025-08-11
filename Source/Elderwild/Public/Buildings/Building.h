@@ -5,7 +5,7 @@
 #include "GameFramework/Actor.h"
 #include "Building.generated.h"
 
-class ACreatureBase;
+class ACreature;
 enum class ECompassDirection : uint8;
 
 UCLASS()
@@ -28,7 +28,7 @@ public:
 	int32 MaxNumberOfCreatures = 3;
 
 	UPROPERTY()
-	TArray<ACreatureBase*> InhabitingCreatures;
+	TArray<ACreature*> InhabitingCreatures;
 
 	ECompassDirection BuildingDirection = ECompassDirection::South;
 

@@ -2,7 +2,7 @@
 
 #include "Kismet/GameplayStatics.h"
 
-#include "Creatures/CreatureBase.h"
+#include "Creatures/Resident.h"
 
 AHouse::AHouse()
 {
@@ -27,18 +27,18 @@ void AHouse::Tick(float DeltaTime)
 void AHouse::TryFillBuildingWithCreatures()
 {
 	TArray<AActor*> FoundActors;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACreatureBase::StaticClass(), FoundActors);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACreature::StaticClass(), FoundActors);
 
 	for (AActor* Actor : FoundActors)
 	{
 		if (GetNumberOfInhabitants() >= MaxNumberOfCreatures) break;
 		
-		if (ACreatureBase* Creature = Cast<ACreatureBase>(Actor))
+		if (AResident* Resident = Cast<AResident>(Actor))
 		{
-			if (Creature->HasAHome()) continue;
+			if (Resident->HasAHome()) continue;
 			
-			InhabitingCreatures.Add(Creature);
-			Creature->AssignToHouse(this);
+			InhabitingCreatures.Add(Resident);
+			Resident->AssignToHouse(this);
 		}
 	}
 }
