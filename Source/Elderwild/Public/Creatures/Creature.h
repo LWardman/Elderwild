@@ -4,19 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "CreatureBase.generated.h"
+#include "Creature.generated.h"
 
 class AHouse;
 
 enum class EDayNight : uint8;
 
 UCLASS()
-class ELDERWILD_API ACreatureBase : public ACharacter
+class ELDERWILD_API ACreature : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
-	ACreatureBase();
+	ACreature();
 
 protected:
 	virtual void BeginPlay() override;
@@ -26,19 +26,9 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	// TODO : Move to an interface?
-	void AssignToHouse(AHouse* NewHouse);
-
-	void RemoveFromHouse();
-
-	bool HasAHome();
-
 	EDayNight SleepsDuringTime = EDayNight::Day;
 
 	// TODO : make this respond to DayCycler events instead?
 	bool ShouldBeSleeping();
 	
-private:
-	UPROPERTY()
-	AHouse* House;
 };
