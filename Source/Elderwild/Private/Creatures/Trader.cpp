@@ -1,10 +1,13 @@
 #include "Creatures/Trader.h"
 
+#include "Components/DucatPouch.h"
 #include "Components/FacingWidgetComponent.h"
 
 ATrader::ATrader()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	DucatPouch = CreateDefaultSubobject<UDucatPouch>(TEXT("Ducat Pouch"));
 	
 	Icon = CreateDefaultSubobject<UFacingWidgetComponent>(TEXT("Icon"));
 	Icon->SetupAttachment(RootComponent);
