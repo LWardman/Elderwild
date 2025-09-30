@@ -4,6 +4,7 @@
 
 #include "Player/ControlledCamera.h"
 #include "Dialogue/DialogueComponent.h"
+#include "Components/InventoryComponent.h"
 
 
 APlayerPawn::APlayerPawn()
@@ -20,6 +21,8 @@ APlayerPawn::APlayerPawn()
 
 	DialogueComponent = CreateDefaultSubobject<UDialogueComponent>(TEXT("Dialogue Component"));
 	checkf(DialogueComponent, TEXT("Dialogue component initialized poorly"));
+
+	Inventory = CreateDefaultSubobject<UInventoryComponent>("Inventory");
 }
 
 void APlayerPawn::BeginPlay()

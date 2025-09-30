@@ -4,10 +4,6 @@
 #include "GameFramework/Pawn.h"
 #include "PlayerPawn.generated.h"
 
-class UControlledCamera;
-class UFloatingPawnMovement;
-class AGrid;
-class UDialogueComponent;
 
 UCLASS()
 class ELDERWILD_API APlayerPawn : public APawn
@@ -22,13 +18,16 @@ protected:
 
 public:	
 	UPROPERTY(EditAnywhere)
-	UControlledCamera* Camera;
+	class UControlledCamera* Camera;
 
 	UPROPERTY(EditAnywhere)
-	UFloatingPawnMovement* Movement;
+	class UFloatingPawnMovement* Movement;
 
 	UPROPERTY(EditAnywhere)
-	UDialogueComponent* DialogueComponent;
+	class UDialogueComponent* DialogueComponent;
 
+	UPROPERTY(EditAnywhere)
+	class UInventoryComponent* Inventory;
+	
 	virtual void Tick(float DeltaTime) override;
 };
