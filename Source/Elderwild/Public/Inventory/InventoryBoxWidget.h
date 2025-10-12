@@ -5,9 +5,7 @@
 #include "Blueprint/UserWidget.h"
 #include "InventoryBoxWidget.generated.h"
 
-class USizeBox;
-class UBorder;
-class UImage;
+class UInventoryItemStack;
 
 UCLASS()
 class ELDERWILD_API UInventoryBoxWidget
@@ -21,8 +19,27 @@ public:
 	
 protected:
 	UPROPERTY(meta = (BindWidget))
-	UImage* ResourceIcon;
+	class UImage* ResourceIcon;
 	
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* ResourceCount;
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* Button;
+
+private:
+	void SetStackIcon(const UInventoryItemStack* Stack);
+	void SetStackCount(const UInventoryItemStack* Stack);
+
+	UPROPERTY()
+	UInventoryItemStack* ItemStack;
+
+	UFUNCTION()
+	void OpenTradeSpecificsUI();
+
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess), Category = "Trading")
+	TSubclassOf<class UTradeSpecifics> TradeSpecificsClass;
+
+	UPROPERTY()
+	UTradeSpecifics* TradeSpecificsWidget;
 };

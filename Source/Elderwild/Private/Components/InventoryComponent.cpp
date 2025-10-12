@@ -2,6 +2,21 @@
 
 #include "DataAssets/ItemDataAsset.h"
 
+void UInventoryComponent::TransferItemToOtherInventory(UInventoryComponent* OtherInventory, UItemDataAsset* Item, int32 Count)
+{
+	if (!OtherInventory)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Attempting to transfer to a null inventory, aborting"));
+		return;
+	}
+
+	if (HasEnoughOfAnItem(Item, Count))
+	{
+		this->SubtractItem(Item, Count);
+		OtherInventory->AddItem(Item, Count);
+	}
+}
+
 void UInventoryComponent::AddItem(UItemDataAsset* Item, int32 Count)
 {
 	if (!Item) return;
@@ -45,4 +60,12 @@ void UInventoryComponent::LogInventory()
 		UE_LOG(LogTemp, Display, TEXT("%ix %s"), Elem.Value, *Elem.Key->Name);
 	}
 	UE_LOG(LogTemp, Display, TEXT("============================="));
+}
+
+void UInventoryComponent::MakePurchase(int32 PurchaseCost)
+{
+	if (CanAffordPurchase(PurchaseCost))
+	{
+		SubtractDucats(PurchaseCost);
+	}
 }

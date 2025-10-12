@@ -12,11 +12,7 @@ public:
 	ATrader();
 
 	UPROPERTY(EditAnywhere, Category="Trading")
-	class UDucatPouch* DucatPouch;
-
-	UPROPERTY(EditAnywhere, Category="Trading")
 	class UInventoryComponent* InventoryComponent;
-	
 
 protected:
 	virtual void BeginPlay() override;
@@ -36,6 +32,4 @@ private:
 
 	UFUNCTION()
 	void EndTraderInteraction();
-
-	bool IsTrading = false;
 };

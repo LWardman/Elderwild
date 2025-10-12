@@ -2,7 +2,6 @@
 
 #include "Kismet/GameplayStatics.h"
 
-#include "Components/DucatPouch.h"
 #include "Components/FacingWidgetComponent.h"
 #include "Components/InventoryComponent.h"
 #include "Creatures/Trader/TradeWidget.h"
@@ -11,8 +10,6 @@
 ATrader::ATrader()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
-	DucatPouch = CreateDefaultSubobject<UDucatPouch>(TEXT("Ducat Pouch"));
 
 	InventoryComponent = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory"));
 	
@@ -34,41 +31,27 @@ void ATrader::BeginTraderInteraction(AActor* Actor, FKey Key)
 {
 	UE_LOG(LogTemp, Display, TEXT("Beginning Trade Interaction"));
 	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
-	if (TradeWidgetClass && PlayerController && !IsTrading)
+	if (TradeWidgetClass && PlayerController && !UTradeWidget::TradeWidgetExists())
 	{
 		TradeWidget = CreateWidget<UTradeWidget>(PlayerController, TradeWidgetClass);
 			
-		if (TradeWidget)
+		if (!TradeWidget)
 		{
-			UInventoryComponent* PlayerInventory = nullptr;
-			
-			if (APlayerPawn* PlayerPawn = Cast<APlayerPawn>(PlayerController->GetPawn()))
-			{
-				PlayerInventory = PlayerPawn->Inventory;
-			}
-
-			// Only add the widget to the screen if both sides have a valid inventory
-			if (InventoryComponent && PlayerInventory)
-			{
-				IsTrading = true;
-				TradeWidget->EndInteraction.AddDynamic(this, &ATrader::EndTraderInteraction);
-				
-				TradeWidget->InitializeInventories(InventoryComponent, PlayerInventory);
-				TradeWidget->AddToPlayerScreen();
-			}
+			UE_LOG(LogTemp, Error, TEXT("TradeWidget failed during creation"));
 		}
-	}
-}
 
-void ATrader::EndTraderInteraction()
-{
-	UE_LOG(LogTemp, Display, TEXT("Ending Trade Interaction"));
-	IsTrading = false;
-
-	if (TradeWidget)
-	{
-		TradeWidget->RemoveFromParent();
-		TradeWidget->EndInteraction.RemoveAll(this);
-		TradeWidget = nullptr;
+		UInventoryComponent* PlayerInventory = nullptr;
+			
+		if (APlayerPawn* PlayerPawn = Cast<APlayerPawn>(PlayerController->GetPawn()))
+		{
+			PlayerInventory = PlayerPawn->Inventory;
+		}
+		// Only add the widget to the screen if both sides have a valid inventory
+		if (InventoryComponent && PlayerInventory)
+		{
+			UTradeWidget::SetTradeWidget(TradeWidget);
+			TradeWidget->InitializeInventories(InventoryComponent, PlayerInventory);
+			TradeWidget->AddToPlayerScreen();
+		}
 	}
 }
