@@ -22,7 +22,7 @@ bool UTradeSpecifics::Initialize()
 	return true;
 }
 
-void UTradeSpecifics::InitializeWithInventoryStack(const UInventoryItemStack* Stack)
+void UTradeSpecifics::InitializeWithInventoryStack(UInventoryItemStack* Stack)
 {
 	if (!Stack)
 	{
@@ -30,6 +30,8 @@ void UTradeSpecifics::InitializeWithInventoryStack(const UInventoryItemStack* St
 		return;
 	}
 
+	ItemStack = Stack;
+	
 	if (TradeCount)
 	{
 		TradeCount->SetMinValue(0.0f);
@@ -44,7 +46,6 @@ void UTradeSpecifics::InitializeWithInventoryStack(const UInventoryItemStack* St
 	if (BuyerCount)
 		BuyerCount->SetIntText(0);
 }
-
 
 void UTradeSpecifics::OnSliderChange(float InValue)
 {

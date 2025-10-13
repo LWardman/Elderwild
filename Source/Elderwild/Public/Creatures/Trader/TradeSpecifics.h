@@ -18,7 +18,7 @@ class ELDERWILD_API UTradeSpecifics : public UUserWidget
 public:
 	virtual bool Initialize() override;
 
-	void InitializeWithInventoryStack(const UInventoryItemStack* Stack);
+	void InitializeWithInventoryStack(UInventoryItemStack* Stack);
 	
 	static void SetTradeSpecifics(UTradeSpecifics* NewWidget) { ActiveWidget = NewWidget; }
 	static void ResetTradeSpecifics() { ActiveWidget.Reset(); }

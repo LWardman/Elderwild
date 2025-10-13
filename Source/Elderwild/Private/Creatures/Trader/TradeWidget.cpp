@@ -67,6 +67,7 @@ void UTradeWidget::CreateInventoryBoxes(UInventoryComponent* InventoryComp, UTil
 
 void UTradeWidget::TradeListener(UInventoryItemStack* Stack, int32 Quantity)
 {
+	UE_LOG(LogTemp, Display, TEXT("Starting trade"));
 	if (!Stack || !Stack->Item || Quantity == 0) return;
 
 	UInventoryComponent* Seller = Stack->OwnerInventory;

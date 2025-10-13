@@ -29,7 +29,4 @@ private:
 
 	UFUNCTION()
 	void BeginTraderInteraction(AActor* Actor, FKey Key);
-
-	UFUNCTION()
-	void EndTraderInteraction();
 };
