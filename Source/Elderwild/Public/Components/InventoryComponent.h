@@ -6,6 +6,7 @@
 
 class UItemDataAsset;
 
+// TODO : Move to inventory directory
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ELDERWILD_API UInventoryComponent : public UActorComponent
 {
@@ -30,6 +31,8 @@ public:
 
 	bool CanAffordPurchase(int32 PurchaseCost) const { return GetAmountOfDucats() >= PurchaseCost; }	
 	void MakePurchase(int32 PurchaseCost);
+
+	float GetTradeMultiplier() const { return TradeMultiplier; }
 	
 private:
 	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess), Category="Contents")
@@ -37,4 +40,7 @@ private:
 	
 	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess), Category="Currency")
 	int32 Ducats = 500;
+
+	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess), Category="Trading")
+	float TradeMultiplier = 1.0;
 };

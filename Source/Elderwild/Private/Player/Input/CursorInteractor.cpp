@@ -38,6 +38,8 @@ void UCursorInteractor::ChangeMouseMode(TSubclassOf<UMouseMode> ModeClass)
 	{
 		MouseMode->Init(Controller, Grid);
 	}
+	
+	OnMouseModeChanged.Broadcast(MouseMode);
 }
 
 void UCursorInteractor::CreateMouseModeWidget()

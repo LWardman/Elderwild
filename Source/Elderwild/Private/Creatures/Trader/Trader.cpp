@@ -6,6 +6,10 @@
 #include "Components/InventoryComponent.h"
 #include "Creatures/Trader/TradeWidget.h"
 #include "Player/PlayerPawn.h"
+#include "Player/CameraController.h"
+#include "Player/Input/CursorInteractor.h"
+#include "Player/Input/MouseMode.h"
+#include "Player/Input/InspectMode.h"
 
 ATrader::ATrader()
 {
@@ -25,10 +29,21 @@ void ATrader::BeginPlay()
 	Super::BeginPlay();
 	
 	OnClicked.AddDynamic(this, &ATrader::BeginTraderInteraction);
+	FetchAndSubscribeToMouseEvents();
+}
+
+void ATrader::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	
+	if (Icon)
+		Icon->SetVisibility(PlayerIsInInspectMode());
 }
 
 void ATrader::BeginTraderInteraction(AActor* Actor, FKey Key)
 {
+	if (!PlayerIsInInspectMode()) return;
+	
 	UE_LOG(LogTemp, Display, TEXT("Beginning Trade Interaction"));
 	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
 	if (TradeWidgetClass && PlayerController && !UTradeWidget::TradeWidgetExists())
@@ -54,4 +69,33 @@ void ATrader::BeginTraderInteraction(AActor* Actor, FKey Key)
 			TradeWidget->AddToPlayerScreen();
 		}
 	}
+}
+
+bool ATrader::PlayerIsInInspectMode() const
+{
+	if (MouseMode.IsValid())
+	{
+		return MouseMode->IsA(UInspectMode::StaticClass());
+	}
+	return false;
+}
+
+void ATrader::FetchAndSubscribeToMouseEvents()
+{
+	const APlayerController* PC = UGameplayStatics::GetPlayerController(this, 0);
+	if (!PC) return;
+	
+	const ACameraController* CamController = Cast<ACameraController>(PC);
+	if (!CamController) return;
+	
+	UCursorInteractor* CursorInteractor = CamController->CursorInteractor;
+	if (!CursorInteractor) return;
+	
+	CursorInteractor->OnMouseModeChanged.AddDynamic(this, &ATrader::OnMouseModeChanged);
+	MouseMode = CursorInteractor->GetMouseMode();
+}
+
+void ATrader::OnMouseModeChanged(UMouseMode* NewMouseMode)
+{
+	MouseMode = NewMouseMode;
 }

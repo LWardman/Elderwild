@@ -28,6 +28,8 @@ void UTradeWidget::InitializeInventories(UInventoryComponent* TradersInventory, 
 {
 	TraderInventory = TradersInventory;
 	PlayerInventory = PlayersInventory;
+
+	UTradeSpecifics::SetTraders(PlayersInventory, TradersInventory);
 }
 
 void UTradeWidget::NativeConstruct()
@@ -40,6 +42,7 @@ void UTradeWidget::NativeConstruct()
 
 void UTradeWidget::CloseWidgetButtonClicked()
 {
+	UTradeSpecifics::ResetTraders();
 	ResetTradeWidget();	
 	UGameplayStatics::SetGlobalTimeDilation(this, 1.0f);
 	RemoveFromParent();
@@ -52,12 +55,22 @@ void UTradeWidget::CreateInventoryBoxes(UInventoryComponent* InventoryComp, UTil
 	InventoryComp->LogInventory();
 
 	TArray<UObject*> Entry;
-	Entry.Reserve(InventoryComp->GetInventory().Num());
+	int32 ExpectedNumberOfEntries = 20;
+	Entry.Reserve(ExpectedNumberOfEntries);
 	
 	for (const auto& InventorySlot : InventoryComp->GetInventory())
 	{
 		UInventoryItemStack* Stack = UInventoryItemStack::Create(this, InventorySlot.Key, InventorySlot.Value, InventoryComp);
 		Stack->Trade.AddDynamic(this, &UTradeWidget::TradeListener);
+		Entry.Add(Stack);
+	}
+
+	while (Entry.Num() < ExpectedNumberOfEntries)
+	{
+		UInventoryItemStack* Stack = NewObject<UInventoryItemStack>(this);
+		Stack->Item = nullptr;
+		Stack->Count = 0;
+		Stack->OwnerInventory = nullptr;
 		Entry.Add(Stack);
 	}
 
@@ -76,6 +89,8 @@ void UTradeWidget::TradeListener(UInventoryItemStack* Stack, int32 Quantity)
 	if (Buyer && Seller)
 	{
 		int32 StackCost = Stack->Item->ItemValue * Quantity;
+		StackCost *= TraderInventory->GetTradeMultiplier();
+		
 		if (Buyer->CanAffordPurchase(StackCost))
 		{
 			UE_LOG(LogTemp, Display, TEXT("Transferring Items..."));

@@ -18,7 +18,7 @@ void UInspectMode::Click()
 {
 	Super::Click();
 	
-	UE_LOG(LogTemp, Display, TEXT("Clicked in default mode"));
+	UE_LOG(LogTemp, Display, TEXT("Clicked in inspect mode"));
 }
 
 void UInspectMode::Hover()

@@ -6,6 +6,7 @@
 #include "InventoryBoxWidget.generated.h"
 
 class UInventoryItemStack;
+class UIntTextBox;
 
 UCLASS()
 class ELDERWILD_API UInventoryBoxWidget
@@ -22,14 +23,18 @@ protected:
 	class UImage* ResourceIcon;
 	
 	UPROPERTY(meta = (BindWidget))
-	class UTextBlock* ResourceCount;
+	UIntTextBox* ResourceCount;
 
+	UPROPERTY(meta = (BindWidget))
+	UIntTextBox* UnitValue;
+	
 	UPROPERTY(meta = (BindWidget))
 	class UButton* Button;
 
 private:
 	void SetStackIcon(const UInventoryItemStack* Stack);
 	void SetStackCount(const UInventoryItemStack* Stack);
+	void SetStackUnitValue(const UInventoryItemStack* Stack);
 
 	UPROPERTY()
 	UInventoryItemStack* ItemStack;

@@ -8,19 +8,25 @@ class AGrid;
 class UMouseMode;
 class UMouseModeWidget;
 
-// TODO : is there a point to having this class anymore?
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMouseModeChanged, UMouseMode*, MouseMode);
+
 UCLASS()
 class ELDERWILD_API UCursorInteractor : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(BlueprintAssignable)
+	FOnMouseModeChanged OnMouseModeChanged;
+	
 	void Initialize(APlayerController* InController, AGrid* InGrid);
 
 	void UpdateHover();
 	void HandleClick();
 
 	void ChangeMouseMode(TSubclassOf<UMouseMode> ModeClass);
+
+	UMouseMode* GetMouseMode() const { return MouseMode; }
 
 private:
 	UPROPERTY()
