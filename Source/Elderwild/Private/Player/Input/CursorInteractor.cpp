@@ -2,7 +2,7 @@
 
 #include "Player/Input/MouseModeWidget.h"
 #include "Player/Input/MouseMode.h"
-
+#include "Player/Input/MouseModeFactory.h"
 
 void UCursorInteractor::Initialize(APlayerController* InController, AGrid* InGrid)
 {
@@ -28,11 +28,14 @@ void UCursorInteractor::HandleClick()
 	}
 }
 
-void UCursorInteractor::ChangeMouseMode(TSubclassOf<UMouseMode> ModeClass)
+void UCursorInteractor::ChangeMouseMode(EMouseModeType ModeType)
 {
-	if (!ModeClass) return;
-
-	MouseMode = NewObject<UMouseMode>(this, ModeClass);
+ 	UMouseMode* NewMode = UMouseModeFactory::Create(this, ModeType);
+	if (!NewMode)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Failed to create MouseMode of type %d"), ModeType);
+		return;	
+	}
 
 	if (Controller && Grid)
 	{
@@ -48,6 +51,10 @@ void UCursorInteractor::CreateMouseModeWidget()
 	{
 		MouseModeWidget = CreateWidget<UMouseModeWidget>(Controller, MouseModeWidgetClass);
 			
-		if (MouseModeWidget) MouseModeWidget->AddToPlayerScreen();
+		if (MouseModeWidget) 
+		{
+			MouseModeWidget->AddToPlayerScreen();
+			MouseModeWidget->SetCursorInteractor(this);
+		}
 	}
 }

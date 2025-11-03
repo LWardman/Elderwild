@@ -42,14 +42,5 @@ private:
 	UPROPERTY()
 	UCursorInteractor* CursorInteractor;
 
-	void SetCursorInteractor();
-
-	UPROPERTY(EditAnywhere, Category="Mouse Modes", meta=(AllowPrivateAccess))
-	TSubclassOf<UMouseMode> InspectModeClass;
-
-	UPROPERTY(EditAnywhere, Category="Mouse Modes", meta=(AllowPrivateAccess))
-	TSubclassOf<UMouseMode> BuildModeClass;
-
-	UPROPERTY(EditAnywhere, Category="Mouse Modes", meta=(AllowPrivateAccess))
-	TSubclassOf<UMouseMode> DialogueModeClass;
+	void SetCursorInteractor(UCursorInteractor* NewCursorInteractor);
 };

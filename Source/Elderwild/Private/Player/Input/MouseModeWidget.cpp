@@ -7,6 +7,7 @@
 #include "Player/CameraController.h"
 #include "Player/PlayerPawn.h"
 #include "Player/Input/CursorInteractor.h"
+#include "Player/Input/MouseModeTypes.h"
 
 
 void UMouseModeWidget::NativeConstruct()
@@ -34,7 +35,7 @@ void UMouseModeWidget::OnInspectButtonPressed()
 	UE_LOG(LogTemp, Display, TEXT("Inspect mode"));
 	if (CursorInteractor)
 	{
-		CursorInteractor->ChangeMouseMode(InspectModeClass);
+		CursorInteractor->ChangeMouseMode(EMouseModeType::Inspect);
 	}
 }
 
@@ -43,7 +44,7 @@ void UMouseModeWidget::OnBuildButtonPressed()
 	UE_LOG(LogTemp, Display, TEXT("Build mode"));
 	if (CursorInteractor)
 	{
-		CursorInteractor->ChangeMouseMode(BuildModeClass);
+		CursorInteractor->ChangeMouseMode(EMouseModeType::Build);
 	}
 }
 
@@ -52,7 +53,7 @@ void UMouseModeWidget::OnDialogueButtonPressed()
 	UE_LOG(LogTemp, Display, TEXT("Dialogue mode"));
 	if (CursorInteractor)
 	{
-		CursorInteractor->ChangeMouseMode(DialogueModeClass);
+		CursorInteractor->ChangeMouseMode(EMouseModeType::Dialogue);
 
 		APlayerController* FoundController = UGameplayStatics::GetPlayerController(this, 0);
 		if (!FoundController) return;
@@ -68,12 +69,7 @@ void UMouseModeWidget::OnDialogueButtonPressed()
 	}
 }
 
-// TODO : Can't CursorInteractor just be passed in since it owns this?
-void UMouseModeWidget::SetCursorInteractor()
+void UMouseModeWidget::SetCursorInteractor(UCursorInteractor* NewCursorInteractor)
 {
-	APlayerController* FoundController = UGameplayStatics::GetPlayerController(this, 0);
-	if (ACameraController* Controller = Cast<ACameraController>(FoundController))
-	{
-		CursorInteractor = Controller->CursorInteractor;
-	}
+	CursorInteractor = NewCursorInteractor;
 }

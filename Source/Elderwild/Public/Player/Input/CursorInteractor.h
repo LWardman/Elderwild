@@ -2,7 +2,9 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Player/Input/MouseModeTypes.h"
 #include "CursorInteractor.generated.h"
+
 
 class AGrid;
 class UMouseMode;
@@ -24,7 +26,7 @@ public:
 	void UpdateHover();
 	void HandleClick();
 
-	void ChangeMouseMode(TSubclassOf<UMouseMode> ModeClass);
+	void ChangeMouseMode(EMouseModeType ModeType);
 
 	UMouseMode* GetMouseMode() const { return MouseMode; }
 
