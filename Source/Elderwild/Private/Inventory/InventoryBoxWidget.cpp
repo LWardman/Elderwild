@@ -2,7 +2,7 @@
 
 #include "Components/Button.h"
 #include "Components/Image.h"
-#include "Components/InventoryComponent.h"
+#include "Inventory/InventoryComponent.h"
 #include "Engine/Texture2D.h"
 #include "Kismet/GameplayStatics.h"
 #include "Brushes/SlateColorBrush.h"

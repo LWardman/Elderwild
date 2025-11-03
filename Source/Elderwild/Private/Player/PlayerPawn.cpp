@@ -4,7 +4,7 @@
 
 #include "Player/ControlledCamera.h"
 #include "Dialogue/DialogueComponent.h"
-#include "Components/InventoryComponent.h"
+#include "Inventory/InventoryComponent.h"
 
 
 APlayerPawn::APlayerPawn()

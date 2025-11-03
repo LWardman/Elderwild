@@ -6,7 +6,7 @@
 
 #include "Components/IntTextBox.h"
 #include "DataAssets/ItemDataAsset.h"
-#include "Components/InventoryComponent.h"
+#include "Inventory/InventoryComponent.h"
 #include "Inventory/InventoryItemStack.h"
 #include "Creatures/Trader/TradeSpecifics.h"
 

@@ -6,7 +6,7 @@
 #include "Engine/Texture2D.h"
 
 #include "Components/IntTextBox.h"
-#include "Components/InventoryComponent.h"
+#include "Inventory/InventoryComponent.h"
 #include "Inventory/InventoryItemStack.h"
 #include "Creatures/Trader/TradeWidget.h"
 #include "DataAssets/ItemDataAsset.h"

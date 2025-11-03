@@ -3,7 +3,7 @@
 #include "Kismet/GameplayStatics.h"
 
 #include "Components/FacingWidgetComponent.h"
-#include "Components/InventoryComponent.h"
+#include "Inventory/InventoryComponent.h"
 #include "Creatures/Trader/TradeWidget.h"
 #include "Player/PlayerPawn.h"
 #include "Player/CameraController.h"
