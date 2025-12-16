@@ -64,5 +64,5 @@ void USeasonCycler::ChangeSeason()
 	
 	SeasonIsChanging.Broadcast(CurrentSeason);
 
-	UE_LOG(LogTemp, Log, TEXT("Season : %i is starting"), CurrentSeason);
+	UE_LOG(CalendarLog, Log, TEXT("Season : %i is starting"), CurrentSeason);
 }

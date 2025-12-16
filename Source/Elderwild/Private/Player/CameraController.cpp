@@ -13,7 +13,6 @@
 #include "Player/Input/InputDataConfig.h"
 #include "Player/Input/CursorInteractor.h"
 #include "Buildings/BuildingDirection.h"
-#include "Player/Input/InspectMode.h"
 
 
 ACameraController::ACameraController()
@@ -88,7 +87,7 @@ void ACameraController::BeginPlay()
     if (CursorInteractor && Grid)
     {
     	CursorInteractor->Initialize(this, Grid);
-    	CursorInteractor->ChangeMouseMode(UInspectMode::StaticClass());
+    	CursorInteractor->ChangeMouseMode(EMouseModeType::Inspect);
     }
 }
 

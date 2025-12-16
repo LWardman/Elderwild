@@ -72,11 +72,11 @@ ADirectionalLight* UCalendar::SearchArrayForDirectionalLight(TArray<AActor*> Sun
     
     if (SunActors.IsEmpty())
     {
-    	UE_LOG(LogTemp, Warning, TEXT("No directional light actor found, ensure actor has tag 'Sun' "));
+    	UE_LOG(CalendarLog, Warning, TEXT("No directional light actor found, ensure actor has tag 'Sun' "));
     }
     else if (SunActors.Num() > 1)
     {
-    	UE_LOG(LogTemp, Warning, TEXT("More than one directional light actor found"));
+    	UE_LOG(CalendarLog, Warning, TEXT("More than one directional light actor found"));
     	for (AActor* Actor : SunActors)
     	{
     		if (Actor->IsA(ADirectionalLight::StaticClass()))

@@ -28,6 +28,7 @@ public:
 	UFUNCTION()
 	void OnDialogueButtonPressed();
 	
+	void SetCursorInteractor(UCursorInteractor* NewCursorInteractor);
 protected:
 	UPROPERTY(meta = (BindWidget))
 	UButton* InspectButton;
@@ -41,6 +42,4 @@ protected:
 private:
 	UPROPERTY()
 	UCursorInteractor* CursorInteractor;
-
-	void SetCursorInteractor(UCursorInteractor* NewCursorInteractor);
 };
