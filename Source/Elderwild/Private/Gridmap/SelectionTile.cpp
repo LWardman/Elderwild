@@ -21,7 +21,7 @@ void USelectionTile::Init(AGrid* InGrid)
 
 	if (!Grid)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Passed a null grid in to the selection tile"));
+		UE_LOG(GridLog, Warning, TEXT("Passed a null grid in to the selection tile"));
 		return;
 	}
 
@@ -33,7 +33,7 @@ void USelectionTile::SetSelectionMaterialColour(FLinearColor NewColor)
 {
 	if (!Grid || !Grid->GetGridVisuals())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Either the grid or its visuals arent initialized"));
+		UE_LOG(GridLog, Warning, TEXT("Either the grid or its visuals arent initialized"));
 		return;
 	}
 	
@@ -76,7 +76,7 @@ void USelectionTile::SetVisibleSections(FIntVector2 BuildingSize)
 	if (!ProcMesh) return;
 	if (!BuildingSizeIsValid(BuildingSize))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("The building size given exceeds the maximum allowed"));
+		UE_LOG(GridLog, Warning, TEXT("The building size given exceeds the maximum allowed"));
 		return;
 	}
 
@@ -148,10 +148,10 @@ void USelectionTile::RotateRelativeTileAroundBaseBy90(FIntVector2& Tile)
 }
 void USelectionTile::LogRelevantTiles(TArray<FIntVector2> Tiles)
 {
-	UE_LOG(LogTemp, Display, TEXT("=========="));
+	UE_LOG(GridLog, Display, TEXT("=========="));
 	for (FIntVector2 Tile : Tiles)
 	{
-		UE_LOG(LogTemp, Display, TEXT("Found Tile : %s"), *Tile.ToString());
+		UE_LOG(GridLog, Display, TEXT("Found Tile : %s"), *Tile.ToString());
 	}
-	UE_LOG(LogTemp, Display, TEXT("=========="));
+	UE_LOG(GridLog, Display, TEXT("=========="));
 }

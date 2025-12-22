@@ -36,6 +36,7 @@ void UCursorInteractor::ChangeMouseMode(EMouseModeType ModeType)
 		UE_LOG(LogTemp, Error, TEXT("Failed to create MouseMode of type %d"), ModeType);
 		return;	
 	}
+	MouseMode = NewMode;
 
 	if (Controller && Grid)
 	{

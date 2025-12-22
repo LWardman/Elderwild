@@ -6,6 +6,7 @@
 
 class AGrid;
 class UCalendar;
+class USongCollection;
 struct FCameraBoundaries;
 
 /** WARNING : ADevGameMode should not be used in the final product,

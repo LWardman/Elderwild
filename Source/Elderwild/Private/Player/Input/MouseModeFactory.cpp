@@ -1,6 +1,6 @@
-#include "MouseModeFactory.h"
+#include "Player/Input/MouseModeFactory.h"
 
-#include "MouseMode.h"
+#include "Player/Input/MouseMode.h"
 #include "Player/Input/BuildMode.h"
 #include "Player/Input/InspectMode.h"
 #include "Player/Input/DialogueMode.h"
@@ -12,7 +12,7 @@ TSubclassOf<UMouseMode> UMouseModeFactory::GetModeClass(EMouseModeType Type)
     case EMouseModeType::Build:   
         return UBuildMode::StaticClass();
 
-    case EMouseModeType::Dialog:   
+    case EMouseModeType::Dialogue:
         return UDialogueMode::StaticClass();
 
     case EMouseModeType::Inspect: 

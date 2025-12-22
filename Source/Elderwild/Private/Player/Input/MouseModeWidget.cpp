@@ -26,8 +26,6 @@ void UMouseModeWidget::NativeConstruct()
 	{
 		DialogueButton->OnReleased.AddDynamic(this, &UMouseModeWidget::OnDialogueButtonPressed);
 	}
-
-	SetCursorInteractor();
 }
 
 void UMouseModeWidget::OnInspectButtonPressed()
