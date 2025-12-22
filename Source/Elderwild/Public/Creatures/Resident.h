@@ -5,7 +5,7 @@
 #include "Resident.generated.h"
 
 UCLASS()
-class ELDERWILD_API AResident : public ACreature
+class ELDERWILD_API AResident : public ACreature // TODO : this might not play well as ACreature, consider UObject or ActorComponent instead
 {
 	GENERATED_BODY()
 

@@ -1,12 +1,15 @@
 #include "Gridmap/SelectionTile.h"
 
 #include "ProceduralMeshComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 #include "Gridmap/Grid.h"
 #include "Gridmap/GridVisuals.h"
 #include "Gridmap/GridFactory.h"
 #include "Buildings/BuildingDirection.h"
 #include "Gridmap/GridDimensions.h"
+#include "Logging/GridLog.h"
+#include "Gridmap/UI/BuildingSizeSelector.h"
 
 USelectionTile::USelectionTile()
 {
@@ -27,6 +30,13 @@ void USelectionTile::Init(AGrid* InGrid)
 
 	UGridFactory::GenerateSelectionSquareGeometry(Grid, ProcMesh);
 	ProcMesh->SetVisibility(false);
+}
+
+void USelectionTile::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	CreateBuildingSizeSelectorWidget();
 }
 
 void USelectionTile::SetSelectionMaterialColour(FLinearColor NewColor)
@@ -54,7 +64,7 @@ void USelectionTile::UpdateSelectedTile(bool IsValidTile, FVector TilePosition)
 	if (!ProcMesh) return;
 	ProcMesh->SetVisibility(IsValidTile);
 
-	SetVisibleSections({2, 3});
+	SetVisibleSections();
 
 	ECompassDirection Direction = UBuildingDirection::GetDirection();
 	float TileDirection = 180.f + static_cast<uint8>(Direction) * 90.f;
@@ -68,19 +78,19 @@ void USelectionTile::UpdateSelectedTile(bool IsValidTile, FVector TilePosition)
 
 	FIntVector2 BaseTile = UGridDimensions::LocationToTile(TilePosition, Grid);
 
-	CalculateRelevantTileLocations(BaseTile, {2, 3});
+	CalculateRelevantTileLocations(BaseTile);
 }
 
-void USelectionTile::SetVisibleSections(FIntVector2 BuildingSize)
+void USelectionTile::SetVisibleSections()
 {
 	if (!ProcMesh) return;
-	if (!BuildingSizeIsValid(BuildingSize))
+	if (!BuildingSizeIsValid())
 	{
 		UE_LOG(GridLog, Warning, TEXT("The building size given exceeds the maximum allowed"));
 		return;
 	}
 
-	TArray<int32> RelevantSections = GetRelevantMeshSections(BuildingSize);
+	TArray<int32> RelevantSections = GetRelevantMeshSections();
 	
 	for (int32 idx = 0; idx < MaxBuildingSize.X * MaxBuildingSize.Y; idx++)
 	{
@@ -88,12 +98,12 @@ void USelectionTile::SetVisibleSections(FIntVector2 BuildingSize)
 	}
 }
 
-bool USelectionTile::BuildingSizeIsValid(FIntVector2 BuildingSize)
+bool USelectionTile::BuildingSizeIsValid()
 {
 	return (BuildingSize.X <= MaxBuildingSize.X && BuildingSize.Y <= MaxBuildingSize.Y);
 }
 
-TArray<int32> USelectionTile::GetRelevantMeshSections(FIntVector2 BuildingSize)
+TArray<int32> USelectionTile::GetRelevantMeshSections()
 {
 	TArray<int32> SectionsToKeep;
 	
@@ -108,7 +118,7 @@ TArray<int32> USelectionTile::GetRelevantMeshSections(FIntVector2 BuildingSize)
 	return SectionsToKeep;
 }
 
-TArray<FIntVector2> USelectionTile::CalculateRelevantTileLocations(FIntVector2 BaseTile, FIntVector2 BuildingSize)
+TArray<FIntVector2> USelectionTile::CalculateRelevantTileLocations(FIntVector2 BaseTile)
 {
 	TArray<FIntVector2> RelativeTiles;
 
@@ -154,4 +164,25 @@ void USelectionTile::LogRelevantTiles(TArray<FIntVector2> Tiles)
 		UE_LOG(GridLog, Display, TEXT("Found Tile : %s"), *Tile.ToString());
 	}
 	UE_LOG(GridLog, Display, TEXT("=========="));
+}
+
+void USelectionTile::CreateBuildingSizeSelectorWidget()
+{
+	APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0);
+	if (Controller && BuildingSizeSelectorClass)
+	{
+		BuildingSizeSelectorWidget = CreateWidget<UBuildingSizeSelector>(Controller, BuildingSizeSelectorClass);
+		
+		if (BuildingSizeSelectorWidget)
+		{
+			BuildingSizeSelectorWidget->OnBuildingSizeSelected.AddUObject(this, &USelectionTile::OnBuildingSizeWidgetButtonClicked);
+			BuildingSizeSelectorWidget->AddToPlayerScreen();
+		}
+	}
+}
+
+void USelectionTile::OnBuildingSizeWidgetButtonClicked(FIntVector2 BroadcastedBuildingSize)
+{
+	UE_LOG(GridLog, Display, TEXT("Received new building size {%i, %i}"), BroadcastedBuildingSize.X, BroadcastedBuildingSize.Y);
+	SetBuildingSize(BroadcastedBuildingSize);
 }

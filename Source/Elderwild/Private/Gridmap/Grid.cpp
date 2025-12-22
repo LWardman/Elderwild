@@ -67,7 +67,7 @@ void AGrid::TryBuild(FIntVector2 TileToBuildOn)
 	if (!BuildingData || !BuildingData->BuildingClass || !OccupancyMap || !SelectionTile || !GridDimensions) return;
 	
 	FIntVector2 BuildingSize = BuildingData->BuildingSize;
-	TArray<FIntVector2> RelevantTiles = SelectionTile->CalculateRelevantTileLocations(TileToBuildOn, BuildingSize);
+	TArray<FIntVector2> RelevantTiles = SelectionTile->CalculateRelevantTileLocations(TileToBuildOn);
 
 	if (!OccupancyMap->AllTilesHaveState(RelevantTiles, EOccupancyState::EMPTY)) return;
 	

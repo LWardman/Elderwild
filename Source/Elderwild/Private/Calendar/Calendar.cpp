@@ -6,6 +6,7 @@
 #include "Calendar/DayCycler.h"
 #include "Calendar/SeasonCycler.h"
 #include "Calendar/CalendarWidget.h"
+#include "Logging/CalendarLog.h"
 
 
 UCalendar::UCalendar()

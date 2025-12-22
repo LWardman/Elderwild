@@ -1,6 +1,7 @@
 #include "Calendar/SeasonCycler.h"
 
 #include "Calendar/DayCycler.h"
+#include "Logging/CalendarLog.h"
 
 
 void USeasonCycler::Init(UDayCycler* DayCycler)

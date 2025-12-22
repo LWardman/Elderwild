@@ -32,7 +32,7 @@ void UBuildMode::Hover()
 		Grid->HoverTile(Hit.Location);
 		
 		FIntVector2 Coord = UGridDimensions::LocationToTile(Hit.Location, Grid);
-		TArray<FIntVector2> BuildingTiles = Grid->GetSelectionTile()->CalculateRelevantTileLocations(Coord, {2, 3});
+		TArray<FIntVector2> BuildingTiles = Grid->GetSelectionTile()->CalculateRelevantTileLocations(Coord);
 		TArray<FIntVector2> ValidTiles;
 		
 		if (Grid->GetOccupancyMap())

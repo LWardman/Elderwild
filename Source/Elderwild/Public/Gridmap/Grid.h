@@ -66,7 +66,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Construction", meta=(AllowPrivateAccess))
 	UGridDimensions* GridDimensions;
 	
-	UPROPERTY(EditAnywhere, Category = "Buildings", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, Category = "Buildings", meta = (AllowPrivateAccess))
 	UBuildingData* BuildingData;
 	
 	UPROPERTY()

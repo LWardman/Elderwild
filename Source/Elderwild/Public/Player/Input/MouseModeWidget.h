@@ -8,7 +8,7 @@ class UButton;
 class UCursorInteractor;
 class UMouseMode;
 
-/* This is a debug class and shouldnt be used in the finished product
+/* This is a debug class and shouldn't be used in the finished product
  */
 UCLASS()
 class ELDERWILD_API UMouseModeWidget : public UUserWidget

@@ -4,6 +4,7 @@
 #include "Components/ActorComponent.h"
 #include "SelectionTile.generated.h"
 
+class UBuildingSizeSelector;
 class UProceduralMeshComponent;
 class AGrid;
 
@@ -15,26 +16,29 @@ class ELDERWILD_API USelectionTile : public UActorComponent
 public:
 	USelectionTile();
 	void Init(AGrid* InGrid);
+	virtual void BeginPlay() override;
 
 	void SetSelectionMaterialColour(FLinearColor NewColor);
 
 	void UpdateSelectedTile(bool IsValidTile, FVector TilePosition);
+	
+	void SetBuildingSize(const FIntVector2 NewBuildingSize) { BuildingSize = NewBuildingSize; }
 
-	TArray<FIntVector2> CalculateRelevantTileLocations(FIntVector2 BaseTile, FIntVector2 BuildingSize);
+	TArray<FIntVector2> CalculateRelevantTileLocations(FIntVector2 BaseTile);
 
 private:
 
-	void SetVisibleSections(FIntVector2 BuildingSize);
+	void SetVisibleSections();
 
-	bool BuildingSizeIsValid(FIntVector2 BuildingSize);
+	bool BuildingSizeIsValid();
 
-	TArray<int32> GetRelevantMeshSections(FIntVector2 BuildingSize);
+	TArray<int32> GetRelevantMeshSections();
 
 	void RotateRelativeTileAroundBaseBy90(FIntVector2& Tile);
 
 	void LogRelevantTiles(TArray<FIntVector2> Tiles);
-
-	// TODO : add a Building Size variable.
+	
+	FIntVector2 BuildingSize = {1, 1};
 	FIntVector2 MaxBuildingSize = {3, 3};
 	
 	UPROPERTY()
@@ -45,4 +49,15 @@ private:
 
 	UPROPERTY()
 	AGrid* Grid;
+	
+	UPROPERTY()
+	UBuildingSizeSelector* BuildingSizeSelectorWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="UI", meta=(AllowPrivateAccess = "true"))
+	TSubclassOf<UBuildingSizeSelector> BuildingSizeSelectorClass;
+	
+	void CreateBuildingSizeSelectorWidget();
+	
+	UFUNCTION()
+	void OnBuildingSizeWidgetButtonClicked(FIntVector2 BroadcastedBuildingSize);
 };
