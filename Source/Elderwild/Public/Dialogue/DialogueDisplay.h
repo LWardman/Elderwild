@@ -15,8 +15,8 @@ class ELDERWILD_API UDialogueDisplay : public UUserWidget
 
 public:
 	void SetMessageContent(FText NewMessage);
-
 	void SetSlideNumber(FText NewSlideInfo);
+	void SetCharacterName(FText Name);
 	
 protected:
 	UPROPERTY(meta = (BindWidget))
@@ -29,8 +29,8 @@ protected:
 	UBorder* MessageBackdrop;
 
 	UPROPERTY(meta = (BindWidget))
-	UTextBlock* SpeakingCharacterName;
+	UTextBlock* CharacterName;
 
 	UPROPERTY(meta = (BindWidget))
-	UImage* SpeakingCharacter;
+	UImage* CharacterPortrait;
 };
