@@ -3,60 +3,44 @@
 #include "Kismet/GameplayStatics.h"
 
 #include "Dialogue/DialogueDisplay.h"
-
-
-
-void UDialogueComponent::Init(APlayerController* InController)
-{
-	Controller = InController;
-
-	// TODO : decouple messages from this class
-	Messages.Add(FText::FromString(TEXT("blood")));
-	Messages.Add(FText::FromString(TEXT("mmmmmmmmm")));
-}
+#include "Dialogue/DialogueInformation.h"
+#include "Logging/DialogueLog.h"
 
 void UDialogueComponent::EnterDialogue()
 {
 	DisplayDialogueWidget();
 
+	if (!DialogueInformation)
+	{
+		UE_LOG(DialogueLog, Warning, TEXT("No DialogueInformation found, assign a data asset"));
+		return;
+	}
+	
 	CurrentMessageIndex = 0;
 	
-	if (Messages.IsValidIndex(CurrentMessageIndex))
+	if (DialogueInformation->HasMessages())
 	{
 		UGameplayStatics::SetGlobalTimeDilation(this, 0.0001f); // effectively pauses the game
-		
-		DialogueWidget->SetMessageContent(Messages[CurrentMessageIndex]);
-		DialogueWidget->SetSlideNumber(CreateSlideNumberInformation());
+		UpdateDialogueInformation();
 	}
 }
 
 void UDialogueComponent::MoveToNextMessage()
 {
-	if (!DialogueWidget) return;
-
-	CurrentMessageIndex++;
-
-	if (Messages.IsValidIndex(CurrentMessageIndex))
-	{
-		DialogueWidget->SetMessageContent(Messages[CurrentMessageIndex]);
-		DialogueWidget->SetSlideNumber(CreateSlideNumberInformation());
-	}
-	else
+	if (!DialogueInformation || CurrentMessageIndex + 1 >= DialogueInformation->GetNumberOfLines())
 	{
 		ExitDialogue();
 	}
+
+	CurrentMessageIndex++;
+	UpdateDialogueInformation();
 }
 
 void UDialogueComponent::MoveToPreviousMessage()
 {
-	if (!DialogueWidget) return;
-
-	if (Messages.IsValidIndex(CurrentMessageIndex - 1))
-	{
-		CurrentMessageIndex--;
-		DialogueWidget->SetMessageContent(Messages[CurrentMessageIndex]);
-		DialogueWidget->SetSlideNumber(CreateSlideNumberInformation());
-	}
+	CurrentMessageIndex--;
+	CurrentMessageIndex = FMath::Max(0, CurrentMessageIndex);
+	UpdateDialogueInformation();
 }
 
 void UDialogueComponent::ExitDialogue()
@@ -68,16 +52,36 @@ void UDialogueComponent::ExitDialogue()
 	}
 }
 
+void UDialogueComponent::UpdateDialogueInformation()
+{
+	if (DialogueWidget && DialogueInformation && DialogueInformation->LineNumberIsValid(CurrentMessageIndex))
+	{
+		DialogueWidget->SetMessageContent(GetCurrentMessage());
+		DialogueWidget->SetSlideNumber(DialogueInformation->GetLineNumberText(CurrentMessageIndex));
+		DialogueWidget->SetSpeakingCharacterName(DialogueInformation->SpeakingCharacter);
+	}	
+}
+
+FText UDialogueComponent::GetCurrentMessage()
+{
+	if (DialogueInformation && DialogueInformation->LineNumberIsValid(CurrentMessageIndex))
+	{
+		return DialogueInformation->GetLineFromNumber(CurrentMessageIndex);
+	}
+	return FText::GetEmpty();
+}
+
 void UDialogueComponent::DisplayDialogueWidget()
 {
+	APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0);
 	if (!Controller)
 	{
-		UE_LOG(LogTemp, Error, TEXT("No controller to use, has this class been two step initialized?"));
+		UE_LOG(DialogueLog, Error, TEXT("No controller found"));
 		return;
 	}
 	if (!DialogueWidgetClass)
 	{
-		UE_LOG(LogTemp, Error, TEXT("No dialogue class to use, has this property been set in the editor?"));
+		UE_LOG(DialogueLog, Error, TEXT("No dialogue class to use, has a class been set?"));
 		return;
 	}
 	
@@ -85,17 +89,6 @@ void UDialogueComponent::DisplayDialogueWidget()
 	if (DialogueWidget)
 	{
 		DialogueWidget->AddToPlayerScreen();
-		UE_LOG(LogTemp, Display, TEXT("Added dialogue widget to player screen"));
+		UE_LOG(DialogueLog, Display, TEXT("Added dialogue widget to player screen"));
 	}
 }
-
-FText UDialogueComponent::CreateSlideNumberInformation() const
-{
-	FString CurrentNumber = FString::FromInt(CurrentMessageIndex + 1); // '+1' accounts for ints starting at 0
-	FString SlideCount = FString::FromInt(GetNumberOfSlides());
-
-	FString FormattedSlideInformation = CurrentNumber + "/" + SlideCount;
-	
-	return FText::FromString(FormattedSlideInformation);
-}
-
