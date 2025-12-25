@@ -28,7 +28,6 @@ APlayerPawn::APlayerPawn()
 void APlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
-	DialogueComponent->Init(Cast<APlayerController>(GetController()));
 }
 
 void APlayerPawn::Tick(float DeltaTime)
