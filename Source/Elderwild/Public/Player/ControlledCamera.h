@@ -12,6 +12,10 @@ struct FCameraBoundaries
 	FVector Max;
 };
 
+class UCameraZoomComponent;
+class UCameraRotationComponent;
+class UCameraTranslationComponent;
+
 UCLASS()
 class ELDERWILD_API UControlledCamera : public UCameraComponent
 {
@@ -23,42 +27,32 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	
-	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
-
 public:
-	FCameraBoundaries GetCameraBoundaries() const {return CameraBoundaries;}
+	FCameraBoundaries GetCameraBoundaries() const { return CameraBoundaries; }
 	
-	void ZoomCamera(float Direction);
+	void ZoomCamera(float Direction) { if (CameraZoom) CameraZoom->ZoomCamera(Direction); }
 
 	FVector CalculateCameraMovementVectorOnXYPlane(FVector2D PlayerInput) const;
     
 	FVector GetForwardXYVector() const;
     
-	void RotateAroundYawAxis(float RotationDirection);
+	// TODO : The compiler will complain about this, since the components are only forward declared here
+	void BeginDragMovement(FVector2D Cursor) { if (CameraTranslation) CameraTranslation->BeginDragMovement(Cursor); }
+	void DragMove(FVector2d Cursor) { if (CameraTranslation) CameraTranslation->DragMove(Cursor); }
 
-	void BeginDragMovement(FVector2D Cursor);
+	void BeginDragRotate(FVector2d Cursor) { if (CameraRotation) CameraRotation->BeginDragRotate(Cursor); }
+	void DragRotate(FVector2d Cursor) { if (CameraRotation) CameraRotation->DragRotate(Cursor); }
 
-	void DragMove(FVector2d Cursor);
-
-	void BeginDragRotate(FVector2d Cursor);
-
-	void DragRotate(FVector2d Cursor);
-
-	FVector UpdateMousePositionsAndGetDelta(FDraggingMousePositions& CursorPositions, const FVector2d Cursor);
-	
 private:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
-	float RotationSpeed = 30.f;
-	
 	FCameraBoundaries CameraBoundaries;
-	
-	float FieldOfView = 80;
-	float TargetFieldOfView = FieldOfView;
-	float MinimumFieldOfView = 16.0f;
-	float MaximumFieldOfView = 90.0f;
 
-	void InterpolateCameraFieldOfView(float DeltaTime);
+	// TODO : Make these components general. For example the CameraRotation class now is bound to it's parent being a camera, this class should work with any class.
+	UPROPERTY(EditAnywhere, Category="Camera", meta=(AllowPrivateAccess))
+	UCameraZoomComponent* CameraZoom;
 
-	FDraggingMousePositions DragMovement;
-	FDraggingMousePositions DragRotation;
+	UPROPERTY(EditAnywhere, Category="Camera", meta=(AllowPrivateAccess))
+	UCameraRotationComponent* CameraRotation;
+
+	UPROPERTY(EditAnywhere, Category="Camera", meta=(AllowPrivateAccess))
+	UCameraTranslationComponent* CameraTranslation;
 };
