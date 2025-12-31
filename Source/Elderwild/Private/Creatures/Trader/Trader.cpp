@@ -53,6 +53,7 @@ void ATrader::BeginTraderInteraction(AActor* Actor, FKey Key)
 		if (!TradeWidget)
 		{
 			UE_LOG(LogTemp, Error, TEXT("TradeWidget failed during creation"));
+			return;
 		}
 
 		UInventoryComponent* PlayerInventory = nullptr;
