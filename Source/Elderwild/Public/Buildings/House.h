@@ -4,7 +4,6 @@
 #include "Buildings/Building.h"
 #include "House.generated.h"
 
-
 UCLASS()
 class ELDERWILD_API AHouse : public ABuilding
 {
