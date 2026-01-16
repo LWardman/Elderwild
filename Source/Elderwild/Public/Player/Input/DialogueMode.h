@@ -11,8 +11,8 @@ class ELDERWILD_API UDialogueMode : public UMouseMode
 	GENERATED_BODY()
 
 public:
-	virtual void Init(APlayerController* InController, AGrid* InGrid) override;
+	virtual void OnMouseModeEnter() override;
 	virtual void Click() override;
 	virtual void Hover() override {}
-	virtual void BeginDestroy() override;
+	virtual void OnMouseModeExit() override;
 };

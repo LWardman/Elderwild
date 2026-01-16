@@ -6,20 +6,19 @@
 
 class AGrid;
 
-UCLASS()
+UCLASS(Abstract)
 class ELDERWILD_API UMouseMode : public UObject
 {
 	GENERATED_BODY()
 
 public:
-	virtual void Init(APlayerController* InController, AGrid* InGrid);
+	virtual void OnMouseModeEnter();
 	virtual void Click();
 	virtual void Hover();
-	virtual void BeginDestroy() override;
-
-	UPROPERTY()
-	APlayerController* Controller;
-
-	UPROPERTY()
-	AGrid* Grid;
+	virtual void OnMouseModeExit();
+	
+protected:
+	APlayerController* GetController() const;
+	AGrid* GetGrid() const;
+	FHitResult GetHitResultUnderCursor() const;	
 };

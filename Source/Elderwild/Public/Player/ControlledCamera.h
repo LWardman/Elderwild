@@ -1,7 +1,5 @@
 #pragma once
 
-#include "Player/Input/DraggingMousePositions.h"
-
 #include "CoreMinimal.h"
 #include "Camera/CameraComponent.h"
 #include "ControlledCamera.generated.h"
@@ -30,23 +28,25 @@ protected:
 public:
 	FCameraBoundaries GetCameraBoundaries() const { return CameraBoundaries; }
 	
-	void ZoomCamera(float Direction) { if (CameraZoom) CameraZoom->ZoomCamera(Direction); }
+	void ZoomCamera(float Direction);
 
 	FVector CalculateCameraMovementVectorOnXYPlane(FVector2D PlayerInput) const;
     
 	FVector GetForwardXYVector() const;
     
-	// TODO : The compiler will complain about this, since the components are only forward declared here
-	void BeginDragMovement(FVector2D Cursor) { if (CameraTranslation) CameraTranslation->BeginDragMovement(Cursor); }
-	void DragMove(FVector2d Cursor) { if (CameraTranslation) CameraTranslation->DragMove(Cursor); }
+	void BeginDragMovement(FVector2D Cursor);
+	
+	void DragMove(FVector2d Cursor);
 
-	void BeginDragRotate(FVector2d Cursor) { if (CameraRotation) CameraRotation->BeginDragRotate(Cursor); }
-	void DragRotate(FVector2d Cursor) { if (CameraRotation) CameraRotation->DragRotate(Cursor); }
+	void BeginDragRotate(FVector2d Cursor);
+	void DragRotate(FVector2d Cursor);
+	
+	void RotateAroundYawAxis(float RotationDirection);
 
 private:
 	FCameraBoundaries CameraBoundaries;
 
-	// TODO : Make these components general. For example the CameraRotation class now is bound to it's parent being a camera, this class should work with any class.
+	// TODO : Make these components general. For example the CameraRotation class now is bound to it's parent being a camera, this component should work with any class.
 	UPROPERTY(EditAnywhere, Category="Camera", meta=(AllowPrivateAccess))
 	UCameraZoomComponent* CameraZoom;
 

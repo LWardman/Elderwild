@@ -2,6 +2,9 @@
 
 #include "Kismet/GameplayStatics.h"
 
+#include "Camera/CameraComponent.h"
+#include "Logging/ControlsLog.h"
+
 UCameraRotationComponent::UCameraRotationComponent()
 {
 	DragRotation.Sensitivity = 0.8f;
@@ -14,25 +17,22 @@ void UCameraRotationComponent::DragRotate(FVector2d Cursor)
     RotateAroundYawAxis(RotationMagnitude);
 }
 
-void UCameraRotationComponent::OnRegister()
-{
-    Super::OnRegister();
-
-    Camera = Cast<UCameraComponent>(GetAttachParent());
-}
-
 void UCameraRotationComponent::RotateAroundYawAxis(float RotationDirection)
 {
-    if (!Camera) return;
+	if (!Camera)
+	{
+		UE_LOG(ControlsLog, Warning, TEXT("Camera wasn't found to rotate"));
+		return;
+	}
 
-    FRotator Rotation = Camera->GetComponentRotation();
-    const float DeltaTime = UGameplayStatics::GetWorldDeltaSeconds(this);
-    const float RotationMagnitude = DeltaTime * RotationSpeed * RotationDirection;
-    Rotation.Yaw += RotationMagnitude;
-    Camera->SetWorldRotation(Rotation);
+	FRotator Rotation = Camera->GetComponentRotation();
+	const float DeltaTime = UGameplayStatics::GetWorldDeltaSeconds(this);
+	const float RotationMagnitude = DeltaTime * RotationSpeed * RotationDirection;
+	Rotation.Yaw += RotationMagnitude;
+	Camera->SetWorldRotation(Rotation);
 }
 
-FVector UControlledCamera::UpdateMousePositionsAndGetDelta(FDraggingMousePositions& CursorPositions, const FVector2d Cursor)
+FVector UCameraRotationComponent::UpdateMousePositionsAndGetDelta(FDraggingMousePositions& CursorPositions, const FVector2d Cursor)
 {
 	CursorPositions.UpdateCurrentPositionToCursor(Cursor);
 	const FVector MouseDeltaPosition = CursorPositions.CalculateDeltaVector();

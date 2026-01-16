@@ -5,6 +5,7 @@
 #include "Dialogue/DialogueDisplay.h"
 #include "Dialogue/DialogueInformation.h"
 #include "Logging/DialogueLog.h"
+#include "Player/CameraController.h"
 
 void UDialogueComponent::EnterDialogue()
 {
@@ -50,6 +51,12 @@ void UDialogueComponent::ExitDialogue()
 		DialogueWidget->RemoveFromParent();
 		UGameplayStatics::SetGlobalTimeDilation(this, 1.0f); // unpauses the game
 	}
+	
+	APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0);
+	if (ACameraController* CameraController = Cast<ACameraController>(Controller))
+	{
+		CameraController->ChangeMouseMode(EMouseModeType::Inspect);
+	}
 }
 
 void UDialogueComponent::UpdateDialogueInformation()
@@ -58,7 +65,7 @@ void UDialogueComponent::UpdateDialogueInformation()
 	{
 		DialogueWidget->SetMessageContent(GetCurrentMessage());
 		DialogueWidget->SetSlideNumber(DialogueInformation->GetLineNumberText(CurrentMessageIndex));
-		DialogueWidget->SetSpeakingCharacterName(DialogueInformation->SpeakingCharacter);
+		DialogueWidget->SetCharacterName(DialogueInformation->SpeakingCharacter);
 	}	
 }
 

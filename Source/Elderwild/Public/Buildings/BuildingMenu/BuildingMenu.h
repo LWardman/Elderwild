@@ -15,18 +15,18 @@ class ELDERWILD_API UBuildingMenu : public UUserWidget
     GENERATED_BODY()
 
 public:
-    virtual bool Initialize() override;
-
     UPROPERTY()
-    FBuildingSelected OnBuildingSelected;
+    FBuildingSelected BuildingSelected;
 
-private:
-    // TODO : What is the best class for this? Is it allowed to have a UTileView of UButtons?
+protected:
     UPROPERTY(meta = (BindWidget))
     UTileView* Buildings;
 
-    void CreateBuildingButtons();
-
+    UPROPERTY(EditAnywhere)
+    TArray<TObjectPtr<UBuildingData>> AvailableBuildings;
+    
+    virtual void NativeOnInitialized() override;
+    
     UFUNCTION()
-    void BroadcastBuildingSelected(UBuildingData* BuildingData);
+    void OnBuildingSelected(UObject* SelectedItem);
 };

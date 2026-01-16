@@ -11,13 +11,14 @@ class UGridDimensions;
 class UGridVisuals;
 class USelectionTile;
 class UBuildingData;
+class UBuildingMenu;
+class ABuilding;
 
 struct FGridRenderData;
 struct FLine;
 
-// TODO : write tests
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FBuildingDataUpdated, const UBuildingData*, BuildingData);
 
-// TODO : factor selection out into its own class
 UCLASS()
 class ELDERWILD_API AGrid : public AActor
 {
@@ -28,16 +29,16 @@ public:
 
 	virtual void OnConstruction(const FTransform &Transform) override;
 	
+	UPROPERTY()
+	FBuildingDataUpdated BuildingDataUpdated;
+	
 protected:
 	virtual void BeginPlay() override;
 
 public:
 	UGridDimensions* GetGridDimensions() const {return GridDimensions;}
-
 	UGridVisuals* GetGridVisuals() const {return GridVisuals;}
-
 	UOccupancyMap* GetOccupancyMap() const {return OccupancyMap;}
-
 	USelectionTile* GetSelectionTile() const {return SelectionTile;}
 	
 	void HoverTile(FVector Location);
@@ -48,7 +49,14 @@ public:
 
 	// TODO : this is a middle man function, remove it
 	void SetSelectionMaterialColour(FLinearColor NewColor);
-
+	
+	void SetBuildingData(const UBuildingData* InBuildingData);
+	
+	void CreateDisplayBuilding();
+	void DestroyDisplayBuilding();
+	
+	void HandleDisplayBuildingMovement(FIntVector2 NewLocation);
+	
 private:
 	void SetSelectedTile(FIntVector2 Coord);
 
@@ -66,8 +74,11 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Construction", meta=(AllowPrivateAccess))
 	UGridDimensions* GridDimensions;
 	
-	UPROPERTY(EditAnywhere, Category = "Buildings", meta = (AllowPrivateAccess))
-	UBuildingData* BuildingData;
+	UPROPERTY()
+	const UBuildingData* BuildingData;
+	
+	UPROPERTY()
+	ABuilding* DisplayBuilding;
 	
 	UPROPERTY()
 	UOccupancyMap* OccupancyMap = nullptr;
@@ -77,4 +88,16 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Visuals", meta=(AllowPrivateAccess))
 	UGridVisuals* GridVisuals;
+	
+	// TODO : This really isn't the place for this widget to be spawned from
+	UPROPERTY()
+	UBuildingMenu* BuildingMenuWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="UI", meta=(AllowPrivateAccess = "true"))
+	TSubclassOf<UBuildingMenu> BuildingMenuClass;
+	
+	void CreateBuildingMenuWidget();
+	
+	UFUNCTION()
+	void OnBuildingButtonClicked(const UBuildingData* InBuildingData);
 };

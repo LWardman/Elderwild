@@ -9,7 +9,8 @@
 #include "Buildings/BuildingDirection.h"
 #include "Gridmap/GridDimensions.h"
 #include "Logging/GridLog.h"
-#include "Gridmap/UI/BuildingSizeSelector.h"
+#include "Buildings/BuildingMenu/BuildingMenu.h"
+#include "Buildings/BuildingData.h"
 
 USelectionTile::USelectionTile()
 {
@@ -36,7 +37,10 @@ void USelectionTile::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	CreateBuildingSizeSelectorWidget();
+	if (AGrid* OwnerGrid = Cast<AGrid>(GetOwner()))
+	{
+		OwnerGrid->BuildingDataUpdated.AddDynamic(this, &USelectionTile::OnBuildingDataUpdated);
+	}
 }
 
 void USelectionTile::SetSelectionMaterialColour(FLinearColor NewColor)
@@ -166,23 +170,12 @@ void USelectionTile::LogRelevantTiles(TArray<FIntVector2> Tiles)
 	UE_LOG(GridLog, Display, TEXT("=========="));
 }
 
-void USelectionTile::CreateBuildingSizeSelectorWidget()
+void USelectionTile::OnBuildingDataUpdated(const UBuildingData* InBuildingData)
 {
-	APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0);
-	if (Controller && BuildingSizeSelectorClass)
-	{
-		BuildingSizeSelectorWidget = CreateWidget<UBuildingSizeSelector>(Controller, BuildingSizeSelectorClass);
-		
-		if (BuildingSizeSelectorWidget)
-		{
-			BuildingSizeSelectorWidget->OnBuildingSizeSelected.AddUObject(this, &USelectionTile::OnBuildingSizeWidgetButtonClicked);
-			BuildingSizeSelectorWidget->AddToPlayerScreen();
-		}
-	}
+	if (!InBuildingData) return;
+	
+	FIntVector2 NewBuildingSize = InBuildingData->BuildingSize;
+	UE_LOG(GridLog, Display, TEXT("Received new building size {%i, %i}"), NewBuildingSize.X, NewBuildingSize.Y);
+	SetBuildingSize(NewBuildingSize);
 }
 
-void USelectionTile::OnBuildingSizeWidgetButtonClicked(FIntVector2 BroadcastedBuildingSize)
-{
-	UE_LOG(GridLog, Display, TEXT("Received new building size {%i, %i}"), BroadcastedBuildingSize.X, BroadcastedBuildingSize.Y);
-	SetBuildingSize(BroadcastedBuildingSize);
-}

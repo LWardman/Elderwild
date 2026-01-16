@@ -19,7 +19,9 @@ public:
 	void ExitDialogue();
 
 private:
+	UPROPERTY(EditAnywhere, Category="Dialogue", meta=(AllowPrivateAccess))
 	UDialogueInformation* DialogueInformation;
+	
 	int32 CurrentMessageIndex = 0;
 	void UpdateDialogueInformation();
 	FText GetCurrentMessage();

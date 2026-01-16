@@ -7,6 +7,7 @@
 class UFacingWidgetComponent;
 class UTradeWidget;
 class UMouseMode;
+class UInventoryComponent;
 
 UCLASS()
 class ELDERWILD_API ATrader : public ACreature
@@ -16,12 +17,10 @@ public:
 	ATrader();
 
 	UPROPERTY(EditAnywhere, Category="Trading")
-	class UInventoryComponent* InventoryComponent;
+	UInventoryComponent* InventoryComponent;
 
 protected:
 	virtual void BeginPlay() override;
-
-	virtual void Tick(float DeltaSeconds) override;
 	
 private:
 	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess), Category="Indicator")
@@ -36,10 +35,8 @@ private:
 	UFUNCTION()
 	void BeginTraderInteraction(AActor* Actor, FKey Key);
 
-	TWeakObjectPtr<UMouseMode> MouseMode;
-	bool PlayerIsInInspectMode() const;
-	void FetchAndSubscribeToMouseEvents();
-
 	UFUNCTION()
 	void OnMouseModeChanged(UMouseMode* NewMouseMode);
+	
+	bool bActivatable = true;
 };

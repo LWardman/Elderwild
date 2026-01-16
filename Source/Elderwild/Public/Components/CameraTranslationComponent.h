@@ -6,6 +6,8 @@
 #include "Components/SceneComponent.h"
 #include "CameraTranslationComponent.generated.h"
 
+class UControlledCamera;
+
 UCLASS(ClassGroup=Camera)
 class ELDERWILD_API UCameraTranslationComponent : public USceneComponent
 {
@@ -14,11 +16,10 @@ class ELDERWILD_API UCameraTranslationComponent : public USceneComponent
 public:
     UCameraTranslationComponent();
 
+    void Init(UControlledCamera* InCamera) { Camera = InCamera; }
+    
     void BeginDragMovement(FVector2D Cursor) { DragTranslation.ResetToCursorsPosition(Cursor); }
     void DragMove(FVector2d Cursor);
-
-protected:
-    virtual void OnRegister() override;
 
 private:
     FVector UpdateMousePositionsAndGetDelta(FDraggingMousePositions& CursorPositions, const FVector2d Cursor);
@@ -26,5 +27,5 @@ private:
     FDraggingMousePositions DragTranslation;
 
     UPROPERTY(Transient)
-    UCameraComponent* Camera;
+    UControlledCamera* Camera;
 };

@@ -1,32 +1,55 @@
 #include "Player/Input/MouseMode.h"
 
 #include "Gridmap/Grid.h"
-#include "Gridmap/GridDimensions.h"
+#include "Kismet/GameplayStatics.h"
+#include "GameModes/DevGameMode.h"
+#include "Player/CameraController.h"
 
-void UMouseMode::Init(APlayerController* InController, AGrid* InGrid)
+void UMouseMode::OnMouseModeEnter()
 {
-	Controller = InController;
-	Grid = InGrid;
-
-	UE_LOG(LogTemp, Display, TEXT("Entering MouseMode : %s"), *GetClass()->GetName());
+	UE_LOG(LogTemp, Display, TEXT("Entering %s"), *GetClass()->GetName());
+	
+	if (ACameraController* Controller = Cast<ACameraController>(GetController()))
+	{
+		Controller->OnMouseModeChanged.Broadcast(this);
+	}
 }
 
 void UMouseMode::Click()
 {
 	//UE_LOG(LogTemp, Display, TEXT("Clicked"));
-	checkf(Controller && Grid && Grid->GetGridDimensions(), TEXT("Nullptr in mouse mode Click()"));
 }
 
 void UMouseMode::Hover()
 {
 	//UE_LOG(LogTemp, Display, TEXT("Hovered"));
-	checkf(Controller && Grid, TEXT("Nullptr in build mode Hover()"));
 }
 
-void UMouseMode::BeginDestroy()
+void UMouseMode::OnMouseModeExit()
 {
-	Super::BeginDestroy();
-	
 	UE_LOG(LogTemp, Display, TEXT("Exiting MouseMode : %s"), *GetClass()->GetName());
 }
 
+APlayerController* UMouseMode::GetController() const
+{
+	return UGameplayStatics::GetPlayerController(this, 0);
+}
+
+AGrid* UMouseMode::GetGrid() const
+{
+	ADevGameMode* GameMode = Cast<ADevGameMode>(UGameplayStatics::GetGameMode(this));
+	
+	if (!GameMode) return nullptr;
+	
+	return GameMode->GetGrid();
+}
+
+FHitResult UMouseMode::GetHitResultUnderCursor() const
+{
+	FHitResult Hit;
+	if (APlayerController* Controller = GetController())
+	{
+		Controller->GetHitResultUnderCursor(ECC_Visibility, true, Hit);
+	}
+	return Hit;
+}

@@ -1,5 +1,7 @@
 #include "Components\CameraTranslationComponent.h"
 
+#include "Player/ControlledCamera.h"
+
 UCameraTranslationComponent::UCameraTranslationComponent()
 {
 	DragTranslation.Sensitivity = 1.5f;
@@ -25,13 +27,6 @@ void UCameraTranslationComponent::DragMove(FVector2d Cursor)
 	Camera->SetWorldLocation(NewLocation);
 }
 
-void UCameraTranslationComponent::OnRegister()
-{
-	Super::OnRegister();
-
-	Camera = Cast<UCameraComponent>(GetAttachParent());
-}
-
 FVector UCameraTranslationComponent::UpdateMousePositionsAndGetDelta(FDraggingMousePositions& CursorPositions, const FVector2d Cursor)
 {
 	CursorPositions.UpdateCurrentPositionToCursor(Cursor);
@@ -40,4 +35,3 @@ FVector UCameraTranslationComponent::UpdateMousePositionsAndGetDelta(FDraggingMo
 
 	return MouseDeltaPosition;
 }
-

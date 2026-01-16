@@ -4,10 +4,12 @@
 #include "Components/ActorComponent.h"
 #include "SelectionTile.generated.h"
 
-class UBuildingSizeSelector;
+class UBuildingMenu;
 class UProceduralMeshComponent;
 class AGrid;
+class UBuildingData;
 
+// TODO : replace Grid references here with GetOwner()
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class ELDERWILD_API USelectionTile : public UActorComponent
 {
@@ -22,6 +24,7 @@ public:
 
 	void UpdateSelectedTile(bool IsValidTile, FVector TilePosition);
 	
+	UFUNCTION()
 	void SetBuildingSize(const FIntVector2 NewBuildingSize) { BuildingSize = NewBuildingSize; }
 
 	TArray<FIntVector2> CalculateRelevantTileLocations(FIntVector2 BaseTile);
@@ -50,14 +53,6 @@ private:
 	UPROPERTY()
 	AGrid* Grid;
 	
-	UPROPERTY()
-	UBuildingSizeSelector* BuildingSizeSelectorWidget;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="UI", meta=(AllowPrivateAccess = "true"))
-	TSubclassOf<UBuildingSizeSelector> BuildingSizeSelectorClass;
-	
-	void CreateBuildingSizeSelectorWidget();
-	
 	UFUNCTION()
-	void OnBuildingSizeWidgetButtonClicked(FIntVector2 BroadcastedBuildingSize);
+	void OnBuildingDataUpdated(const UBuildingData* InBuildingData);
 };

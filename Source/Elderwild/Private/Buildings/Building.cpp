@@ -10,6 +10,10 @@
 ABuilding::ABuilding()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	
+	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	RootComponent = Mesh;
+	Mesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Overlap);
 }
 
 void ABuilding::BeginPlay()
@@ -23,24 +27,6 @@ void ABuilding::BeginPlay()
 void ABuilding::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-}
-
-int32 ABuilding::GetNumberOfInhabitants() const
-{
-	return InhabitingCreatures.Num();
-}
-
-void ABuilding::SetBuildingSize(FIntVector2 NewBuildingSize)
-{
-	if (NewBuildingSize.X > 0 && NewBuildingSize.Y > 0)
-	{
-		BuildingSize = NewBuildingSize;
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("An invalid size has been assigned to a building, defaulting to (1,1)"));
-		BuildingSize = FIntVector2(1, 1);
-	}
 }
 
 void ABuilding::FindEntranceLocation()

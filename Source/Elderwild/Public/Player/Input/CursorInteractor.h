@@ -5,12 +5,9 @@
 #include "Player/Input/MouseModeTypes.h"
 #include "CursorInteractor.generated.h"
 
-
 class AGrid;
 class UMouseMode;
 class UMouseModeWidget;
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMouseModeChanged, UMouseMode*, MouseMode);
 
 UCLASS()
 class ELDERWILD_API UCursorInteractor : public UActorComponent
@@ -18,11 +15,8 @@ class ELDERWILD_API UCursorInteractor : public UActorComponent
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintAssignable)
-	FOnMouseModeChanged OnMouseModeChanged;
+	virtual void BeginPlay() override;
 	
-	void Initialize(APlayerController* InController, AGrid* InGrid);
-
 	void UpdateHover();
 	void HandleClick();
 
@@ -31,12 +25,6 @@ public:
 	UMouseMode* GetMouseMode() const { return MouseMode; }
 
 private:
-	UPROPERTY()
-	APlayerController* Controller;
-
-	UPROPERTY()
-	AGrid* Grid;
-
 	UPROPERTY()
 	UMouseMode* MouseMode;
 

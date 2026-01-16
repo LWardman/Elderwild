@@ -6,6 +6,8 @@
 #include "Components/SceneComponent.h"
 #include "CameraRotationComponent.generated.h"
 
+class UCameraComponent;
+
 UCLASS(ClassGroup=Camera)
 class ELDERWILD_API UCameraRotationComponent : public USceneComponent
 {
@@ -13,17 +15,16 @@ class ELDERWILD_API UCameraRotationComponent : public USceneComponent
 
 public:
 	UCameraRotationComponent();
+	
+	void Init(UCameraComponent* InCamera) { Camera = InCamera; }
 
 	void DragRotate(FVector2d Cursor);
 
 	void BeginDragRotate(FVector2d Cursor) { DragRotation.ResetToCursorsPosition(Cursor); }
 
-protected:
-	virtual void OnRegister() override;
-
-private:
 	void RotateAroundYawAxis(float RotationDirection);
 	
+private:
 	FVector UpdateMousePositionsAndGetDelta(FDraggingMousePositions& CursorPositions, const FVector2d Cursor);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))

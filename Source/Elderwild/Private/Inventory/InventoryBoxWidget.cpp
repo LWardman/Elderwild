@@ -9,7 +9,7 @@
 #include "Styling/SlateBrush.h"
 
 #include "Components/IntTextBox.h"
-#include "DataAssets/ItemDataAsset.h"
+#include "Inventory/ItemDataAsset.h"
 #include "Inventory/InventoryItemStack.h"
 #include "Creatures/Trader/TradeSpecifics.h"
 

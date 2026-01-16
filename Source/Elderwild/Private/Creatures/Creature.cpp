@@ -36,8 +36,8 @@ void ACreature::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 bool ACreature::ShouldBeSleeping()
 {
-	ADevGameMode* GM = Cast<ADevGameMode>(UGameplayStatics::GetGameMode(this))
+	ADevGameMode* GM = Cast<ADevGameMode>(UGameplayStatics::GetGameMode(this));
 	if (!GM || !GM->GetCalendar()) return false;
 	
-	return SleepsDuringTime = GM->GetCalendar()->GetDayState();
+	return SleepsDuringTime == GM->GetCalendar()->GetDayState();
 }

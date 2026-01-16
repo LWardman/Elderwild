@@ -9,7 +9,7 @@
 #include "Inventory/InventoryComponent.h"
 #include "Inventory/InventoryItemStack.h"
 #include "Creatures/Trader/TradeWidget.h"
-#include "DataAssets/ItemDataAsset.h"
+#include "Inventory/ItemDataAsset.h"
 
 TWeakObjectPtr<UTradeSpecifics> UTradeSpecifics::ActiveWidget;
 TPair<UInventoryComponent*, UInventoryComponent*> UTradeSpecifics::Traders;

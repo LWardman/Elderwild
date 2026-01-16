@@ -4,16 +4,14 @@
 #include "InputActionValue.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/FloatingPawnMovement.h"
-#include "Kismet/GameplayStatics.h"
 
-#include "Gridmap/Grid.h"
-#include "GameModes/DevGameMode.h"
 #include "Player/PlayerPawn.h"
 #include "Player/ControlledCamera.h"
 #include "Player/Input/InputDataConfig.h"
 #include "Player/Input/CursorInteractor.h"
 #include "Buildings/BuildingDirection.h"
-
+#include "Logging/ControlsLog.h"
+#include "Player/Input/BuildMode.h"
 
 ACameraController::ACameraController()
 {
@@ -23,7 +21,18 @@ ACameraController::ACameraController()
 	DefaultMouseCursor = EMouseCursor::Default;
 
 	CursorInteractor = CreateDefaultSubobject<UCursorInteractor>(TEXT("Cursor Interactor"));
-	checkf(CursorInteractor, TEXT("CursorInteractor not initialized properly"));
+	CameraComponent = CreateDefaultSubobject<UControlledCamera>(TEXT("Camera"));
+}
+
+void ACameraController::ChangeMouseMode(EMouseModeType ModeType)
+{
+	if (CursorInteractor) CursorInteractor->ChangeMouseMode(ModeType);
+}
+
+const UMouseMode* ACameraController::GetMouseMode()
+{
+	if (!CursorInteractor) return nullptr;
+	return CursorInteractor->GetMouseMode();
 }
 
 void ACameraController::SetupInputComponent()
@@ -31,10 +40,7 @@ void ACameraController::SetupInputComponent()
 	Super::SetupInputComponent();
 
 	// Add Input Mapping Context
-	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
-	{
-		Subsystem->AddMappingContext(IMC_StandardPlay, 0);
-	}
+	ApplyMappingContext(IMC_StandardPlay, 0);
 
 	if(!InputActions) return;
 
@@ -58,6 +64,9 @@ void ACameraController::SetupInputComponent()
 
 		// RotatingBuilding
 		EnhancedInputComponent->BindAction(InputActions->RotateBuilding, ETriggerEvent::Completed, this, &ACameraController::RotateBuilding);
+		
+		// Exit build mode
+		EnhancedInputComponent->BindAction(InputActions->ExitBuildMode, ETriggerEvent::Completed, this, &ACameraController::ExitBuildMode);
 	}
 	else
 	{
@@ -69,26 +78,14 @@ void ACameraController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	APlayerPawn* PlayerPawn = Cast<APlayerPawn>(GetPawn());
-	checkf(PlayerPawn, TEXT("Controller could not find the player pawn"));
+	if (APlayerPawn* PlayerPawn = Cast<APlayerPawn>(GetPawn()))
+	{
+		Movement = PlayerPawn->Movement;
+		CameraComponent = PlayerPawn->Camera;
+	}
 
-	Movement = PlayerPawn->Movement;
-	checkf(Movement, TEXT("Controller could not find the pawns floating movement component"));
-
-	CameraComponent = PlayerPawn->Camera;
-	checkf(CameraComponent, TEXT("Controller could not find the pawns camera component"));
-
-	ADevGameMode* GameMode = Cast<ADevGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
-	checkf(GameMode, TEXT("Controller could not find the game mode"));
-
-	Grid = GameMode->GetGrid();
-	checkf(Grid, TEXT("Handling player cursor could not be done because the grid cannot be found"));
-	
-    if (CursorInteractor && Grid)
-    {
-    	CursorInteractor->Initialize(this, Grid);
-    	CursorInteractor->ChangeMouseMode(EMouseModeType::Inspect);
-    }
+	OnMouseModeChanged.AddDynamic(this, &ACameraController::HandleMappingContextFromMouseMode);
+	ChangeMouseMode(EMouseModeType::Inspect);
 }
 
 void ACameraController::Tick(float DeltaSeconds)
@@ -105,14 +102,17 @@ void ACameraController::OnClick()
 
 void ACameraController::ZoomCamera(const FInputActionValue& Value)
 {
-	CameraComponent->ZoomCamera(Value.GetMagnitude());
+	if (CameraComponent) CameraComponent->ZoomCamera(Value.GetMagnitude());
 }
 
 void ACameraController::MoveCameraOnXYPlane(const FInputActionValue& Value)
 {
 	const FVector2D Input = Value.Get<FVector2D>();
-	FVector MovementDirection = CameraComponent->CalculateCameraMovementVectorOnXYPlane(Input);
-	Movement->AddInputVector(MovementDirection);
+	if (CameraComponent && Movement)
+	{
+		FVector MovementDirection = CameraComponent->CalculateCameraMovementVectorOnXYPlane(Input);
+		Movement->AddInputVector(MovementDirection);
+	}
 }
 
 void ACameraController::BeginDragMoveCamera(const FInputActionValue& Value)
@@ -153,7 +153,7 @@ void ACameraController::DragRotateCamera(const FInputActionValue& Value)
 
 void ACameraController::RotateCameraAroundYawAxis(const FInputActionValue& Value)
 {
-	CameraComponent->RotateAroundYawAxis(Value.GetMagnitude());
+	if (CameraComponent) CameraComponent->RotateAroundYawAxis(Value.GetMagnitude());
 }
 
 void ACameraController::RotateBuilding(const FInputActionValue& Value)
@@ -161,3 +161,49 @@ void ACameraController::RotateBuilding(const FInputActionValue& Value)
 	UBuildingDirection::RotateClockwise();
 }
 
+void ACameraController::ExitBuildMode(const FInputActionValue& Value)
+{
+	ChangeMouseMode(EMouseModeType::Inspect);
+}
+
+void ACameraController::ApplyMappingContext(const UInputMappingContext* MappingContext, int32 Priority)
+{
+	if (!MappingContext)
+	{
+		UE_LOG(ControlsLog, Error, TEXT("Attempted to apply a null mapping context. Aborting.."));
+		return;
+	}
+	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
+	{
+		UE_LOG(ControlsLog, Display, TEXT("Adding a mapping context"));
+		Subsystem->AddMappingContext(MappingContext, Priority);
+	}
+}
+
+void ACameraController::RemoveMappingContext(const UInputMappingContext* MappingContext)
+{
+	if (!MappingContext)
+	{
+		UE_LOG(ControlsLog, Error, TEXT("Attempted to remove a null mapping context. Aborting.."));
+		return;
+	}
+	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
+	{
+		UE_LOG(ControlsLog, Display, TEXT("Removing a mapping context"));
+		Subsystem->RemoveMappingContext(MappingContext);
+	}
+}
+
+void ACameraController::HandleMappingContextFromMouseMode(UMouseMode* MouseMode)
+{
+	if (!MouseMode) return;
+	
+	if (MouseMode->IsA(UBuildMode::StaticClass()))
+	{
+		ApplyMappingContext(IMC_Building, 1);
+	}
+	else
+	{
+		RemoveMappingContext(IMC_Building);
+	}
+}

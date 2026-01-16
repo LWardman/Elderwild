@@ -4,6 +4,8 @@
 #include "Buildings/Building.h"
 #include "House.generated.h"
 
+class UInhabitanceComponent;
+
 UCLASS()
 class ELDERWILD_API AHouse : public ABuilding
 {
@@ -19,6 +21,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	void TryFillBuildingWithCreatures();
+	UPROPERTY(EditAnywhere, Category="Building Components", meta=(AllowPrivateAccess))
+	UInhabitanceComponent* InhabitanceComponent;
 
 };

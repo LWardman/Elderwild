@@ -1,28 +1,30 @@
-#include "Components/CameraZoom.h"
+#include "Components/CameraZoomComponent.h"
 
-void UCameraZoom::ZoomCamera(float Direction)
+#include "Camera/CameraComponent.h"
+#include "Logging/ControlsLog.h"
+
+UCameraZoomComponent::UCameraZoomComponent()
+{
+    PrimaryComponentTick.bCanEverTick = true;
+}
+
+void UCameraZoomComponent::ZoomCamera(float Direction)
 {
     TargetFieldOfView -= Direction * 2;
     TargetFieldOfView = FMath::Clamp(TargetFieldOfView, MinimumFieldOfView, MaximumFieldOfView);
+    UE_LOG(ControlsLog, Display, TEXT("Setting new target FOV: %f"), TargetFieldOfView);
 }
 
-void UCameraZoom::OnRegister()
-{
-    Super::OnRegister();
-
-    Camera = Cast<UCameraComponent>(GetAttachParent());
-}
-
-void UCameraZoom::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
+void UCameraZoomComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction)
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+    
     InterpolateCameraFieldOfView(DeltaTime);
 }
 
-void UCameraZoom::InterpolateCameraFieldOfView(float DeltaTime)
+void UCameraZoomComponent::InterpolateCameraFieldOfView(float DeltaTime)
 {
-    if (!Camera) return;    
+    if (!Camera || TargetFieldOfView == FieldOfView) return;    
 
     const float FieldOfViewDelta = TargetFieldOfView - FieldOfView;
     const float InterpSpeed = FMath::Abs(FieldOfViewDelta);

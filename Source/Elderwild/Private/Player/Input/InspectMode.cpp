@@ -2,15 +2,19 @@
 
 #include "Gridmap/Grid.h"
 #include "Gridmap/GridVisuals.h"
+#include "Buildings/BuildingData.h"
 
-
-void UInspectMode::Init(APlayerController* InController, AGrid* InGrid)
+void UInspectMode::OnMouseModeEnter()
 {
-	Super::Init(InController, InGrid);
-
+	Super::OnMouseModeEnter();
+	
+	const UBuildingData* EmptyBuildingData = GetDefault<UBuildingData>();
+	
+	AGrid* Grid = GetGrid();
 	if (Grid && Grid->GetGridVisuals())
 	{
 		Grid->SetSelectionMaterialColour(Grid->GetGridVisuals()->InspectColor);
+		Grid->SetBuildingData(EmptyBuildingData);
 	}
 }
 
@@ -25,10 +29,11 @@ void UInspectMode::Hover()
 {
 	Super::Hover();
 
+	AGrid* Grid = GetGrid();
 	if (!Grid) return;
 	
-	FHitResult Hit;
-	if (Controller && Controller->GetHitResultUnderCursor(ECC_Visibility, true, Hit))
+	FHitResult Hit = GetHitResultUnderCursor();
+	if (Hit.IsValidBlockingHit())
 	{
 		Grid->HoverTile(Hit.Location);
 	}

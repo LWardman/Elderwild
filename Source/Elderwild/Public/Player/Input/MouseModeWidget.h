@@ -23,18 +23,13 @@ public:
 	void OnInspectButtonPressed();
 
 	UFUNCTION()
-	void OnBuildButtonPressed();
-
-	UFUNCTION()
 	void OnDialogueButtonPressed();
 	
 	void SetCursorInteractor(UCursorInteractor* NewCursorInteractor);
+	
 protected:
 	UPROPERTY(meta = (BindWidget))
 	UButton* InspectButton;
-
-	UPROPERTY(meta = (BindWidget))
-	UButton* BuildButton;
 
 	UPROPERTY(meta = (BindWidget))
 	UButton* DialogueButton;

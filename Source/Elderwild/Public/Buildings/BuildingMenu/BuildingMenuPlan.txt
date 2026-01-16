@@ -1,8 +1,0 @@
-BuildingMenu should include a tile view of buildings that can be built.
-These tile views should each be buttons that can be disabled or enabled, greyed out when disabled.
-When pressed, these buttons will make the player enter "Build Mode", passing relevant information on to other systems.
-This will remove the need for the "Build Mode" button, so it can be removed.
-There should be a key binding that exits build mode.
-Building a building should not exit build mode.
-When built, an event should fire with information about the new building.
-The widget should always be on screen at the bottom.

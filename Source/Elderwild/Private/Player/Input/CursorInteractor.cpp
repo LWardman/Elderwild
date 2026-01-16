@@ -1,53 +1,46 @@
 #include "Player/Input/CursorInteractor.h"
 
+#include "Kismet/GameplayStatics.h"
+
 #include "Player/Input/MouseModeWidget.h"
 #include "Player/Input/MouseMode.h"
 #include "Player/Input/MouseModeFactory.h"
 
-void UCursorInteractor::Initialize(APlayerController* InController, AGrid* InGrid)
+void UCursorInteractor::BeginPlay()
 {
-	Controller = InController;
-	Grid = InGrid;
-
+	Super::BeginPlay();
+	
 	CreateMouseModeWidget();
 }
 
 void UCursorInteractor::UpdateHover()
 {
-	if (MouseMode)
-	{
-		MouseMode->Hover();
-	}
+	if (MouseMode) MouseMode->Hover();
 }
 
 void UCursorInteractor::HandleClick()
 {
-	if (MouseMode)
-	{
-		MouseMode->Click();
-	}
+	if (MouseMode) MouseMode->Click();
 }
 
 void UCursorInteractor::ChangeMouseMode(EMouseModeType ModeType)
 {
- 	UMouseMode* NewMode = UMouseModeFactory::Create(this, ModeType);
-	if (!NewMode)
+	if (MouseMode) MouseMode->OnMouseModeExit();
+	
+	if (UMouseMode* NewMode = UMouseModeFactory::Create(this, ModeType))
+	{
+		MouseMode = NewMode;
+		MouseMode->OnMouseModeEnter();
+	}
+	else
 	{
 		UE_LOG(LogTemp, Error, TEXT("Failed to create MouseMode of type %d"), ModeType);
-		return;	
 	}
-	MouseMode = NewMode;
-
-	if (Controller && Grid)
-	{
-		MouseMode->Init(Controller, Grid);
-	}
-	
-	OnMouseModeChanged.Broadcast(MouseMode);
 }
 
 void UCursorInteractor::CreateMouseModeWidget()
 {
+	APlayerController* Controller = UGameplayStatics::GetPlayerController(this, 0);
 	if (MouseModeWidgetClass && Controller)
 	{
 		MouseModeWidget = CreateWidget<UMouseModeWidget>(Controller, MouseModeWidgetClass);

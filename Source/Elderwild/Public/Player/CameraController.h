@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "Player/Input/MouseModeTypes.h"
 #include "CameraController.generated.h"
 
 class UInputAction;
@@ -13,6 +14,9 @@ class UFloatingPawnMovement;
 class AGrid;
 class UInputDataConfig;
 class UCursorInteractor;
+class UMouseMode;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMouseModeChanged, UMouseMode*, MouseMode);
 
 /** Controller intended only for use with the player pawn
  */
@@ -30,11 +34,14 @@ public:
 	UPROPERTY()
 	UControlledCamera* CameraComponent;
 
-	UPROPERTY()
-	AGrid* Grid;
-	
 	UPROPERTY(EditAnywhere)
 	UCursorInteractor* CursorInteractor;
+	
+	void ChangeMouseMode(EMouseModeType ModeType);
+	const UMouseMode* GetMouseMode();
+	
+	UPROPERTY(BlueprintAssignable)
+	FOnMouseModeChanged OnMouseModeChanged;
 	
 protected:
 	virtual void SetupInputComponent() override;
@@ -46,6 +53,9 @@ protected:
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input", meta=(AllowPrivateAccess = "true"))
 	UInputMappingContext* IMC_StandardPlay;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Input", meta=(AllowPrivateAccess = "true"))
+	UInputMappingContext* IMC_Building;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput", meta=(AllowPrivateAccess = "true"))
 	UInputDataConfig* InputActions;
@@ -65,4 +75,12 @@ private:
 	void RotateCameraAroundYawAxis(const FInputActionValue& Value);
 
 	void RotateBuilding(const FInputActionValue& Value);
+	
+	void ExitBuildMode(const FInputActionValue& Value);
+	
+	void ApplyMappingContext(const UInputMappingContext* MappingContext, int32 Priority);
+	void RemoveMappingContext(const UInputMappingContext* MappingContext);
+	
+	UFUNCTION()
+	void HandleMappingContextFromMouseMode(UMouseMode* MouseMode);
 };

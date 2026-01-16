@@ -11,7 +11,7 @@ class ELDERWILD_API UDialogueInformation : public UDataAsset
 
 public:
     UPROPERTY(EditAnywhere, Category="Variables")
-    FText SpeakingCharacter = TEXT("UninitializedName");
+    FText SpeakingCharacter;
 
     UPROPERTY(EditAnywhere, Category = "Variables")
     TArray<FText> LinesOfDialogue;

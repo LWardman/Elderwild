@@ -1,6 +1,6 @@
 #include "Inventory/InventoryComponent.h"
 
-#include "DataAssets/ItemDataAsset.h"
+#include "Inventory/ItemDataAsset.h"
 
 void UInventoryComponent::TransferItemToOtherInventory(UInventoryComponent* OtherInventory, UItemDataAsset* Item, int32 Count)
 {
