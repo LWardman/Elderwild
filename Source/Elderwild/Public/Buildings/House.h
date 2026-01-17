@@ -5,6 +5,7 @@
 #include "House.generated.h"
 
 class UInhabitanceComponent;
+class UEntranceLocationComponent;
 
 UCLASS()
 class ELDERWILD_API AHouse : public ABuilding
@@ -23,5 +24,7 @@ public:
 private:
 	UPROPERTY(EditAnywhere, Category="Building Components", meta=(AllowPrivateAccess))
 	UInhabitanceComponent* InhabitanceComponent;
-
+	
+	UPROPERTY(EditAnywhere, Category="Building Components", meta=(AllowPrivateAccess))
+	UEntranceLocationComponent* EntranceLocationComponent;
 };
