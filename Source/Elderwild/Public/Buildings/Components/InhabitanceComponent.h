@@ -4,7 +4,6 @@
 #include "Components/ActorComponent.h"
 #include "InhabitanceComponent.generated.h"
 
-class ACreature;
 class AHouse;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -23,8 +22,8 @@ public:
 	bool HasSpace() const { return GetNumberOfInhabitants() < GetMaxInhabitants(); }
 	bool IsFull() const { return !HasSpace(); }
 	
-	TArray<ACreature*> GetInhabitants() const { return InhabitingCreatures; }
-	bool RegisterInhabitant(ACreature* NewInhabitant);
+	TArray<AActor*> GetInhabitants() const { return InhabitingCreatures; }
+	bool RegisterInhabitant(AActor* NewInhabitant);
 	
 	void RegisterPotentialInhabitants();
 
@@ -33,7 +32,7 @@ private:
 	int32 MaxNumberOfCreatures = 3;
 
 	UPROPERTY()
-	TArray<ACreature*> InhabitingCreatures;
+	TArray<AActor*> InhabitingCreatures;
 	
 	UPROPERTY()
 	AHouse* Parent;

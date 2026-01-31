@@ -48,6 +48,13 @@ FIntVector2 UGridDimensions::LocationToTile(FVector HitLocation, AGrid* Grid)
 	return Grid->GetGridDimensions()->LocalLocationToTile(LocalHitLocation);
 }
 
+FIntVector2 UGridDimensions::GetRandomTile()
+{
+	int32 RandomRow = FMath::RandRange(0, GetNumRows() - 1);
+	int32 RandomCol = FMath::RandRange(0, GetNumCols() - 1);
+	return FIntVector2(RandomRow, RandomCol);
+}
+
 bool UGridDimensions::GridHasValidDimensions() const
 {
 	return NumRows > 0 && NumCols > 0;

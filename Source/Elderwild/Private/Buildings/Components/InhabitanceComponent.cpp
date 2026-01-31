@@ -1,11 +1,16 @@
 #include "Buildings/Components/InhabitanceComponent.h"
 
 #include "Kismet/GameplayStatics.h"
-#include "Creatures/Resident.h"
+
 #include "Buildings/House.h"
+#include "Creatures/Creature.h"
+#include "Creatures/Components/ResidentComponent.h"
+#include "Logging/BuildingLog.h"
 
 UInhabitanceComponent::UInhabitanceComponent()
 {
+	PrimaryComponentTick.bCanEverTick = true;
+	
 	InhabitingCreatures.Reserve(GetMaxInhabitants());
 }
 
@@ -26,7 +31,7 @@ void UInhabitanceComponent::TickComponent(float DeltaTime, enum ELevelTick TickT
 	}
 }
 
-bool UInhabitanceComponent::RegisterInhabitant(ACreature* NewInhabitant)
+bool UInhabitanceComponent::RegisterInhabitant(AActor* NewInhabitant)
 {
 	if (!HasSpace()) return false;	
 	
@@ -36,20 +41,37 @@ bool UInhabitanceComponent::RegisterInhabitant(ACreature* NewInhabitant)
 
 void UInhabitanceComponent::RegisterPotentialInhabitants()
 {
+	if (!Parent)
+	{
+		UE_LOG(BuildingLog, Warning, TEXT("Inhabitance Component has no House Parent"));
+		return;
+	}
+	
 	// TODO : Cache homeless creatures somewhere as this will get expensive for large amounts of creatures
-	TArray<AActor*> FoundActors;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACreature::StaticClass(), FoundActors);
+	TArray<AActor*> Creatures;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACreature::StaticClass(), Creatures);
+	
+	UE_LOG(BuildingLog, Display, TEXT("Building found %i creatures to check"), Creatures.Num());
 
-	for (AActor* Actor : FoundActors)
+	for (AActor* Creature : Creatures)
 	{
 		if (IsFull()) break;
 		
-		if (AResident* Resident = Cast<AResident>(Actor))
+		UResidentComponent* ResidentComponent = Creature->FindComponentByClass<UResidentComponent>();
+		
+		if (!ResidentComponent)
 		{
-			if (Resident->HasAHome()) continue;
-			
-			if (Parent) Resident->AssignToHouse(Parent);
-			RegisterInhabitant(Resident);
+			UE_LOG(BuildingLog, Display, TEXT("Creature %s has no resident component"), *Creature->GetName());
+			continue;
 		}
-	}	
+		if (ResidentComponent->HasHome())
+		{
+			UE_LOG(BuildingLog, Display, TEXT("Skipping Creature %s because it already has a home"), *Creature->GetName());
+			continue;
+		}
+		
+		UE_LOG(BuildingLog, Display, TEXT("Assigning home %s to creature %s"), *Parent->GetName(), *Creature->GetName());
+		ResidentComponent->AssignToHouse(Parent);
+		RegisterInhabitant(Creature);
+	}
 }

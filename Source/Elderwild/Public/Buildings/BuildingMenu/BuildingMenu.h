@@ -6,6 +6,16 @@
 
 class UTileView;
 class UBuildingData;
+class UBuildMenuTabData;
+class UBuildingTabWidget;
+
+UENUM(BlueprintType)
+enum class EBuildTab : uint8
+{
+    Buildings,
+    Roads,
+    Decorations
+};
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FBuildingSelected, const UBuildingData*, BuildingData);
 
@@ -19,14 +29,29 @@ public:
     FBuildingSelected BuildingSelected;
 
 protected:
-    UPROPERTY(meta = (BindWidget))
+    UPROPERTY(meta=(BindWidget))
     UTileView* Buildings;
-
-    UPROPERTY(EditAnywhere)
-    TArray<TObjectPtr<UBuildingData>> AvailableBuildings;
+    
+    // TODO : Turn the collection of building tab widgets into a UPanelWidget
+    UPROPERTY(meta=(BindWidget))
+    UBuildingTabWidget* BuildingsTab;
+    
+    UPROPERTY(meta=(BindWidget))
+    UBuildingTabWidget* RoadsTab;
+    
+    UPROPERTY(meta=(BindWidget))
+    UBuildingTabWidget* DecorationsTab;
     
     virtual void NativeOnInitialized() override;
     
     UFUNCTION()
     void OnBuildingSelected(UObject* SelectedItem);
+    
+    void SetTileViewFromBuildingTabEntries(TObjectPtr<UBuildMenuTabData> BuildingTabEntries);
+    
+    UPROPERTY(EditAnywhere)
+    TMap<EBuildTab, TObjectPtr<UBuildMenuTabData>> TabToBuildingMap;
+    
+    UFUNCTION()
+    void SwitchTab(EBuildTab NewTab);
 };

@@ -4,6 +4,7 @@
 
 #include "Calendar/Calendar.h"
 #include "GameModes/DevGameMode.h"
+#include "Creatures/CreatureController.h"
 
 ACreature::ACreature()
 {
@@ -19,13 +20,10 @@ void ACreature::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (ShouldBeSleeping())
+	if (ACreatureController* AI = Cast<ACreatureController>(GetController()))
 	{
-		//UE_LOG(LogTemp, Display, TEXT("Should be sleeping"));
-	}
-	else
-	{
-		//UE_LOG(LogTemp, Display, TEXT("Should be working"));
+		UE_LOG(LogTemp, Display, TEXT("bShouldBeSleeping: %s"), ShouldBeSleeping() ? TEXT("true") : TEXT("false"));
+		AI->UpdateSleepState(ShouldBeSleeping());
 	}
 }
 

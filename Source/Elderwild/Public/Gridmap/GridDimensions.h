@@ -33,6 +33,8 @@ public:
 
 	static FIntVector2 LocationToTile(FVector HitLocation, AGrid* Grid);
 	
+	FIntVector2 GetRandomTile();
+	
 private:
 	UPROPERTY(EditAnywhere, Category = "Constants", meta = (AllowPrivateAccess = "true"))
 	int32 NumRows = 10;

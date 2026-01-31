@@ -20,8 +20,20 @@ public:
 
 	UPROPERTY(Transient)
 	UBehaviorTreeComponent* BehaviorTreeManager;
+	
+	void UpdateSleepState(bool bInSleepState);
+	
+	void UpdateHome(AActor* InHome);
 
 protected:
-	
 	virtual void OnPossess(APawn* InPawn) override;	
+	
+private:
+	void StartAI();
+	
+	UPROPERTY(EditDefaultsOnly, Category="Blackboard")
+	FName BB_ShouldBeSleeping = "ShouldBeAsleep";
+	
+	UPROPERTY(EditDefaultsOnly, Category="Blackboard")
+	FName BB_Home = "Home";
 };
