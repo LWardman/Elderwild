@@ -1,7 +1,5 @@
 #include "Buildings/Building.h"
 
-#include "DrawDebugHelpers.h"
-
 ABuilding::ABuilding()
 {
 	PrimaryActorTick.bCanEverTick = true;
