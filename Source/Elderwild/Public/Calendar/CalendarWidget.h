@@ -5,6 +5,8 @@
 #include "CalendarWidget.generated.h"
 
 class UTextBlock;
+class USeasonPanel;
+enum class ESeason : uint8;
 
 UCLASS()
 class ELDERWILD_API UCalendarWidget : public UUserWidget
@@ -13,7 +15,7 @@ class ELDERWILD_API UCalendarWidget : public UUserWidget
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void UpdateSeasonInformation(const FString& SeasonInfo);
+	void UpdateSeason(const ESeason NewSeason);
 	
 	UFUNCTION(BlueprintCallable)
 	void UpdateDayInformation(const FString& DayInfo);
@@ -29,5 +31,5 @@ protected:
 	UTextBlock* TimeText;
 
 	UPROPERTY(meta = (BindWidget))
-	UTextBlock* SeasonText;
+	USeasonPanel* SeasonPanel;	
 };

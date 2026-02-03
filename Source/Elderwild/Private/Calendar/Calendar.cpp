@@ -111,13 +111,7 @@ void UCalendar::SetSunPositionInSky()
 
 void UCalendar::SendSeasonInfoToUI(ESeason NewSeason)
 {
-	if (!CalendarWidget) return;
-	
-	FString SeasonName = UEnum::GetDisplayValueAsText(NewSeason).ToString();
-	
-	FString SeasonInfo = FString::Printf(TEXT("Current Season : %s"), *SeasonName);
-
-	CalendarWidget->UpdateSeasonInformation(SeasonInfo);
+	if (CalendarWidget) CalendarWidget->UpdateSeason(NewSeason);
 }
 
 void UCalendar::SendDayInfoToUI()

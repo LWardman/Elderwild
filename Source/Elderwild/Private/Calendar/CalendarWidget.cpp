@@ -1,11 +1,12 @@
 #include "Calendar/CalendarWidget.h"
 
+#include "Calendar/UI/SeasonPanel.h"
 #include "Components/TextBlock.h"
 
 
-void UCalendarWidget::UpdateSeasonInformation(const FString& SeasonInfo)
+void UCalendarWidget::UpdateSeason(const ESeason NewSeason)
 {
-	if (SeasonText) SeasonText->SetText(FText::FromString(SeasonInfo));
+	if (SeasonPanel) SeasonPanel->UpdateSeason(NewSeason);
 }
 
 void UCalendarWidget::UpdateDayInformation(const FString& DayInfo)
