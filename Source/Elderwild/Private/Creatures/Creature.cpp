@@ -22,7 +22,6 @@ void ACreature::Tick(float DeltaTime)
 
 	if (ACreatureController* AI = Cast<ACreatureController>(GetController()))
 	{
-		UE_LOG(LogTemp, Display, TEXT("bShouldBeSleeping: %s"), ShouldBeSleeping() ? TEXT("true") : TEXT("false"));
 		AI->UpdateSleepState(ShouldBeSleeping());
 	}
 }
