@@ -62,8 +62,5 @@ void UBuildingMenu::SetTileViewFromBuildingTabEntries(TObjectPtr<UBuildMenuTabDa
 
 void UBuildingMenu::SwitchTab(EBuildTab NewTab)
 {
-	if (TObjectPtr<UBuildMenuTabData>* TabDataPtr = TabToBuildingMap.Find(NewTab))
-	{
-		SetTileViewFromBuildingTabEntries(*TabDataPtr);
-	}
+	SetTileViewFromBuildingTabEntries(TabToBuildingMap.FindChecked(NewTab));
 }
