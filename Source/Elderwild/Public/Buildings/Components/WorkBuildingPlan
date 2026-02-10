@@ -1,0 +1,6 @@
+Inhabitance component can be reused for work places, but needs to have a way to manually assign workers
+
+A new component should be made in Creatures/Components/ which should be extremely similar to a ResidentComponent,
+except that instead of being AHouse*, the class would instead be AWorkBuilding* or something of the sort.
+This raises a DRY issue, so it could be an idea to make a UBuildingAssignmentComponent class,
+then give ACreature multiple components of this class with names like "HomeAssignment" and "WorkAssignment".
