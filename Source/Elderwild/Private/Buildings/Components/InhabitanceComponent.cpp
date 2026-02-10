@@ -64,7 +64,7 @@ void UInhabitanceComponent::RegisterPotentialInhabitants()
 			UE_LOG(BuildingLog, Display, TEXT("Creature %s has no resident component"), *Creature->GetName());
 			continue;
 		}
-		if (ResidentComponent->HasHome())
+		if (ResidentComponent->IsAssigned())
 		{
 			UE_LOG(BuildingLog, Display, TEXT("Skipping Creature %s because it already has a home"), *Creature->GetName());
 			continue;
