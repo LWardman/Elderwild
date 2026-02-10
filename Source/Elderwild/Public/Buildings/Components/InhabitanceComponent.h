@@ -27,7 +27,12 @@ public:
 	
 	void RegisterPotentialInhabitants();
 
-private:		
+	bool ShouldAutomaticallyPopulate() const { return bAutomaticallyPopulate; }
+
+protected:
+	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess))
+	bool bAutomaticallyPopulate = false;
+
 	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess))
 	int32 MaxNumberOfCreatures = 3;
 

@@ -25,7 +25,7 @@ void UInhabitanceComponent::TickComponent(float DeltaTime, enum ELevelTick TickT
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
-	if (HasSpace())
+	if (HasSpace() && ShouldAutomaticallyPopulate())
 	{
 		RegisterPotentialInhabitants();
 	}
