@@ -4,9 +4,9 @@
 #include "Logging/CalendarLog.h"
 
 
-void USeasonCycler::Init(UDayCycler* DayCycler)
+void USeasonCycler::SetDayCycler(UDayCycler* NewDayCycler)
 {
-	Day = DayCycler;
+	Day = NewDayCycler;
 	if (Day)
 	{
 		Day->BeginCycling();

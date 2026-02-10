@@ -1,8 +1,8 @@
 #include "Calendar/CalendarWidget.h"
 
 #include "Calendar/UI/SeasonPanel.h"
+#include "Calendar/UI/TimeOfDayWidget.h"
 #include "Components/TextBlock.h"
-
 
 void UCalendarWidget::UpdateSeason(const ESeason NewSeason)
 {
@@ -14,7 +14,7 @@ void UCalendarWidget::UpdateDayInformation(const FString& DayInfo)
 	if (DayText) DayText->SetText(FText::FromString(DayInfo));
 }
 
-void UCalendarWidget::UpdateTimeInformation(const FString& TimeInfo)
+void UCalendarWidget::UpdateTimeInformation(const float PercentThroughDay)
 {
-	if (TimeText) TimeText->SetText(FText::FromString(TimeInfo));
+	if (TimeWidget) TimeWidget->UpdateDayPercentage(PercentThroughDay);
 }

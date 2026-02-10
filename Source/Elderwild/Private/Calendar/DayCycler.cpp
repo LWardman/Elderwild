@@ -26,7 +26,7 @@ void UDayCycler::ForceTransitionToNight()
 
 float UDayCycler::PercentWayThroughDay() const
 {
-	return (1 - GetTimeRemainingForTheDay() / FullDayCycle);
+	return (1 - GetTimeRemainingForTheDay() / GetDayLength());
 }
 
 EDayNight UDayCycler::GetCurrentTimePeriod() const
@@ -36,7 +36,7 @@ EDayNight UDayCycler::GetCurrentTimePeriod() const
 
 Seconds UDayCycler::GetTimeRemainingForTheDay() const
 {
-	if (!GetWorld()) return FullDayCycle;
+	if (!GetWorld()) return GetDayLength();
 	
 	Seconds TimeRemaining = GetWorld()->GetTimerManager().GetTimerRemaining(DayCyclingTimerHandle);
 

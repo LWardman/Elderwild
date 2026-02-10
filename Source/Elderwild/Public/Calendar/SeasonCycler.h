@@ -24,8 +24,7 @@ class ELDERWILD_API USeasonCycler : public UObject
 	GENERATED_BODY()
 
 public:
-	void Init(UDayCycler* DayCycler);
-
+	void SetDayCycler(UDayCycler* NewDayCycler);
 	UDayCycler* GetDayCycler() const;
 	
 	int32 GetNumberOfDaysLeft() const;
@@ -34,6 +33,8 @@ public:
 	bool IsLastDayOfMonth() const;
 
 	ESeason GetSeason() const;
+	
+	void SetMonthLength(const int32 NewMonthLength) { MonthLength = NewMonthLength; }
 
 	UPROPERTY(BlueprintAssignable, Category = "Season Events")
 	FSeasonChangeDelegate SeasonIsChanging;

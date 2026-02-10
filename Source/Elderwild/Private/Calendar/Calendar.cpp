@@ -30,12 +30,13 @@ void UCalendar::BeginPlay()
 	}
 	
 	SeasonCycler = NewObject<USeasonCycler>(this);
-	checkf(SeasonCycler, TEXT("Season Cycler not initialized properly"));
+	SeasonCycler->SetMonthLength(MonthLength);
 	SeasonCycler->SeasonIsChanging.AddDynamic(this, &UCalendar::SendSeasonInfoToUI);
 
 	UDayCycler* DayCycler = NewObject<UDayCycler>(this);
-	SeasonCycler->Init(DayCycler);
-	checkf(SeasonCycler->GetDayCycler(), TEXT("Season's DayCycler not initialized properly"));
+	DayCycler->SetDaytimeLength(DayTimeLength);
+	DayCycler->SetNightLength(NightLength);
+	SeasonCycler->SetDayCycler(DayCycler);
 
 	Sunlight = SearchArrayForDirectionalLight( GetActorsWithSunTag() );
 }
@@ -127,7 +128,6 @@ void UCalendar::SendTimeInfoToUI()
 {
 	if (!CalendarWidget || !SeasonCycler || !SeasonCycler->GetDayCycler()) return;
 
-	float PercentThroughDay = SeasonCycler->GetDayCycler()->PercentWayThroughDay();
-	FString TimeInfo = FString::Printf(TEXT("%.1f through the day"), PercentThroughDay);
-	CalendarWidget->UpdateTimeInformation(TimeInfo);
+	const float PercentThroughDay = SeasonCycler->GetDayCycler()->PercentWayThroughDay();
+	CalendarWidget->UpdateTimeInformation(PercentThroughDay);
 }

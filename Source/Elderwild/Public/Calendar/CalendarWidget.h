@@ -6,6 +6,7 @@
 
 class UTextBlock;
 class USeasonPanel;
+class UTimeOfDayWidget;
 enum class ESeason : uint8;
 
 UCLASS()
@@ -21,14 +22,14 @@ public:
 	void UpdateDayInformation(const FString& DayInfo);
 	
 	UFUNCTION(BlueprintCallable)
-	void UpdateTimeInformation(const FString& TimeInfo);
+	void UpdateTimeInformation(const float PercentThroughDay);
 
 protected:
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* DayText;
 
 	UPROPERTY(meta = (BindWidget))
-	UTextBlock* TimeText;
+	UTimeOfDayWidget* TimeWidget;
 
 	UPROPERTY(meta = (BindWidget))
 	USeasonPanel* SeasonPanel;	

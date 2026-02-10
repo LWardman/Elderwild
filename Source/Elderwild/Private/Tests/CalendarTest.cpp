@@ -7,7 +7,7 @@ bool FCalendar::RunTest(const FString& Parameters)
 {
 	USeasonCycler* Season = NewObject<USeasonCycler>();
 	UDayCycler* Day = NewObject<UDayCycler>();
-	Season->Init(Day);
+	Season->SetDayCycler(Day);
 
 	TestNotNull(TEXT("Season generated properly"), Season);
 	TestNotNull(TEXT("Day Cycler generated properly"), Day);

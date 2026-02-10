@@ -44,6 +44,15 @@ private:
 	UFUNCTION()
 	void SendDayInfoToUI();
 	
+	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess), Category="CalendarVariables")
+	float DayTimeLength = 15.0f;
+	
+	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess), Category="CalendarVariables")
+	float NightLength = 15.0f;
+	
+	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess), Category="CalendarVariables")
+	int32 MonthLength = 7;
+	
 	void SendTimeInfoToUI();
 
 	UPROPERTY()

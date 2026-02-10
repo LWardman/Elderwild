@@ -33,6 +33,10 @@ public:
 
 	EDayNight GetCurrentTimePeriod() const;
 	
+	void SetDaytimeLength(const Seconds NewDayLength) { DaytimeLength = NewDayLength; }
+	
+	void SetNightLength(const Seconds NewNightLength) { NightLength = NewNightLength; }
+	
 private:
 	FTimerHandle DayCyclingTimerHandle;
 
@@ -40,7 +44,8 @@ private:
 	
 	Seconds DaytimeLength = 5.f;
 	Seconds NightLength = 5.f;
-	Seconds FullDayCycle = DaytimeLength + NightLength;
+	
+	Seconds GetDayLength() const { return DaytimeLength + NightLength; }
 
 	EDayNight TimePeriod = EDayNight::Day;
 	
