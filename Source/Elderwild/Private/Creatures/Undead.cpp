@@ -1,19 +1,19 @@
 #include "Creatures/Undead.h"
 
-#include "Creatures/Components/ResidentComponent.h"
+#include "Creatures/Components/BuildingAssignmentComponent.h"
 #include "Creatures/CreatureController.h"
-#include "Buildings/House.h"
+#include "Buildings/Building.h"
 
 AUndead::AUndead()
 {
-	ResidentComponent = CreateDefaultSubobject<UResidentComponent>(TEXT("Resident Component"));
-	ResidentComponent->HouseChanged.AddDynamic(this, &AUndead::OnHouseChanged);
+	ResidentComponent = CreateDefaultSubobject<UBuildingAssignmentComponent>(TEXT("Resident Component"));
+	ResidentComponent->BuildingChanged.AddDynamic(this, &AUndead::OnHouseChanged);
 }
 
-void AUndead::OnHouseChanged(AHouse* House)
+void AUndead::OnHouseChanged(ABuilding* Building)
 {
 	if (ACreatureController* CreatureController = Cast<ACreatureController>(GetController()))
 	{
-		CreatureController->UpdateHome(House);
+		CreatureController->UpdateHome(Building);
 	}
 }

@@ -2,24 +2,24 @@
 
 #include "Buildings/Building.h"
 
-void UResidentComponent::AssignToBuilding(ABuilding* NewBuilding)
+void UBuildingAssignmentComponent::AssignToBuilding(ABuilding* NewBuilding)
 {
 	Building = NewBuilding;
 	BuildingChanged.Broadcast(Building);
 }
 
-void UResidentComponent::RemoveFromBuilding()
+void UBuildingAssignmentComponent::RemoveFromBuilding()
 {
 	Building = nullptr;
 	BuildingChanged.Broadcast(Building);
 }
 
-bool UResidentComponent::IsAssigned() const
+bool UBuildingAssignmentComponent::IsAssigned() const
 {
 	return Building != nullptr;
 }
 
-FVector UResidentComponent::GetHomeLocation() const
+FVector UBuildingAssignmentComponent::GetBuildingLocation() const
 {
 	if (!Building) return FVector::Zero();
 	

@@ -8,6 +8,8 @@ AHouse::AHouse()
 	PrimaryActorTick.bCanEverTick = true;
 	
 	InhabitanceComponent = CreateDefaultSubobject<UInhabitanceComponent>(TEXT("Inhabitance Component"));
+	InhabitanceComponent->SetShouldAutomaticallyPopulate(true);
+	
 	EntranceLocationComponent = CreateDefaultSubobject<UEntranceLocationComponent>(TEXT("Entrance Location Component"));
 	
 	EntranceLocationComponent->SetupAttachment(RootComponent);

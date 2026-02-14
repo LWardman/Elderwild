@@ -4,8 +4,8 @@
 #include "Creatures/Creature.h"
 #include "Undead.generated.h"
 
-class UResidentComponent;
-class AHouse;
+class UBuildingAssignmentComponent;
+class ABuilding;
 
 UCLASS()
 class ELDERWILD_API AUndead : public ACreature
@@ -17,8 +17,8 @@ public:
 	
 private:
 	UPROPERTY(VisibleAnywhere)
-	UResidentComponent* ResidentComponent;
+	UBuildingAssignmentComponent* ResidentComponent;
 	
 	UFUNCTION()
-	void OnHouseChanged(AHouse* House);
+	void OnHouseChanged(ABuilding* Building);
 };

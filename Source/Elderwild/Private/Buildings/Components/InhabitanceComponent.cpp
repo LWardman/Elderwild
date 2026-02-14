@@ -4,7 +4,7 @@
 
 #include "Buildings/House.h"
 #include "Creatures/Creature.h"
-#include "Creatures/Components/ResidentComponent.h"
+#include "Creatures/Components/BuildingAssignmentComponent.h"
 #include "Logging/BuildingLog.h"
 
 UInhabitanceComponent::UInhabitanceComponent()
@@ -57,7 +57,7 @@ void UInhabitanceComponent::RegisterPotentialInhabitants()
 	{
 		if (IsFull()) break;
 		
-		UResidentComponent* ResidentComponent = Creature->FindComponentByClass<UResidentComponent>();
+		UBuildingAssignmentComponent* ResidentComponent = Creature->FindComponentByClass<UBuildingAssignmentComponent>();
 		
 		if (!ResidentComponent)
 		{
@@ -71,7 +71,7 @@ void UInhabitanceComponent::RegisterPotentialInhabitants()
 		}
 		
 		UE_LOG(BuildingLog, Display, TEXT("Assigning home %s to creature %s"), *Parent->GetName(), *Creature->GetName());
-		ResidentComponent->AssignToHouse(Parent);
+		ResidentComponent->AssignToBuilding(Parent);
 		RegisterInhabitant(Creature);
 	}
 }

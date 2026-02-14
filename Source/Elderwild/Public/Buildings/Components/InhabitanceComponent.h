@@ -28,6 +28,7 @@ public:
 	void RegisterPotentialInhabitants();
 
 	bool ShouldAutomaticallyPopulate() const { return bAutomaticallyPopulate; }
+	void SetShouldAutomaticallyPopulate(bool bShouldAutomaticallyPopulate) { bAutomaticallyPopulate = bShouldAutomaticallyPopulate; }
 
 protected:
 	UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess))
